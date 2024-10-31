@@ -54,81 +54,98 @@ struct StylesDisplayer: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack() {
                 Text("Large Title Font")
                     .font(themeManager.selectedTheme.largeTitleFont)
                     .foregroundColor(themeManager.selectedTheme.primaryColor)
+                    .padding(.vertical, 10)
                 
                 Text("Text Title Font")
                     .font(themeManager.selectedTheme.textTitleFont)
                     .foregroundColor(themeManager.selectedTheme.primaryColor)
+                    .padding(.vertical, 10)
                 
                 Text("Normal Button Title Font")
                     .font(themeManager.selectedTheme.normalTitleFont)
                     .foregroundColor(themeManager.selectedTheme.accentColor)
+                    .padding(.vertical, 10)
                 
                 Text("Bold Button Title Font")
                     .font(themeManager.selectedTheme.boldBtnTitleFont)
                     .foregroundColor(themeManager.selectedTheme.accentColor)
+                    .padding(.vertical, 10)
                 
                 Text("Body Text Font")
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundColor(themeManager.selectedTheme.primaryColor)
+                    .padding(.vertical, 10)
                 
                 Text("Caption Text Font")
                     .font(themeManager.selectedTheme.captionTxtFont)
                     .foregroundColor(themeManager.selectedTheme.teritaryColor)
+                    .padding(.vertical, 10)
                 
                 Button("Primary Button") {
                     print("Primary button tapped")
                 }
                 .buttonStyle(PrimaryButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Secondary Button") {
                     print("Secondary button tapped")
                 }
                 .buttonStyle(SecondaryButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Tertiary Button") {
                     print("Tertiary button tapped")
                 }
                 .buttonStyle(TertiaryButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Quaternary Button") {
                     print("Quaternary button tapped")
                 }
                 .buttonStyle(QuaternaryButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Add") {
                     print("Add button tapped")
                 }
                 .buttonStyle(AddButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Remove") {
                     print("Remove button tapped")
                 }
                 .buttonStyle(RemoveButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Central and Western") {
                     print("Tag button tapped")
                 }
                 .buttonStyle(TagButtonStyle())
+                .padding(.vertical, 10)
                 
                 Button("Eastern") {
                     print("Remove tag button tapped")
                 }
                 .buttonStyle(RemoveTagButtonStyle())
+                .padding(.vertical, 10)
                 
                 TextField("Email Address", text: .constant(""))
                     .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
+                    .padding(.vertical, 10)
                 
                 SecureField("Password", text: .constant(""))
                     .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
+                    .padding(.vertical, 10)
                 
                 Button("Login") {
                     print("Login button tapped")
                 }
                 .buttonStyle(.plain)
+                .padding(.vertical, 10)
             }
         }
         .onTapGesture{}
