@@ -42,11 +42,11 @@ struct TertiaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(width: 290)
-            .foregroundColor(Color("mnPrimaryTextColor"))
+            .foregroundColor(Color("mnPrimaryColor"))
             .padding(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color("mnPrimaryTextColor"), lineWidth: 1)
+                    .stroke(Color("mnPrimaryColor"), lineWidth: 1)
             )
             .opacity(configuration.isPressed ? 0.5 : 1.0)
     }

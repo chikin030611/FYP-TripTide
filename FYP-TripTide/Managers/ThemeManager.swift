@@ -18,8 +18,9 @@ protocol ThemeProtocol {
     var captionTxtFont: Font { get }
     
     var accentColor: Color { get }
-    var primaryTextColor: Color { get }
-    var secondaryTextColor: Color { get }
+    var primaryColor: Color { get }
+    var secondaryColor: Color { get }
+    var teritaryColor: Color { get }
     var btnTextColor: Color { get }
 }
 
@@ -32,8 +33,9 @@ struct Main: ThemeProtocol {
     var captionTxtFont: Font { .system(size: 16, weight: .regular, design: .default) }
     
     var accentColor: Color { return Color("mnAccentColor") }
-    var primaryTextColor: Color { return Color("mnPrimaryTextColor") }
-    var secondaryTextColor: Color { return Color("mnSecondaryTextColor") }
+    var primaryColor: Color { return Color("mnPrimaryColor") }
+    var secondaryColor: Color { return Color("mnSecondaryColor") }
+    var teritaryColor: Color { return Color("mnTeritaryColor") }
     var btnTextColor: Color { return Color("mnBtnTextColor") }
 }
 
@@ -46,81 +48,92 @@ class ThemeManager: ObservableObject {
 }
 
 
-struct ThemeDisplayer: View {
+struct StylesDisplayer: View {
     
     @StateObject var themeManager = ThemeManager()
     
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Large Title Font")
-                .font(themeManager.selectedTheme.largeTitleFont)
-                .foregroundColor(themeManager.selectedTheme.primaryTextColor)
-            
-            Text("Text Title Font")
-                .font(themeManager.selectedTheme.textTitleFont)
-                .foregroundColor(themeManager.selectedTheme.primaryTextColor)
-            
-            Text("Normal Button Title Font")
-                .font(themeManager.selectedTheme.normalTitleFont)
-                .foregroundColor(themeManager.selectedTheme.accentColor)
-            
-            Text("Bold Button Title Font")
-                .font(themeManager.selectedTheme.boldBtnTitleFont)
-                .foregroundColor(themeManager.selectedTheme.accentColor)
-            
-            Text("Body Text Font")
-                .font(themeManager.selectedTheme.bodyTextFont)
-                .foregroundColor(themeManager.selectedTheme.primaryTextColor)
-            
-            Text("Caption Text Font")
-                .font(themeManager.selectedTheme.captionTxtFont)
-                .foregroundColor(themeManager.selectedTheme.secondaryTextColor)
-            
-            Button("Primary Button") {
-                print("Primary button tapped")
+        ScrollView {
+            VStack(spacing: 16) {
+                Text("Large Title Font")
+                    .font(themeManager.selectedTheme.largeTitleFont)
+                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+                
+                Text("Text Title Font")
+                    .font(themeManager.selectedTheme.textTitleFont)
+                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+                
+                Text("Normal Button Title Font")
+                    .font(themeManager.selectedTheme.normalTitleFont)
+                    .foregroundColor(themeManager.selectedTheme.accentColor)
+                
+                Text("Bold Button Title Font")
+                    .font(themeManager.selectedTheme.boldBtnTitleFont)
+                    .foregroundColor(themeManager.selectedTheme.accentColor)
+                
+                Text("Body Text Font")
+                    .font(themeManager.selectedTheme.bodyTextFont)
+                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+                
+                Text("Caption Text Font")
+                    .font(themeManager.selectedTheme.captionTxtFont)
+                    .foregroundColor(themeManager.selectedTheme.teritaryColor)
+                
+                Button("Primary Button") {
+                    print("Primary button tapped")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                
+                Button("Secondary Button") {
+                    print("Secondary button tapped")
+                }
+                .buttonStyle(SecondaryButtonStyle())
+                
+                Button("Tertiary Button") {
+                    print("Tertiary button tapped")
+                }
+                .buttonStyle(TertiaryButtonStyle())
+                
+                Button("Quaternary Button") {
+                    print("Quaternary button tapped")
+                }
+                .buttonStyle(QuaternaryButtonStyle())
+                
+                Button("Add") {
+                    print("Add button tapped")
+                }
+                .buttonStyle(AddButtonStyle())
+                
+                Button("Remove") {
+                    print("Remove button tapped")
+                }
+                .buttonStyle(RemoveButtonStyle())
+                
+                Button("Central and Western") {
+                    print("Tag button tapped")
+                }
+                .buttonStyle(TagButtonStyle())
+                
+                Button("Eastern") {
+                    print("Remove tag button tapped")
+                }
+                .buttonStyle(RemoveTagButtonStyle())
+                
+                TextField("Email Address", text: .constant(""))
+                    .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
+                
+                SecureField("Password", text: .constant(""))
+                    .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
+                
+                Button("Login") {
+                    print("Login button tapped")
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(PrimaryButtonStyle())
-
-            Button("Secondary Button") {
-                print("Secondary button tapped")
-            }
-            .buttonStyle(SecondaryButtonStyle())
-
-            Button("Tertiary Button") {
-                print("Tertiary button tapped")
-            }
-            .buttonStyle(TertiaryButtonStyle())
-            
-            Button("Quaternary Button") {
-                print("Quaternary button tapped")
-            }
-            .buttonStyle(QuaternaryButtonStyle())
-
-            Button("Add") {
-                print("Add button tapped")
-            }
-            .buttonStyle(AddButtonStyle())
-
-            Button("Remove") {
-                print("Remove button tapped")
-            }
-            .buttonStyle(RemoveButtonStyle())
-            
-            Button("Central and Western") {
-                print("")
-            }
-            .buttonStyle(TagButtonStyle())
-            
-            Button("Eastern") {
-                print("")
-            }
-            .buttonStyle(RemoveTagButtonStyle())
-            
         }
-        .padding()
     }
 }
 
 #Preview {
-    ThemeDisplayer()
+    StylesDisplayer()
 }

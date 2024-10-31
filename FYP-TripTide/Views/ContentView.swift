@@ -18,10 +18,10 @@ struct ContentView: View {
                     Image(systemName: "house")
                     Text("Explore")
                 }
-            ExploreTabView()
+            StylesDisplayer()
                 .tabItem {
-                    Image(systemName: "heart")
-                    Text("Favourites")
+                    Image(systemName: "paintbrush")
+                    Text("Styles")
                 }
         }
         .accentColor(themeManager.selectedTheme.accentColor)
