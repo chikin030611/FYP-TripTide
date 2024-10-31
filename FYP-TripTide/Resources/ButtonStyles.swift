@@ -13,12 +13,12 @@ import SwiftUI
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(width: 290)
+            .frame(width: 290, height: 30)
             .foregroundColor(Color("mnBtnTextColor"))
             .padding(7)
             .background(Color("mnAccentColor"))
             .cornerRadius(25)
-            .opacity(configuration.isPressed ? 0.5 : 1.0)
+            .opacity(configuration.isPressed ? 0.5  : 1.0)
     }
 }
 
@@ -26,14 +26,14 @@ struct PrimaryButtonStyle: ButtonStyle {
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(width: 290)
+            .frame(width: 290, height: 30)
             .foregroundColor(Color("mnAccentColor"))
             .padding(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 25)
                     .stroke(Color("mnAccentColor"), lineWidth: 1)
             )
-            .opacity(configuration.isPressed ? 0.5 : 1.0)
+            .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 
@@ -41,14 +41,14 @@ struct SecondaryButtonStyle: ButtonStyle {
 struct TertiaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(width: 290)
+            .frame(width: 290, height: 30)
             .foregroundColor(Color("mnPrimaryColor"))
             .padding(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 25)
                     .stroke(Color("mnPrimaryColor"), lineWidth: 1)
             )
-            .opacity(configuration.isPressed ? 0.5 : 1.0)
+            .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 
@@ -57,10 +57,10 @@ struct QuaternaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 16, weight: .regular, design: .default))
-            .frame(width: 290)
+            .frame(width: 290, height: 30)
             .foregroundColor(Color("mnAccentColor"))
             .padding(7)
-            .opacity(configuration.isPressed ? 0.5 : 1.0)
+            .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 
@@ -92,7 +92,7 @@ struct RemoveButtonStyle: ButtonStyle {
                     .stroke(Color.red, lineWidth: 1)
             )
             .foregroundColor(Color.red)
-            .opacity(configuration.isPressed ? 0.5 : 1.0)
+            .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 
@@ -127,7 +127,7 @@ struct RemoveTagButtonStyle: ButtonStyle {
             RoundedRectangle(cornerRadius: 25)
                 .stroke(Color("mnAccentColor"), lineWidth: 1)
         )
-        .opacity(configuration.isPressed ? 0.5 : 1.0)
+        .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 

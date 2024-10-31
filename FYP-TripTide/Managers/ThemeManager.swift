@@ -131,6 +131,7 @@ struct StylesDisplayer: View {
                 .buttonStyle(.plain)
             }
         }
+        .onTapGesture{}
     }
 }
 

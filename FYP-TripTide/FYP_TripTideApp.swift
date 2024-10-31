@@ -12,6 +12,8 @@ struct FYP_TripTideApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(.light)
+
         }
     }
 }
