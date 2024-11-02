@@ -89,6 +89,12 @@ struct StylesDisplayer: View {
 //                    .foregroundColor(themeManager.selectedTheme.teritaryColor)
 //                    .padding(.vertical, 10)
                 
+                Card(image: Image("test_light"), title: "Test")
+                    .padding(.vertical, 10)
+                
+                Card(image: Image("test_dark"), title: "Test")
+                    .padding(.vertical, 10)
+                
                 ImageCarousel(images: images)
                     .frame(height: 200)
                     .onAppear(perform: loadImages)
