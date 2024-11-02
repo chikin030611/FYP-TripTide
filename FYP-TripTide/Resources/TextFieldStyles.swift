@@ -16,25 +16,24 @@ struct UnderlinedTextFieldStyle: TextFieldStyle {
     
     func _body(configuration: TextField<Self._Label>) -> some View {
         
-        HStack {
-            if (icon != nil) {
+        HStack(alignment: .center, spacing: 8) { // Adjust spacing as needed
+            if let icon = icon {
                 icon
                     .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                    .padding(.leading, 10)
-                    .padding(.trailing, 20)
+                    .frame(width: 20, height: 20, alignment: .center)
+                    .padding(.horizontal, 20)
             }
             configuration
-                .foregroundColor(themeManager.selectedTheme.secondaryColor)
         }
-            .padding(10)
-            .background(
-                VStack {
-                    Spacer()
-                    Color(themeManager.selectedTheme.teritaryColor)
-                        .frame(height: 1)
-                }
-                    .padding(.horizontal, 10)
-            )
+        .padding(10)
+        .background(
+            VStack {
+                Spacer()
+                Color(themeManager.selectedTheme.teritaryColor)
+                    .frame(height: 1)
+            }
+            .padding(.horizontal, 10)
+        )
     }
 }
 
