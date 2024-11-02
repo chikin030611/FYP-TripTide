@@ -52,37 +52,49 @@ struct StylesDisplayer: View {
     
     @StateObject var themeManager = ThemeManager()
     
+    @State private var email: String = ""
+    @State private var password: String = ""
+    
     var body: some View {
         ScrollView {
             VStack() {
-                Text("Large Title Font")
-                    .font(themeManager.selectedTheme.largeTitleFont)
-                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+//                Text("Large Title Font")
+//                    .font(themeManager.selectedTheme.largeTitleFont)
+//                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+//                    .padding(.vertical, 10)
+//                
+//                Text("Text Title Font")
+//                    .font(themeManager.selectedTheme.textTitleFont)
+//                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+//                    .padding(.vertical, 10)
+//                
+//                Text("Normal Button Title Font")
+//                    .font(themeManager.selectedTheme.normalTitleFont)
+//                    .foregroundColor(themeManager.selectedTheme.accentColor)
+//                    .padding(.vertical, 10)
+//                
+//                Text("Bold Button Title Font")
+//                    .font(themeManager.selectedTheme.boldBtnTitleFont)
+//                    .foregroundColor(themeManager.selectedTheme.accentColor)
+//                    .padding(.vertical, 10)
+//
+//                Text("Body Text Font")
+//                    .font(themeManager.selectedTheme.bodyTextFont)
+//                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+//                    .padding(.vertical, 10)
+//                
+//                Text("Caption Text Font")
+//                    .font(themeManager.selectedTheme.captionTxtFont)
+//                    .foregroundColor(themeManager.selectedTheme.teritaryColor)
+//                    .padding(.vertical, 10)
+                
+                
+                TextField("Email Address", text: $email)
+                    .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
                     .padding(.vertical, 10)
                 
-                Text("Text Title Font")
-                    .font(themeManager.selectedTheme.textTitleFont)
-                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                    .padding(.vertical, 10)
-                
-                Text("Normal Button Title Font")
-                    .font(themeManager.selectedTheme.normalTitleFont)
-                    .foregroundColor(themeManager.selectedTheme.accentColor)
-                    .padding(.vertical, 10)
-                
-                Text("Bold Button Title Font")
-                    .font(themeManager.selectedTheme.boldBtnTitleFont)
-                    .foregroundColor(themeManager.selectedTheme.accentColor)
-                    .padding(.vertical, 10)
-                
-                Text("Body Text Font")
-                    .font(themeManager.selectedTheme.bodyTextFont)
-                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                    .padding(.vertical, 10)
-                
-                Text("Caption Text Font")
-                    .font(themeManager.selectedTheme.captionTxtFont)
-                    .foregroundColor(themeManager.selectedTheme.teritaryColor)
+                SecureField("Password", text: $password)
+                    .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
                     .padding(.vertical, 10)
                 
                 Button("Primary Button") {
@@ -133,19 +145,6 @@ struct StylesDisplayer: View {
                 .buttonStyle(RemoveTagButtonStyle())
                 .padding(.vertical, 10)
                 
-                TextField("Email Address", text: .constant(""))
-                    .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
-                    .padding(.vertical, 10)
-                
-                SecureField("Password", text: .constant(""))
-                    .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
-                    .padding(.vertical, 10)
-                
-                Button("Login") {
-                    print("Login button tapped")
-                }
-                .buttonStyle(.plain)
-                .padding(.vertical, 10)
             }
         }
         .onTapGesture{}
