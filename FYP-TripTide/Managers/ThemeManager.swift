@@ -92,6 +92,8 @@ struct StylesDisplayer: View {
                 TextField("Email Address", text: $email)
                     .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
                     .padding(.vertical, 10)
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
                 
                 SecureField("Password", text: $password)
                     .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
