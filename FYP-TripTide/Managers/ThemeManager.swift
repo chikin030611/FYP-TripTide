@@ -15,7 +15,7 @@ protocol ThemeProtocol {
     var normalTitleFont: Font { get }
     var boldBtnTitleFont: Font { get }
     var bodyTextFont: Font { get }
-    var captionTxtFont: Font { get }
+    var captionTextFont: Font { get }
     
     var accentColor: Color { get }
     var primaryColor: Color { get }
@@ -30,7 +30,7 @@ struct Main: ThemeProtocol {
     var normalTitleFont: Font { .system(size: 20, weight: .semibold, design: .default) }
     var boldBtnTitleFont: Font { .system(size: 20, weight: .bold, design: .default) }
     var bodyTextFont: Font { .system(size: 18, weight: .regular, design: .default) }
-    var captionTxtFont: Font { .system(size: 16, weight: .regular, design: .default) }
+    var captionTextFont: Font { .system(size: 16, weight: .regular, design: .default) }
     
     var accentColor: Color { return Color("mnAccentColor") }
     var primaryColor: Color { return Color("mnPrimaryColor") }
@@ -54,6 +54,7 @@ struct StylesDisplayer: View {
     
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var images: [Image] = []
     
     var body: some View {
         ScrollView {
@@ -88,6 +89,9 @@ struct StylesDisplayer: View {
 //                    .foregroundColor(themeManager.selectedTheme.teritaryColor)
 //                    .padding(.vertical, 10)
                 
+                ImageCarousel(images: images)
+                    .frame(height: 200)
+                    .onAppear(perform: loadImages)
                 
                 TextField("Email Address", text: $email)
                     .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
@@ -150,6 +154,33 @@ struct StylesDisplayer: View {
             }
         }
         .onTapGesture{}
+    }
+}
+
+extension StylesDisplayer {
+    private func loadImages() {
+        let urls = [
+            URL(string: "https://dummyimage.com/600x400.png/123/fff")!,
+            URL(string: "https://dummyimage.com/1080x1999.png/000/fff")!,
+            URL(string: "https://dummyimage.com/600x400.png/2d39d6/fff")!,
+            URL(string: "https://dummyimage.com/600x400.png/fff/000")!
+        ]
+
+        for url in urls {
+            URLSession.shared.dataTask(with: url) { data, _, error in
+                guard let data = data, error == nil else {
+                    print("Error loading image: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                
+                if let uiImage = UIImage(data: data) {
+                    let image = Image(uiImage: uiImage)
+                    DispatchQueue.main.async {
+                        self.images.append(image)
+                    }
+                }
+            }.resume()
+        }
     }
 }
 

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/** Image Carousel**/
 struct ImageCarousel: View {
     
     var images: [Image] = []
@@ -22,8 +23,10 @@ struct ImageCarousel: View {
                         .clipped()
                 }
             }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .frame(height: 250)
+            .tabViewStyle(.page)
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
+            .frame(width: UIScreen.main.bounds.width - 20,height: 200)
+            .cornerRadius(10)
         }
     }
 }

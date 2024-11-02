@@ -13,15 +13,17 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            ExploreTabView()
-                .tabItem {
-                    Image(systemName: "house")
-                    Text("Explore")
-                }
             StylesDisplayer()
                 .tabItem {
                     Image(systemName: "paintbrush")
                     Text("Styles")
+                }
+            
+            
+            ExploreTabView()
+                .tabItem {
+                    Image(systemName: "house")
+                    Text("Explore")
                 }
         }
         .accentColor(themeManager.selectedTheme.accentColor)
