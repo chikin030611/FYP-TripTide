@@ -13,7 +13,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            StylesDisplayer()
+            UITestView()
                 .tabItem {
                     Image(systemName: "paintbrush")
                     Text("Styles")
