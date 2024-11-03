@@ -44,7 +44,7 @@ struct Card: View {
                 )
             
             Text(title)
-                .font(themeManager.selectedTheme.normalTitleFont)
+                .font(themeManager.selectedTheme.titleFont)
                 .foregroundColor(.white)
                 .frame(width: 180, height: 130, alignment: .bottomLeading)
 

@@ -10,10 +10,10 @@ import SwiftUI
  Protocol for themes
  */
 protocol ThemeProtocol {
+    var largerTitleFont: Font { get }
     var largeTitleFont: Font { get }
-    var textTitleFont: Font { get }
-    var normalTitleFont: Font { get }
-    var boldBtnTitleFont: Font { get }
+    var titleFont: Font { get }
+    var boldTitleFont: Font { get }
     var bodyTextFont: Font { get }
     var captionTextFont: Font { get }
     
@@ -25,12 +25,12 @@ protocol ThemeProtocol {
 }
 
 struct Main: ThemeProtocol {
-    var largeTitleFont: Font { .system(size: 30, weight: .bold, design: .default) }
-    var textTitleFont: Font { .system(size: 24, weight: .medium, design: .default) }
-    var normalTitleFont: Font { .system(size: 20, weight: .semibold, design: .default) }
-    var boldBtnTitleFont: Font { .system(size: 20, weight: .bold, design: .default) }
-    var bodyTextFont: Font { .system(size: 18, weight: .regular, design: .default) }
-    var captionTextFont: Font { .system(size: 16, weight: .regular, design: .default) }
+    var largerTitleFont: Font { .system(size: 34, weight: .bold, design: .default) }
+    var largeTitleFont: Font { .system(size: 28, weight: .semibold, design: .default) }
+    var titleFont: Font { .system(size: 22, weight: .semibold, design: .default) }
+    var boldTitleFont: Font { .system(size: 17, weight: .bold, design: .default) }
+    var bodyTextFont: Font { .system(size: 17, weight: .regular, design: .default) }
+    var captionTextFont: Font { .system(size: 13, weight: .regular, design: .default) }
     
     var accentColor: Color { return Color("mnAccentColor") }
     var primaryColor: Color { return Color("mnPrimaryColor") }
