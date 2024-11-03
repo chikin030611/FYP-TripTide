@@ -19,15 +19,38 @@ struct ExploreTabView: View {
     let forYouTitle = NSLocalizedString("For You", comment: "Title of the For You section")
     let forYouDescription = NSLocalizedString("Discover places that are perfect for you", comment: "Description of the For You section")
     
+    // TODO: Replace with actual data
+    @State var forYouCards: [Card] = [
+        Card(image: Image("test_dark"), title: "Disneyland"),
+        Card(image: Image("test_dark"), title: "Ocean Park"),
+        Card(image: Image("test_dark"), title: "The Peak")
+    ]
+    
     // Restaurant Section
     let restaurantIcon = "fork.knife"
     let restaurantTitle = NSLocalizedString("Restaurant", comment: "Title of the restaurant section")
     let restaurantDescription = NSLocalizedString("Locals' favourite dining places", comment: "Description of the restaurant section")
     
+    // TODO: Replace with actual data
+    @State var restaurantCards: [Card] = [
+        Card(image: Image("test_light"), title: "Random Cafe"),
+        Card(image: Image("test_light"), title: "Fining Dining Place"),
+        Card(image: Image("test_dark"), title: "McDonald's"),
+        Card(image: Image("test_dark"), title: "KFC")
+    ]
+    
     // Accommodation Section
     let accommodationIcon = "bed.double.fill"
     let accommodationTitle = NSLocalizedString("Accommodation", comment: "Title of the accommodation section")
     let accommodationDescription = NSLocalizedString("Cozy places to stay", comment: "Description of the accommodation section")
+    
+    // TODO: Replace with actual data
+    @State var accommodationCards: [Card] = [
+        Card(image: Image("test_light"), title: "Random Hotel"),
+        Card(image: Image("test_light"), title: "5-star Hotel"),
+        Card(image: Image("test_light"), title: "Hostel"),
+        Card(image: Image("test_light"), title: "Airbnb")
+    ]
     
     // MARK: - Body
     var body: some View {
@@ -39,20 +62,35 @@ struct ExploreTabView: View {
                 Divider()
                 
                 // For You
-                BodySection(themeManager: themeManager, imageName: forYouIcon, title: forYouTitle, description: forYouDescription)
+                BodySection(themeManager: themeManager,
+                            imageName: forYouIcon,
+                            title: forYouTitle,
+                            description: forYouDescription,
+                            cards: forYouCards
+                )
                     .padding(.vertical, 5)
                 
                 // Restaurant
-                BodySection(themeManager: themeManager, imageName: restaurantIcon, title: restaurantTitle, description: restaurantDescription)
+                BodySection(themeManager: themeManager,
+                            imageName: restaurantIcon,
+                            title: restaurantTitle,
+                            description: restaurantDescription,
+                            cards: restaurantCards
+                )
                     .padding(.vertical, 5)
                 
                 // Accommodation
-                BodySection(themeManager: themeManager, imageName: accommodationIcon, title: accommodationTitle, description: accommodationDescription)
+                BodySection(themeManager: themeManager,
+                            imageName: accommodationIcon,
+                            title: accommodationTitle,
+                            description: accommodationDescription,
+                            cards: accommodationCards
+                )
                     .padding(.vertical, 5)
             }
             .padding()
-            
         }
+        .padding(.vertical, 10)
     }
 }
 
@@ -82,6 +120,7 @@ struct BodySection: View {
     var imageName: String
     var title: String
     var description: String
+    var cards: [Card]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -89,17 +128,20 @@ struct BodySection: View {
                 Image(systemName: imageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 32, height: 32)
+                    .frame(width: 25, height: 25)
                     .foregroundStyle(themeManager.selectedTheme.accentColor)
                 
                 Text(title)
-                    .font(themeManager.selectedTheme.largeTitleFont)
+                    .font(themeManager.selectedTheme.boldTitleFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
             }
             
             Text(description)
                 .font(themeManager.selectedTheme.bodyTextFont)
                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
+            
+            CardGroup(cards: cards)
+            
         }
     }
 }

@@ -28,7 +28,7 @@ struct Main: ThemeProtocol {
     var largerTitleFont: Font { .system(size: 34, weight: .bold, design: .default) }
     var largeTitleFont: Font { .system(size: 28, weight: .semibold, design: .default) }
     var titleFont: Font { .system(size: 22, weight: .semibold, design: .default) }
-    var boldTitleFont: Font { .system(size: 17, weight: .bold, design: .default) }
+    var boldTitleFont: Font { .system(size: 22, weight: .bold, design: .default) }
     var bodyTextFont: Font { .system(size: 17, weight: .regular, design: .default) }
     var captionTextFont: Font { .system(size: 13, weight: .regular, design: .default) }
     
