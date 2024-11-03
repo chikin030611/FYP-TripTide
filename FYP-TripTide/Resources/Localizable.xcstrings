@@ -1,0 +1,136 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Accommodation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "住宿"
+          }
+        }
+      }
+    },
+    "Add" : {
+      "shouldTranslate" : false
+    },
+    "Body Text Font" : {
+      "shouldTranslate" : false
+    },
+    "Bold Title Font" : {
+      "shouldTranslate" : false
+    },
+    "Caption Text Font" : {
+      "shouldTranslate" : false
+    },
+    "Central and Western" : {
+      "shouldTranslate" : false
+    },
+    "Cozy places to stay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "舒適的住宿地點"
+          }
+        }
+      }
+    },
+    "Discover places that are perfect for you" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "探索最適合您的地方"
+          }
+        }
+      }
+    },
+    "Eastern" : {
+      "shouldTranslate" : false
+    },
+    "Email Address" : {
+      "shouldTranslate" : false
+    },
+    "Explore" : {
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "探索"
+          }
+        }
+      }
+    },
+    "For You" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "為你推薦"
+          }
+        }
+      }
+    },
+    "Large Title Font" : {
+      "shouldTranslate" : false
+    },
+    "Larger Title Font" : {
+      "shouldTranslate" : false
+    },
+    "Locals' favourite dining places" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當地人最喜歡的用餐地方"
+          }
+        }
+      }
+    },
+    "Normal Title Font" : {
+      "shouldTranslate" : false
+    },
+    "Password" : {
+      "shouldTranslate" : false
+    },
+    "Primary Button" : {
+      "shouldTranslate" : false
+    },
+    "Quaternary Button" : {
+      "shouldTranslate" : false
+    },
+    "Remove" : {
+      "shouldTranslate" : false
+    },
+    "Restaurant" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "餐廳"
+          }
+        }
+      }
+    },
+    "Secondary Button" : {
+      "shouldTranslate" : false
+    },
+    "Styles" : {
+      "shouldTranslate" : false
+    },
+    "Tertiary Button" : {
+      "shouldTranslate" : false
+    },
+    "TripTide" : {
+      "shouldTranslate" : false
+    }
+  },
+  "version" : "1.0"
+}
