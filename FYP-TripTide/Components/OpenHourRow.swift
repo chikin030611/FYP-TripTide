@@ -7,16 +7,26 @@
 
 import SwiftUI
 
+
 struct OpenHourRow: View {
     
     @StateObject var themeManager = ThemeManager()
     
-    var openHour: OpenHour
+    var openHours: [OpenHour]
 //    let currentDate = Date()
+    
+    private var todayOpenHour: OpenHour? {
+        let now = Date()
+        let calendar = Calendar.current
+        let todayIndex = calendar.component(.weekday, from: now) // 1 = Sunday, 7 = Saturday
+        
+        // Map weekday index to OpenHour day
+        return openHours.first { $0.weekdayIndex == todayIndex }
+    }
     
     private var isOpen: Bool {
         // If the place is closed on the current day, return false
-        if openHour.isRestDay {
+        guard let openHour = todayOpenHour, !openHour.isRestDay else {
             return false
         }
         
@@ -25,19 +35,19 @@ struct OpenHourRow: View {
         
         // Create DateComponents for opening and closing times
         guard let openHH = openHour.getOpenTimeHour(),
-              let openMinute = openHour.getOpenTimeMinute(),
-              let closeHour = openHour.getCloseTimeHour(),
-              let closeMinute = openHour.getCloseTimeMinute() else {
+              let openMM = openHour.getOpenTimeMinute(),
+              let closeHH = openHour.getCloseTimeHour(),
+              let closeMM = openHour.getCloseTimeMinute() else {
             return false // Assume closed if time details are missing
         }
         
         var openingTime = DateComponents()
         openingTime.hour = openHH
-        openingTime.minute = openMinute
+        openingTime.minute = openMM
         
         var closingTime = DateComponents()
-        closingTime.hour = closeHour
-        closingTime.minute = closeMinute
+        closingTime.hour = closeHH
+        closingTime.minute = closeMM
         
         // Convert to `Date`
         guard let openingDate = calendar.nextDate(after: now, matching: openingTime, matchingPolicy: .nextTime),
@@ -55,6 +65,7 @@ struct OpenHourRow: View {
 
     
     var body: some View {
+        // TODO: Add a button to show all open hours
         HStack {
             VStack(alignment: .leading) {
                 
@@ -64,19 +75,25 @@ struct OpenHourRow: View {
                     .foregroundStyle(isOpen ? themeManager.selectedTheme.accentColor : themeManager.selectedTheme.warningColor)
                 
                 HStack {
-                    Text(openHour.day)
-                        .font(themeManager.selectedTheme.captionTextFont)
-                        .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                    
-                    Text("•")
-                        .font(themeManager.selectedTheme.captionTextFont)
-                    
-                    if openHour.isRestDay {
-                        Text("Rest Day")
+                    if let openHour = todayOpenHour {
+                        Text(openHour.dayName())
                             .font(themeManager.selectedTheme.captionTextFont)
                             .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                        
+                        Text("•")
+                            .font(themeManager.selectedTheme.captionTextFont)
+                        
+                        if openHour.isRestDay {
+                            Text("Rest Day")
+                                .font(themeManager.selectedTheme.captionTextFont)
+                                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                        } else {
+                            Text("\(openHour.openTime!) - \(openHour.closeTime!)")
+                                .font(themeManager.selectedTheme.captionTextFont)
+                                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                        }
                     } else {
-                        Text("\(openHour.openTime!) - \(openHour.closeTime!)")
+                        Text("No open hours available")
                             .font(themeManager.selectedTheme.captionTextFont)
                             .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     }
@@ -93,7 +110,13 @@ struct OpenHourRow: View {
 }
 
 #Preview {
-    OpenHourRow(openHour: OpenHour(day: "Monday", openTime: "10:00", closeTime: "20:00"))
-//    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: "01:00", closeTime: "20:00"))
-//    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: nil, closeTime: nil))
+    OpenHourRow(openHours: [
+        OpenHour(weekdayIndex: 2, openTime: "10:00 AM", closeTime: "8:00 PM"),
+        OpenHour(weekdayIndex: 3, openTime: "10:00 AM", closeTime: "8:00 PM"),
+        OpenHour(weekdayIndex: 4, openTime: "10:00 AM", closeTime: "8:00 PM"),
+        OpenHour(weekdayIndex: 5, openTime: "10:00 AM", closeTime: "8:00 PM"),
+        OpenHour(weekdayIndex: 6, openTime: "10:00 AM", closeTime: "8:00 PM"),
+        OpenHour(weekdayIndex: 7, openTime: nil, closeTime: nil),
+        OpenHour(weekdayIndex: 1, openTime: nil, closeTime: nil)
+    ])
 }

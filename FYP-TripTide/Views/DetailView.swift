@@ -78,13 +78,15 @@ struct DetailView: View {
                         
                         Spacer()
                         
+                        // TODO: Add a button to favourite the place
+                        // TODO: Make the button pressable
                         Image(systemName: "heart")
                             .font(.title)
                     }
                     .padding(.bottom, 10)
                     
                     // Open Hour
-                    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: "01:00", closeTime: "20:00")) 
+                    OpenHourRow(openHours: place.openHours)
                         .padding(.bottom, 10)
                     
                     // Recommended Staying Time
@@ -138,13 +140,13 @@ struct DetailView: View {
         price: "$500+",
         tags: [Tag(name: "Amusement Park"), Tag(name: "Entertainment")],
         openHours: [
-            OpenHour(day: "Monday", openTime: "10:00 AM", closeTime: "8:00 PM"),
-            OpenHour(day: "Tuesday", openTime: "10:00 AM", closeTime: "8:00 PM"),
-            OpenHour(day: "Wednesday", openTime: "10:00 AM", closeTime: "8:00 PM"),
-            OpenHour(day: "Thursday", openTime: "10:00 AM", closeTime: "8:00 PM"),
-            OpenHour(day: "Friday", openTime: "10:00 AM", closeTime: "8:00 PM"),
-            OpenHour(day: "Saturday", openTime: nil, closeTime: nil),
-            OpenHour(day: "Sunday", openTime: nil, closeTime: nil)
+            OpenHour(weekdayIndex: 1, openTime: "00:00", closeTime: "03:50"),
+            OpenHour(weekdayIndex: 2, openTime: "10:00", closeTime: "18:00"),
+            OpenHour(weekdayIndex: 3, openTime: "10:00", closeTime: "19:00"),
+            OpenHour(weekdayIndex: 4, openTime: "10:00", closeTime: "20:00"),
+            OpenHour(weekdayIndex: 5, openTime: "10:00", closeTime: "20:00"),
+            OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "20:00"),
+            OpenHour(weekdayIndex: 7, openTime: nil, closeTime: nil)
         ],
         stayingTime: "4 hours",
         description: "Disneyland Park is the first theme park built at Disneyland Resort in Anaheim, California.",

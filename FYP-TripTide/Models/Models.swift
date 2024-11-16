@@ -7,81 +7,7 @@
 
 import Foundation
 
-struct Tag: Equatable {
-    var name: String
-}
-
-struct OpenHour {
-    var day: String
-    var openTime: String?
-    var closeTime: String?
-    
-    func getOpenTimeHour() -> Int? {
-        guard let openTime = openTime else { return nil }
-        return OpenHour.convertTimeToHour(time: openTime)
-    }
-    
-    func getCloseTimeHour() -> Int? {
-        guard let closeTime = closeTime else { return nil }
-        return OpenHour.convertTimeToHour(time: closeTime)
-    }
-    
-    static func convertTimeToHour(time: String) -> Int? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm" // 24-hour time format
-        
-        let date = formatter.date(from: time)
-        
-        let calendar = Calendar.current
-        return calendar.component(.hour, from: date!)
-    }
-    
-    func getOpenTimeMinute() -> Int? {
-        guard let openTime = openTime else { return nil }
-        return OpenHour.convertTimeToMinute(time: openTime)
-    }
-    
-    func getCloseTimeMinute() -> Int? {
-        guard let closeTime = closeTime else { return nil }
-        return OpenHour.convertTimeToMinute(time: closeTime)
-    }
-    
-    static func convertTimeToMinute(time: String) -> Int? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm" // 24-hour time format
-        
-        let date = formatter.date(from: time)
-        
-        let calendar = Calendar.current
-        return calendar.component(.minute, from: date!)
-    }
-    
-//    func getOpenTimeDate() -> Date? {
-//        guard let openTime = openTime else { return nil }
-//        return OpenHour.convertTimeToDate(time: openTime)
-//    }
-//    
-//    func getCloseTimeDate() -> Date? {
-//        guard let closeTime = closeTime else { return nil }
-//        return OpenHour.convertTimeToDate(time: closeTime)
-//    }
-//    
-//    static func convertTimeToDate(time: String) -> Date? {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "HH:mm" // 24-hour time format
-//        
-//        formatter.timeZone = TimeZone(identifier: "Europe/London")
-//        
-//        
-//        return formatter.date(from: time)
-//    }
-    
-    var isRestDay: Bool {
-        return openTime == nil || closeTime == nil
-    }
-}
-
-
+// MARK: - Place Model
 struct Place: Identifiable {
     var id = UUID()
     var images: [String]
@@ -95,3 +21,70 @@ struct Place: Identifiable {
     var latitude: Double
     var longitude: Double
 }
+
+// MARK: - Tag Model
+struct Tag: Equatable {
+    var name: String
+}
+
+// MARK: - OpenHour Model
+struct OpenHour {
+    var weekdayIndex: Int
+    var openTime: String?
+    var closeTime: String?
+    var isRestDay: Bool {
+        return openTime == nil || closeTime == nil
+    }
+    
+    func dayName() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        return formatter.weekdaySymbols[weekdayIndex - 1] // Array is 0-based, weekdayIndex is 1-based
+    }
+    
+    func getOpenTimeHour() -> Int? {
+        guard let openTime = openTime else { return nil }
+        return OpenHour.convertTimeToHour(time: openTime)
+    }
+    
+    func getOpenTimeMinute() -> Int? {
+        guard let openTime = openTime else { return nil }
+        return OpenHour.convertTimeToMinute(time: openTime)
+    }
+    
+    func getCloseTimeHour() -> Int? {
+        guard let closeTime = closeTime else { return nil }
+        return OpenHour.convertTimeToHour(time: closeTime)
+    }
+    
+    func getCloseTimeMinute() -> Int? {
+        guard let closeTime = closeTime else { return nil }
+        return OpenHour.convertTimeToMinute(time: closeTime)
+    }
+    
+    static func convertTimeToHour(time: String) -> Int? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm" // 24-hour time format
+        
+        guard let date = formatter.date(from: time) else {
+            return nil // Return nil if the date conversion fails
+        }
+        
+        let calendar = Calendar.current
+        return calendar.component(.hour, from: date)
+    }
+
+    static func convertTimeToMinute(time: String) -> Int? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm" // 24-hour time format
+        
+        guard let date = formatter.date(from: time) else {
+            return nil // Return nil if the date conversion fails
+        }
+        
+        let calendar = Calendar.current
+        return calendar.component(.minute, from: date)
+    }
+}
+
+
