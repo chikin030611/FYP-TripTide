@@ -13,16 +13,15 @@ struct DetailView: View {
     
     @StateObject var themeManager = ThemeManager()
     
+    // Property to hold a Place object
+    var place: Place
     
-    @State var images: [Image] = [Image("test_dark"), Image("test_light")]
-    @State var tags: [Tag] = [Tag(name: "Amusement Park"), Tag(name: "Entertainment")]
-    
-    @State private var coordinate = CLLocationCoordinate2D(latitude: 33.8121, longitude: -117.9190)
     @State private var cameraPosition: MapCameraPosition
     
-    init() {
+    init(place: Place) {
+        self.place = place
         _cameraPosition = State(initialValue: .camera(
-            .init(centerCoordinate: CLLocationCoordinate2D(latitude: 33.8121, longitude: -117.9190), distance: 2000)
+            .init(centerCoordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude), distance: 2000)
         ))
     }
     
@@ -31,22 +30,45 @@ struct DetailView: View {
             VStack {
                 
                 // Images
-                ImageCarousel(images: images)
+                ImageCarousel(images: place.images)
                     .padding(.top, 20)
                 
                 // Body
                 VStack {
-                    // Title
+                    // Header
                     HStack {
                         VStack(alignment: .leading) {
-                            Text("Disneyland")
+                            
+                            // Title
+                            Text(place.name)
                                 .font(themeManager.selectedTheme.largeTitleFont)
                             
+                            // Rating
                             HStack {
-                                ForEach(tags, id: \.name) { tag in
+                                ForEach(Array(repeating: true, count: place.rating), id: \.self) { _ in
+                                    Image(systemName: "star.fill")
+                                        .font(themeManager.selectedTheme.captionTextFont)
+                                        .foregroundStyle(themeManager.selectedTheme.accentColor)
+                                }
+
+                                ForEach(Array(repeating: true, count: 5-place.rating), id: \.self) { _ in
+                                    Image(systemName: "star")
+                                        .font(themeManager.selectedTheme.captionTextFont)
+                                        .foregroundStyle(themeManager.selectedTheme.accentColor)
+                                }
+
+                            }
+                        
+                            // Price and Tags
+                            HStack {
+                                Text(place.price)
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                Text("•")
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                ForEach(place.tags, id: \.name) { tag in
                                     Text(tag.name)
                                         .font(themeManager.selectedTheme.captionTextFont)
-                                    if (tag != tags.last) {
+                                    if tag != place.tags.last {
                                         Text("•")
                                             .font(themeManager.selectedTheme.captionTextFont)
                                     }
@@ -62,12 +84,13 @@ struct DetailView: View {
                     .padding(.bottom, 10)
                     
                     // Open Hour
-                    OpenHourRow()
+                    OpenHourRow() // Assuming OpenHourRow takes an array of OpenHour
                         .padding(.bottom, 10)
                     
                     // Recommended Staying Time
                     HStack {
                         Image(systemName: "clock")
+                            .frame(width: 25, height: 25)
                             .font(themeManager.selectedTheme.boldTitleFont)
                             .foregroundStyle(themeManager.selectedTheme.primaryColor)
                         
@@ -76,7 +99,7 @@ struct DetailView: View {
                                 .font(themeManager.selectedTheme.boldBodyTextFont)
                                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
                             
-                            Text("4 hours")
+                            Text(place.stayingTime)
                                 .font(themeManager.selectedTheme.bodyTextFont)
                                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
                         }
@@ -85,10 +108,11 @@ struct DetailView: View {
                     .padding(.bottom, 10)
                     
                     // Description
-                    Text("Disneyland Park, originally Disneyland, is the first of two theme parks built at the Disneyland Resort in Anaheim, California, opened on July 17, 1955. It is the only theme park designed and built to completion under the direct supervision of Walt Disney.")
+                    Text(place.description)
                         .font(themeManager.selectedTheme.bodyTextFont)
                         .foregroundStyle(themeManager.selectedTheme.primaryColor)
                         .padding(.bottom, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     // Location
                     Text("Location")
@@ -97,7 +121,7 @@ struct DetailView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Map(position: $cameraPosition) {
-                        Marker("DisneyLand", coordinate: coordinate)
+                        Marker(place.name, coordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude))
                     }
                     .frame(height: 200)
                 }
@@ -107,5 +131,16 @@ struct DetailView: View {
 }
 
 #Preview {
-    DetailView()
+    DetailView(place: Place(
+        images: ["https://dummyimage.com/600x400.png/fff/000", "https://dummyimage.com/600x400/07162e/ffffff"],
+        name: "Disneyland",
+        rating: 4,
+        price: "$500+",
+        tags: [Tag(name: "Amusement Park"), Tag(name: "Entertainment")],
+        openHours: [OpenHour(day: "Monday", hours: "8:00 AM - 9:00 PM")],
+        stayingTime: "4 hours",
+        description: "Disneyland Park is the first theme park built at Disneyland Resort in Anaheim, California.",
+        latitude: 33.8121,
+        longitude: -117.9190
+    ))
 }
