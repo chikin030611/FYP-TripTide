@@ -19,30 +19,40 @@ struct OpenHourRow: View {
         if openHour.isRestDay {
             return false
         }
-
+        
         let now = Date()
         let calendar = Calendar.current
         
-        // Get the current hour and minute
-        let currentHour = calendar.component(.hour, from: now)
-        let currentMinute = calendar.component(.minute, from: now)
-        let currentTotalMinutes = (currentHour * 60) + currentMinute
-
-        // Get open and close hours and minutes
+        // Create DateComponents for opening and closing times
         guard let openHH = openHour.getOpenTimeHour(),
-              let openMM = openHour.getOpenTimeMinute(),
-              let closeHH = openHour.getCloseTimeHour(),
-              let closeMM = openHour.getCloseTimeMinute() else {
-            return false // If any value is missing, assume closed
+              let openMinute = openHour.getOpenTimeMinute(),
+              let closeHour = openHour.getCloseTimeHour(),
+              let closeMinute = openHour.getCloseTimeMinute() else {
+            return false // Assume closed if time details are missing
         }
-
-        // Calculate total minutes for open and close times
-        let openTotalMinutes = (openHH * 60) + openMM
-        let closeTotalMinutes = (closeHH * 60) + closeMM
-
-        // Compare the total minutes
-        return currentTotalMinutes >= openTotalMinutes && currentTotalMinutes <= closeTotalMinutes
+        
+        var openingTime = DateComponents()
+        openingTime.hour = openHH
+        openingTime.minute = openMinute
+        
+        var closingTime = DateComponents()
+        closingTime.hour = closeHour
+        closingTime.minute = closeMinute
+        
+        // Convert to `Date`
+        guard let openingDate = calendar.nextDate(after: now, matching: openingTime, matchingPolicy: .nextTime),
+              let closingDate = calendar.nextDate(after: now, matching: closingTime, matchingPolicy: .nextTime) else {
+            return false
+        }
+        
+        // Handle spanning midnight by checking if the closing time is earlier than opening time
+        if closingDate < openingDate {
+            return now >= openingDate || now <= closingDate
+        } else {
+            return now >= openingDate && now <= closingDate
+        }
     }
+
     
     var body: some View {
         HStack {
@@ -83,7 +93,7 @@ struct OpenHourRow: View {
 }
 
 #Preview {
-//    OpenHourRow(openHour: OpenHour(day: "Monday", openTime: "10:00", closeTime: "20:00"))
-    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: "01:00", closeTime: "20:00"))
+    OpenHourRow(openHour: OpenHour(day: "Monday", openTime: "10:00", closeTime: "20:00"))
+//    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: "01:00", closeTime: "20:00"))
 //    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: nil, closeTime: nil))
 }
