@@ -25,7 +25,7 @@ struct ImageCarousel: View {
             }
             .tabViewStyle(.page)
             .indexViewStyle(.page(backgroundDisplayMode: .always))
-            .frame(width: UIScreen.main.bounds.width - 20,height: 200)
+            .frame(height: 200)
             .cornerRadius(10)
         }
     }
