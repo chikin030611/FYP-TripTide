@@ -84,7 +84,7 @@ struct DetailView: View {
                     .padding(.bottom, 10)
                     
                     // Open Hour
-                    OpenHourRow() // Assuming OpenHourRow takes an array of OpenHour
+                    OpenHourRow(openHour: OpenHour(day: "Sunday", openTime: "01:00", closeTime: "20:00")) 
                         .padding(.bottom, 10)
                     
                     // Recommended Staying Time
@@ -132,12 +132,20 @@ struct DetailView: View {
 
 #Preview {
     DetailView(place: Place(
-        images: ["https://dummyimage.com/600x400.png/fff/000", "https://dummyimage.com/600x400/07162e/ffffff"],
+        images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
         name: "Disneyland",
         rating: 4,
         price: "$500+",
         tags: [Tag(name: "Amusement Park"), Tag(name: "Entertainment")],
-        openHours: [OpenHour(day: "Monday", hours: "8:00 AM - 9:00 PM")],
+        openHours: [
+            OpenHour(day: "Monday", openTime: "10:00 AM", closeTime: "8:00 PM"),
+            OpenHour(day: "Tuesday", openTime: "10:00 AM", closeTime: "8:00 PM"),
+            OpenHour(day: "Wednesday", openTime: "10:00 AM", closeTime: "8:00 PM"),
+            OpenHour(day: "Thursday", openTime: "10:00 AM", closeTime: "8:00 PM"),
+            OpenHour(day: "Friday", openTime: "10:00 AM", closeTime: "8:00 PM"),
+            OpenHour(day: "Saturday", openTime: nil, closeTime: nil),
+            OpenHour(day: "Sunday", openTime: nil, closeTime: nil)
+        ],
         stayingTime: "4 hours",
         description: "Disneyland Park is the first theme park built at Disneyland Resort in Anaheim, California.",
         latitude: 33.8121,
