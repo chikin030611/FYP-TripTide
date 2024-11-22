@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Place Model
 struct Place: Identifiable {
-    var id = UUID()
+    var id: String
     var images: [String]
     var name: String
     var rating: Int
@@ -20,6 +20,22 @@ struct Place: Identifiable {
     var description: String
     var latitude: Double
     var longitude: Double
+}
+
+extension Place {
+    static let empty = Place(
+        id: "",
+        images: [],
+        name: "",
+        rating: 0,
+        price: "",
+        tags: [],
+        openHours: [],
+        stayingTime: "",
+        description: "",
+        latitude: 0,
+        longitude: 0
+    )
 }
 
 // MARK: - Tag Model

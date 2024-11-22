@@ -124,6 +124,12 @@
     "Password" : {
       "shouldTranslate" : false
     },
+    "Plan" : {
+
+    },
+    "Plan Coming Soon" : {
+
+    },
     "Primary Button" : {
       "shouldTranslate" : false
     },
@@ -150,14 +156,23 @@
         }
       }
     },
-    "Secondary Button" : {
-      "shouldTranslate" : false
+    "Search" : {
+
     },
-    "Styles" : {
+    "Search Coming Soon" : {
+
+    },
+    "Secondary Button" : {
       "shouldTranslate" : false
     },
     "Tertiary Button" : {
       "shouldTranslate" : false
+    },
+    "Tips" : {
+
+    },
+    "Tips Coming Soon" : {
+
     },
     "TripTide" : {
       "shouldTranslate" : false

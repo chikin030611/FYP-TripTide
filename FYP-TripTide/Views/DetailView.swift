@@ -14,12 +14,15 @@ struct DetailView: View {
     @StateObject var themeManager = ThemeManager()
     
     // Property to hold a Place object
-    var place: Place
-    
+    // var place: Place
+    var placeId: String
+    @State private var place: Place = .empty
+
     @State private var cameraPosition: MapCameraPosition
     
     init(place: Place) {
-        self.place = place
+        self.placeId = place.id
+        self.place = getPlace(by: placeId) ?? .empty
         _cameraPosition = State(initialValue: .camera(
             .init(centerCoordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude), distance: 2000)
         ))
@@ -132,25 +135,25 @@ struct DetailView: View {
     }
 }
 
-#Preview {
-    DetailView(place: Place(
-        images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
-        name: "Disneyland",
-        rating: 4,
-        price: "$500+",
-        tags: [Tag(name: "Amusement Park"), Tag(name: "Entertainment")],
-        openHours: [
-            OpenHour(weekdayIndex: 1, openTime: "00:00", closeTime: "03:50"),
-            OpenHour(weekdayIndex: 2, openTime: "10:00", closeTime: "18:00"),
-            OpenHour(weekdayIndex: 3, openTime: "10:00", closeTime: "19:00"),
-            OpenHour(weekdayIndex: 4, openTime: "10:00", closeTime: "20:00"),
-            OpenHour(weekdayIndex: 5, openTime: "10:00", closeTime: "20:00"),
-            OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "20:00"),
-            OpenHour(weekdayIndex: 7, openTime: nil, closeTime: nil)
-        ],
-        stayingTime: "4 hours",
-        description: "Disneyland Park is the first theme park built at Disneyland Resort in Anaheim, California.",
-        latitude: 33.8121,
-        longitude: -117.9190
-    ))
-}
+// #Preview {
+//     DetailView(place: Place(
+//         images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
+//         name: "Disneyland",
+//         rating: 4,
+//         price: "$500+",
+//         tags: [Tag(name: "Amusement Park"), Tag(name: "Entertainment")],
+//         openHours: [
+//             OpenHour(weekdayIndex: 1, openTime: "00:00", closeTime: "03:50"),
+//             OpenHour(weekdayIndex: 2, openTime: "10:00", closeTime: "18:00"),
+//             OpenHour(weekdayIndex: 3, openTime: "10:00", closeTime: "19:00"),
+//             OpenHour(weekdayIndex: 4, openTime: "10:00", closeTime: "20:00"),
+//             OpenHour(weekdayIndex: 5, openTime: "10:00", closeTime: "20:00"),
+//             OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "20:00"),
+//             OpenHour(weekdayIndex: 7, openTime: nil, closeTime: nil)
+//         ],
+//         stayingTime: "4 hours",
+//         description: "Disneyland Park is the first theme park built at Disneyland Resort in Anaheim, California.",
+//         latitude: 33.8121,
+//         longitude: -117.9190
+//     ))
+// }

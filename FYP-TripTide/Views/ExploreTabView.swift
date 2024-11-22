@@ -21,9 +21,9 @@ struct ExploreTabView: View {
     
     // TODO: Replace with actual data
     @State var forYouCards: [Card] = [
-        Card(image: Image("test_dark"), title: "Disneyland"),
-        Card(image: Image("test_dark"), title: "Ocean Park"),
-        Card(image: Image("test_dark"), title: "The Peak")
+        Card(placeId: "1"),
+        Card(placeId: "2"),
+        Card(placeId: "3")
     ]
     
     // Restaurant Section
@@ -33,10 +33,10 @@ struct ExploreTabView: View {
     
     // TODO: Replace with actual data
     @State var restaurantCards: [Card] = [
-        Card(image: Image("test_light"), title: "Random Cafe"),
-        Card(image: Image("test_light"), title: "Fining Dining Place"),
-        Card(image: Image("test_dark"), title: "McDonald's"),
-        Card(image: Image("test_dark"), title: "KFC")
+        Card(placeId: "4"),
+        Card(placeId: "5"),
+        Card(placeId: "6"),
+        Card(placeId: "7")
     ]
     
     // Accommodation Section
@@ -46,10 +46,9 @@ struct ExploreTabView: View {
     
     // TODO: Replace with actual data
     @State var accommodationCards: [Card] = [
-        Card(image: Image("test_light"), title: "Random Hotel"),
-        Card(image: Image("test_light"), title: "5-star Hotel"),
-        Card(image: Image("test_light"), title: "Hostel"),
-        Card(image: Image("test_light"), title: "Airbnb")
+        Card(placeId: "8"),
+        Card(placeId: "9"),
+        Card(placeId: "10")
     ]
     
     // MARK: - Body

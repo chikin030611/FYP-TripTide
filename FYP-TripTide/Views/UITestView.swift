@@ -72,18 +72,18 @@ struct TypographySection: View {
 // MARK: - Card Section
 struct CardView: View {
     @State private var cards: [Card] = [
-        Card(image: Image("test_light"), title: "Test1"),
-        Card(image: Image("test_dark"), title: "Test2"),
-        Card(image: Image("test_light"), title: "Test1"),
-        Card(image: Image("test_dark"), title: "Test2"),
-        Card(image: Image("test_light"), title: "Test1"),
-        Card(image: Image("test_dark"), title: "Test2")
+        Card(placeId: "1"),
+        Card(placeId: "2"),
+        Card(placeId: "3"),
+        Card(placeId: "4"),
+        Card(placeId: "5"),
+        Card(placeId: "6")
     ]
 
     var body: some View {
         CardGroup(cards: cards)
         
-        Card(image: Image("test_light"), title: "Test")
+        Card(placeId: "7")
             .padding(.vertical, 10)
     }
 }
