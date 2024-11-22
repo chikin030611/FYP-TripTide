@@ -1,6 +1,19 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "•" : {
+
+    },
     "Accommodation" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -26,6 +39,9 @@
     },
     "Central and Western" : {
       "shouldTranslate" : false
+    },
+    "Closed Now" : {
+
     },
     "Cozy places to stay" : {
       "extractionState" : "manual",
@@ -93,8 +109,17 @@
         }
       }
     },
+    "Location" : {
+
+    },
+    "No open hours available" : {
+
+    },
     "Normal Title Font" : {
       "shouldTranslate" : false
+    },
+    "Open Now" : {
+
     },
     "Password" : {
       "shouldTranslate" : false
@@ -105,8 +130,14 @@
     "Quaternary Button" : {
       "shouldTranslate" : false
     },
+    "Recommended Staying Time" : {
+
+    },
     "Remove" : {
       "shouldTranslate" : false
+    },
+    "Rest Day" : {
+
     },
     "Restaurant" : {
       "extractionState" : "manual",

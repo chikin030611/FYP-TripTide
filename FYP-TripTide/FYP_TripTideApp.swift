@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import Inject
 
 @main
 struct FYP_TripTideApp: App {
+    @ObserveInjection var inject
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.light)
-
+                .enableInjection()
         }
     }
 }
