@@ -53,43 +53,45 @@ struct ExploreTabView: View {
     
     // MARK: - Body
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                // Title
-                TitleSection(themeManager: themeManager)
-                
-                Divider()
-                
-                // For You
-                BodySection(themeManager: themeManager,
-                            imageName: forYouIcon,
-                            title: forYouTitle,
-                            description: forYouDescription,
-                            cards: forYouCards
-                )
-                    .padding(.vertical, 5)
-                
-                // Restaurant
-                BodySection(themeManager: themeManager,
-                            imageName: restaurantIcon,
-                            title: restaurantTitle,
-                            description: restaurantDescription,
-                            cards: restaurantCards
-                )
-                    .padding(.vertical, 5)
-                
-                // Accommodation
-                BodySection(themeManager: themeManager,
-                            imageName: accommodationIcon,
-                            title: accommodationTitle,
-                            description: accommodationDescription,
-                            cards: accommodationCards
-                )
-                    .padding(.vertical, 5)
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading) {
+                    // Title
+                    TitleSection(themeManager: themeManager)
+                    
+                    Divider()
+                    
+                    // For You
+                    BodySection(themeManager: themeManager,
+                                imageName: forYouIcon,
+                                title: forYouTitle,
+                                description: forYouDescription,
+                                cards: forYouCards
+                    )
+                        .padding(.vertical, 5)
+                    
+                    // Restaurant
+                    BodySection(themeManager: themeManager,
+                                imageName: restaurantIcon,
+                                title: restaurantTitle,
+                                description: restaurantDescription,
+                                cards: restaurantCards
+                    )
+                        .padding(.vertical, 5)
+                    
+                    // Accommodation
+                    BodySection(themeManager: themeManager,
+                                imageName: accommodationIcon,
+                                title: accommodationTitle,
+                                description: accommodationDescription,
+                                cards: accommodationCards
+                    )
+                        .padding(.vertical, 5)
+                }
+                .padding()
             }
-            .padding()
+            .padding(.vertical, 10)
         }
-        .padding(.vertical, 10)
     }
 }
 
