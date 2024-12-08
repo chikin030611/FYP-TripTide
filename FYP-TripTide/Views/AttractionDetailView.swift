@@ -9,6 +9,10 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
+// TODO: Lock the map control
+// TODO: Add favorite functionality
+// TODO: Add the navigation to the opening hours
+
 struct AttractionDetailView: View {
     @StateObject var themeManager = ThemeManager()
     @StateObject private var viewModel: AttractionDetailViewModel
