@@ -26,6 +26,7 @@ struct AttractionDetailView: View {
         ScrollView {
             VStack {
                 // Images
+                // TODO: Press to zoom in
                 ImageCarousel(images: viewModel.attraction.images)
                     .padding(.top, 20)
                 

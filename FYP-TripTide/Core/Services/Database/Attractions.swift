@@ -8,13 +8,13 @@ let disneylandAttraction = Attraction(
     price: "$599+",
     tags: [Tag(name: "Theme Park"), Tag(name: "Entertainment"), Tag(name: "Family")],
     openHours: [
-        OpenHour(weekdayIndex: 1, openTime: "10:00", closeTime: "20:00"),
-        OpenHour(weekdayIndex: 2, openTime: "10:00", closeTime: "20:00"), 
-        OpenHour(weekdayIndex: 3, openTime: "10:00", closeTime: "20:00"),
-        OpenHour(weekdayIndex: 4, openTime: "10:00", closeTime: "20:00"),
-        OpenHour(weekdayIndex: 5, openTime: "10:00", closeTime: "21:00"),
-        OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "21:00"),
-        OpenHour(weekdayIndex: 7, openTime: "10:00", closeTime: "21:00")
+        OpenHour(weekdayIndex: 1, openTime: "10:30", closeTime: "20:30"),
+        OpenHour(weekdayIndex: 2, openTime: nil, closeTime: nil),
+        OpenHour(weekdayIndex: 3, openTime: "10:30", closeTime: "20:30"),
+        OpenHour(weekdayIndex: 4, openTime: "10:30", closeTime: "20:30"),
+        OpenHour(weekdayIndex: 5, openTime: "10:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "22:30"),
+        OpenHour(weekdayIndex: 7, openTime: "10:00", closeTime: "22:00")
     ],
     stayingTime: "Full Day",
     description: "Hong Kong Disneyland is a theme park located on Lantau Island. It features classic Disney attractions, shows and character meet-and-greets in a magical setting.",
@@ -36,8 +36,8 @@ let oceanParkAttraction = Attraction(
         OpenHour(weekdayIndex: 3, openTime: "10:00", closeTime: "19:00"),
         OpenHour(weekdayIndex: 4, openTime: "10:00", closeTime: "19:00"),
         OpenHour(weekdayIndex: 5, openTime: "10:00", closeTime: "19:00"),
-        OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "20:00"),
-        OpenHour(weekdayIndex: 7, openTime: "10:00", closeTime: "20:00")
+        OpenHour(weekdayIndex: 6, openTime: "10:00", closeTime: "19:00"),
+        OpenHour(weekdayIndex: 7, openTime: "10:00", closeTime: "19:00")
     ],
     stayingTime: "6-8 hours",
     description: "Ocean Park Hong Kong is a marine life theme park featuring animal exhibits, exciting rides and shows. Known for its cable car ride offering spectacular views.",
@@ -54,13 +54,13 @@ let victoriaPeakAttraction = Attraction(
     price: "$99",
     tags: [Tag(name: "Landmark"), Tag(name: "Viewpoint"), Tag(name: "Nature")],
     openHours: [
-        OpenHour(weekdayIndex: 1, openTime: "07:00", closeTime: "00:00"),
-        OpenHour(weekdayIndex: 2, openTime: "07:00", closeTime: "00:00"),
-        OpenHour(weekdayIndex: 3, openTime: "07:00", closeTime: "00:00"),
-        OpenHour(weekdayIndex: 4, openTime: "07:00", closeTime: "00:00"),
-        OpenHour(weekdayIndex: 5, openTime: "07:00", closeTime: "00:00"),
-        OpenHour(weekdayIndex: 6, openTime: "07:00", closeTime: "00:00"),
-        OpenHour(weekdayIndex: 7, openTime: "07:00", closeTime: "00:00")
+        OpenHour(weekdayIndex: 1, openTime: "07:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 2, openTime: "07:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 3, openTime: "07:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 4, openTime: "07:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 5, openTime: "07:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 6, openTime: "07:00", closeTime: "22:00"),
+        OpenHour(weekdayIndex: 7, openTime: "07:00", closeTime: "22:00")
     ],
     stayingTime: "2-3 hours",
     description: "The Peak is the highest point on Hong Kong Island, offering breathtaking views of the city skyline, Victoria Harbour, and the surrounding islands.",
@@ -77,13 +77,13 @@ let wongTaiSinAttraction = Attraction(
     price: "Free",
     tags: [Tag(name: "Temple"), Tag(name: "Cultural"), Tag(name: "Historical")],
     openHours: [
-        OpenHour(weekdayIndex: 1, openTime: "07:00", closeTime: "17:30"),
+        OpenHour(weekdayIndex: 1, openTime: nil, closeTime: nil),
         OpenHour(weekdayIndex: 2, openTime: "07:00", closeTime: "17:30"),
         OpenHour(weekdayIndex: 3, openTime: "07:00", closeTime: "17:30"),
         OpenHour(weekdayIndex: 4, openTime: "07:00", closeTime: "17:30"),
-        OpenHour(weekdayIndex: 5, openTime: "07:00", closeTime: "17:30"),
-        OpenHour(weekdayIndex: 6, openTime: "07:00", closeTime: "17:30"),
-        OpenHour(weekdayIndex: 7, openTime: "07:00", closeTime: "17:30")
+        OpenHour(weekdayIndex: 5, openTime: "07:00", closeTime: "18:30"),
+        OpenHour(weekdayIndex: 6, openTime: "07:00", closeTime: "18:30"),
+        OpenHour(weekdayIndex: 7, openTime: "07:00", closeTime: "18:30")
     ],
     stayingTime: "1-2 hours",
     description: "Wong Tai Sin Temple is a famous shrine and major tourist attraction in Hong Kong. The temple is dedicated to Wong Tai Sin, or the Great Immortal Wong.",
@@ -146,13 +146,13 @@ let ladiesMarketAttraction = Attraction(
     price: "Free",
     tags: [Tag(name: "Shopping"), Tag(name: "Street Market"), Tag(name: "Local Culture")],
     openHours: [
-        OpenHour(weekdayIndex: 1, openTime: "12:00", closeTime: "23:30"),
-        OpenHour(weekdayIndex: 2, openTime: "12:00", closeTime: "23:30"),
-        OpenHour(weekdayIndex: 3, openTime: "12:00", closeTime: "23:30"),
-        OpenHour(weekdayIndex: 4, openTime: "12:00", closeTime: "23:30"),
-        OpenHour(weekdayIndex: 5, openTime: "12:00", closeTime: "23:30"),
-        OpenHour(weekdayIndex: 6, openTime: "12:00", closeTime: "23:30"),
-        OpenHour(weekdayIndex: 7, openTime: "12:00", closeTime: "23:30")
+        OpenHour(weekdayIndex: 1, openTime: "13:00", closeTime: "23:30"),
+        OpenHour(weekdayIndex: 2, openTime: "13:00", closeTime: "23:30"),
+        OpenHour(weekdayIndex: 3, openTime: "13:00", closeTime: "23:30"),
+        OpenHour(weekdayIndex: 4, openTime: "13:00", closeTime: "23:30"),
+        OpenHour(weekdayIndex: 5, openTime: "12:00", closeTime: "00:00"),
+        OpenHour(weekdayIndex: 6, openTime: "12:00", closeTime: "00:00"),
+        OpenHour(weekdayIndex: 7, openTime: nil, closeTime: nil)
     ],
     stayingTime: "2-3 hours",
     description: "The Ladies' Market is a street market with over 100 stalls selling bargain clothing, accessories and souvenirs. Popular for its bargaining culture.",

@@ -65,7 +65,6 @@ struct OpenHourRow: View {
 
     
     var body: some View {
-        // TODO: Add a button to show all open hours
         Button {
             showOpenHours.toggle()
         } label: {

@@ -18,8 +18,13 @@ struct OpenHoursSheet: View {
                             
                             Spacer()
                             
-                            Text("\(openHour.openTime!) - \(openHour.closeTime!)")
-                                .font(themeManager.selectedTheme.bodyTextFont)
+                            if let openTime = openHour.openTime, let closeTime = openHour.closeTime {
+                                Text("\(openTime) - \(closeTime)")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                            } else {
+                                Text("Closed")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                            }
                         }
                         .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     }
