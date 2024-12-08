@@ -6,7 +6,7 @@ struct CardGroup: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                ForEach(cards, id: \.placeId) { card in
+                ForEach(cards, id: \.attractionId) { card in
                     card
                 }
             }

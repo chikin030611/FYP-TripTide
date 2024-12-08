@@ -7,8 +7,8 @@
 
 import Foundation
 
-// MARK: - Place Model
-struct Place: Identifiable {
+// MARK: - Attraction Model
+struct Attraction: Identifiable {
     var id: String
     var images: [String]
     var name: String
@@ -22,8 +22,8 @@ struct Place: Identifiable {
     var longitude: Double
 }
 
-extension Place {
-    static let empty = Place(
+extension Attraction {
+    static let empty = Attraction(
         id: "",
         images: [],
         name: "",

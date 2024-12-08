@@ -1,6 +1,6 @@
 import SwiftUI
 
-let disneylandPlace = Place(
+let disneylandAttraction = Attraction(
     id: "1",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Hong Kong Disneyland",
@@ -22,7 +22,7 @@ let disneylandPlace = Place(
     longitude: 114.0413
 )
 
-let oceanParkPlace = Place(
+let oceanParkAttraction = Attraction(
     id: "2",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Ocean Park Hong Kong",
@@ -44,7 +44,7 @@ let oceanParkPlace = Place(
     longitude: 114.1757
 )
 
-let victoriaPeakPlace = Place(
+let victoriaPeakAttraction = Attraction(
     id: "3",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Victoria Peak",
@@ -66,7 +66,7 @@ let victoriaPeakPlace = Place(
     longitude: 114.1455
 )
 
-let wongTaiSinPlace = Place(
+let wongTaiSinAttraction = Attraction(
     id: "4",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Wong Tai Sin Temple",
@@ -88,7 +88,7 @@ let wongTaiSinPlace = Place(
     longitude: 114.1931
 )
 
-let tsimShaTsuiPlace = Place(
+let tsimShaTsuiAttraction = Attraction(
     id: "5",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Tsim Sha Tsui Promenade",
@@ -110,7 +110,7 @@ let tsimShaTsuiPlace = Place(
     longitude: 114.1744
 )
 
-let tianTanBuddhaPlace = Place(
+let tianTanBuddhaAttraction = Attraction(
     id: "6",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Tian Tan Buddha",
@@ -132,7 +132,7 @@ let tianTanBuddhaPlace = Place(
     longitude: 113.9055
 )
 
-let ladiesMarketPlace = Place(
+let ladiesMarketAttraction = Attraction(
     id: "7",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Ladies' Market",
@@ -154,7 +154,7 @@ let ladiesMarketPlace = Place(
     longitude: 114.1707
 )
 
-let midLevelsEscalatorsPlace = Place(
+let midLevelsEscalatorsAttraction = Attraction(
     id: "8",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Central and Mid-Levels Escalators",
@@ -176,7 +176,7 @@ let midLevelsEscalatorsPlace = Place(
     longitude: 114.1548
 )
 
-let hongKongParkPlace = Place(
+let hongKongParkAttraction = Attraction(
     id: "9",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Hong Kong Park",
@@ -198,7 +198,7 @@ let hongKongParkPlace = Place(
     longitude: 114.1608
 )
 
-let starFerryPlace = Place(
+let starFerryAttraction = Attraction(
     id: "10",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Star Ferry",
@@ -220,20 +220,20 @@ let starFerryPlace = Place(
     longitude: 114.1692
 )
 
-let samplePlaces = [
-    disneylandPlace,
-    oceanParkPlace, 
-    victoriaPeakPlace,
-    wongTaiSinPlace,
-    tsimShaTsuiPlace,
-    tianTanBuddhaPlace,
-    ladiesMarketPlace,
-    midLevelsEscalatorsPlace,
-    hongKongParkPlace,
-    starFerryPlace
+let sampleAttractions = [
+    disneylandAttraction,
+    oceanParkAttraction, 
+    victoriaPeakAttraction,
+    wongTaiSinAttraction,
+    tsimShaTsuiAttraction,
+    tianTanBuddhaAttraction,
+    ladiesMarketAttraction,
+    midLevelsEscalatorsAttraction,
+    hongKongParkAttraction,
+    starFerryAttraction
 ]
 
-// Get a place by id
-func getPlace(by id: String) -> Place? {
-    return samplePlaces.first { $0.id == id }
+// Get a attraction by id
+func getAttraction(by id: String) -> Attraction? {
+    return sampleAttractions.first { $0.id == id }
 }

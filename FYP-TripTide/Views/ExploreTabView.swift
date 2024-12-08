@@ -17,38 +17,35 @@ struct ExploreTabView: View {
     // For You Section
     let forYouIcon = "sparkles"
     let forYouTitle = NSLocalizedString("For You", comment: "Title of the For You section")
-    let forYouDescription = NSLocalizedString("Discover places that are perfect for you", comment: "Description of the For You section")
+    let forYouDescription = NSLocalizedString("Discover attractions that are perfect for you", comment: "Description of the For You section")
     
-    // TODO: Replace with actual data
     @State var forYouCards: [Card] = [
-        Card(placeId: "1"),
-        Card(placeId: "2"),
-        Card(placeId: "3")
+        Card(attractionId: "1"),
+        Card(attractionId: "2"),
+        Card(attractionId: "3")
     ]
     
     // Restaurant Section
     let restaurantIcon = "fork.knife"
     let restaurantTitle = NSLocalizedString("Restaurant", comment: "Title of the restaurant section")
-    let restaurantDescription = NSLocalizedString("Locals' favourite dining places", comment: "Description of the restaurant section")
+    let restaurantDescription = NSLocalizedString("Locals' favourite dining attractions", comment: "Description of the restaurant section")
     
-    // TODO: Replace with actual data
     @State var restaurantCards: [Card] = [
-        Card(placeId: "4"),
-        Card(placeId: "5"),
-        Card(placeId: "6"),
-        Card(placeId: "7")
+        Card(attractionId: "4"),
+        Card(attractionId: "5"),
+        Card(attractionId: "6"),
+        Card(attractionId: "7")
     ]
     
     // Accommodation Section
     let accommodationIcon = "bed.double.fill"
     let accommodationTitle = NSLocalizedString("Accommodation", comment: "Title of the accommodation section")
-    let accommodationDescription = NSLocalizedString("Cozy places to stay", comment: "Description of the accommodation section")
+    let accommodationDescription = NSLocalizedString("Cozy attractions to stay", comment: "Description of the accommodation section")
     
-    // TODO: Replace with actual data
     @State var accommodationCards: [Card] = [
-        Card(placeId: "8"),
-        Card(placeId: "9"),
-        Card(placeId: "10")
+        Card(attractionId: "8"),
+        Card(attractionId: "9"),
+        Card(attractionId: "10")
     ]
     
     // MARK: - Body

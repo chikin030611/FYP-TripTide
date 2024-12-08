@@ -25,7 +25,7 @@ struct OpenHourRow: View {
     }
     
     private var isOpen: Bool {
-        // If the place is closed on the current day, return false
+        // If the attraction is closed on the current day, return false
         guard let openHour = todayOpenHour, !openHour.isRestDay else {
             return false
         }

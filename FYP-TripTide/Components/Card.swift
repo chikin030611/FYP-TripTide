@@ -12,20 +12,20 @@ struct Card: View {
     
     @StateObject var themeManager = ThemeManager()
     
-    var placeId: String
-    @State private var place: Place
+    var attractionId: String
+    @State private var attraction: Attraction
     
-    init(placeId: String) {
-        print("Card init - placeId received: \(placeId)")
-        self.placeId = placeId
-        let initialPlace = getPlace(by: placeId) ?? Place.empty
-        _place = State(initialValue: initialPlace)
+    init(attractionId: String) {
+        print("Card init - attractionId received: \(attractionId)")
+        self.attractionId = attractionId
+        let initialAttraction = getAttraction(by: attractionId) ?? Attraction.empty
+        _attraction = State(initialValue: initialAttraction)
     }
     
     var body: some View {
-        NavigationLink(destination: DetailView(place: place)) {
+        NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
             ZStack {
-                if place.images.isEmpty {
+                if attraction.images.isEmpty {
                     // Fallback for when there are no images
                     Image(systemName: "photo")
                         .resizable()
@@ -33,7 +33,7 @@ struct Card: View {
                         .foregroundColor(.gray)
                         .frame(width: 200, height: 150)
                 } else {
-                    AsyncImage(url: URL(string: place.images[0])) { phase in
+                    AsyncImage(url: URL(string: attraction.images[0])) { phase in
                         switch phase {
                         case .empty:
                             ProgressView()
@@ -64,7 +64,7 @@ struct Card: View {
                     endPoint: .bottom
                 )
                 
-                Text(place.name)
+                Text(attraction.name)
                     .font(themeManager.selectedTheme.titleFont)
                     .foregroundColor(.white)
                     .frame(width: 180, height: 130, alignment: .bottomLeading)
