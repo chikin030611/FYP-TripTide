@@ -16,7 +16,6 @@ struct Card: View {
     @State private var attraction: Attraction
     
     init(attractionId: String) {
-        print("Card init - attractionId received: \(attractionId)")
         self.attractionId = attractionId
         let initialAttraction = getAttraction(by: attractionId) ?? Attraction.empty
         _attraction = State(initialValue: initialAttraction)
