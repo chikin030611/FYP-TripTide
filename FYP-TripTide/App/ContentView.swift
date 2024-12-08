@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import Inject
 
 struct ContentView: View {
-    
+    @ObserveInjection var inject
     @StateObject var themeManager = ThemeManager()
     
     var body: some View {
@@ -47,6 +48,7 @@ struct ContentView: View {
         }
         .accentColor(themeManager.selectedTheme.accentColor)
         .environmentObject(themeManager)
+        .enableInjection()
     }
 }
 

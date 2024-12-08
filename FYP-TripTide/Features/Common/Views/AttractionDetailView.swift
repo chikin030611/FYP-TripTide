@@ -14,11 +14,10 @@ import Inject
 // TODO: Add favorite functionality
 
 struct AttractionDetailView: View {
-    @ObserveInjection var inject
-    
     @StateObject var themeManager = ThemeManager()
     @StateObject private var viewModel: AttractionDetailViewModel
     @State private var showMap = false
+    @State private var showAddressOptions = false
     
     init(attraction: Attraction) {
         _viewModel = StateObject(wrappedValue: AttractionDetailViewModel(attractionId: attraction.id))
@@ -52,7 +51,6 @@ struct AttractionDetailView: View {
             }
             .padding(.horizontal)
         }
-        .enableInjection()
     }
     
     // MARK: - View Components
@@ -148,9 +146,17 @@ struct AttractionDetailView: View {
                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
 
             // TODO: Add address
-            Text("Tsim Sha Tsui, Kowloon, Hong Kong")
-                .font(themeManager.selectedTheme.bodyTextFont)
-                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+            Button {
+                showAddressOptions.toggle()
+            } label: {
+                Text("Tsim Sha Tsui, Kowloon, Hong Kong")
+                    .font(themeManager.selectedTheme.bodyTextFont)
+                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                    .underline()
+            }
+            .sheet(isPresented: $showAddressOptions) {
+                AddressActionSheet(address: "Tsim Sha Tsui, Kowloon, Hong Kong")
+            }
 
             Button {
                 showMap.toggle()
