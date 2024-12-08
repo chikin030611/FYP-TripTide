@@ -46,6 +46,7 @@ struct ExploreTabView: View {
                 .padding()
             }
             .padding(.vertical, 10)
+            .padding(.trailing, 8)
         }
     }
 }

@@ -8,14 +8,17 @@
 import SwiftUI
 import CoreLocation
 import MapKit
+import Inject
 
 // TODO: Lock the map control
 // TODO: Add favorite functionality
-// TODO: Add the navigation to the opening hours
 
 struct AttractionDetailView: View {
+    @ObserveInjection var inject
+    
     @StateObject var themeManager = ThemeManager()
     @StateObject private var viewModel: AttractionDetailViewModel
+    @State private var showMap = false
     
     init(attraction: Attraction) {
         _viewModel = StateObject(wrappedValue: AttractionDetailViewModel(attractionId: attraction.id))
@@ -47,8 +50,9 @@ struct AttractionDetailView: View {
                     locationSection
                 }
             }
+            .padding(.horizontal)
         }
-        .padding(10)
+        .enableInjection()
     }
     
     // MARK: - View Components
@@ -142,13 +146,30 @@ struct AttractionDetailView: View {
             Text("Location")
                 .font(themeManager.selectedTheme.boldTitleFont)
                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
-            
-            Map(position: $viewModel.cameraPosition) {
-                Marker(viewModel.attraction.name, coordinate: CLLocationCoordinate2D(
-                    latitude: viewModel.attraction.latitude,
-                    longitude: viewModel.attraction.longitude))
+
+            // TODO: Add address
+            Text("Tsim Sha Tsui, Kowloon, Hong Kong")
+                .font(themeManager.selectedTheme.bodyTextFont)
+                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+
+            Button {
+                showMap.toggle()
+            } label: {
+                Map(position: $viewModel.cameraPosition, interactionModes: []) {
+                    Marker(viewModel.attraction.name, coordinate: CLLocationCoordinate2D(
+                        latitude: viewModel.attraction.latitude,
+                        longitude: viewModel.attraction.longitude))
+                }
+                .frame(height: 200)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(themeManager.selectedTheme.primaryColor.opacity(0.2), lineWidth: 1)
+                )
             }
-            .frame(height: 200)
+            .sheet(isPresented: $showMap) {
+                AttractionMapView(attraction: viewModel.attraction)
+            }
         }
     }
 }
