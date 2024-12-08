@@ -34,6 +34,6 @@ struct OpenHoursSheet: View {
             .navigationTitle("Opening Hours")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .presentationDetents([.height(420)])
+        .presentationDetents([.height(380)])
     }
 } 

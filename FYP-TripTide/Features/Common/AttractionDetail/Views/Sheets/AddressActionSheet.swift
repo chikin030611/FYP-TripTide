@@ -11,39 +11,33 @@ struct AddressActionSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                Group {
-                    Button {
-                        openInMaps()
-                        dismiss()
-                    } label: {
-                        Text("Open in Maps")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                    
-                    Button {
-                        openInGoogleMaps()
-                        dismiss()
-                    } label: {
-                        Text("Open in Google Maps")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                    
-                    Button {
-                        UIPasteboard.general.string = address
-                        onCopy()
-                        dismiss()
-                    } label: {
-                        Text("Copy Address")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                Button {
+                    openInMaps()
+                    dismiss()
+                } label: {
+                    Text("Open in Maps")
+                        .font(themeManager.selectedTheme.bodyTextFont)
                 }
-                .listRowBackground(Color.clear)
-                .buttonStyle(.plain)
+                
+                Button {
+                    openInGoogleMaps()
+                    dismiss()
+                } label: {
+                    Text("Open in Google Maps")
+                        .font(themeManager.selectedTheme.bodyTextFont)
+                }
+                
+                Button {
+                    UIPasteboard.general.string = address
+                    onCopy()
+                    dismiss()
+                } label: {
+                    Text("Copy Address")
+                        .font(themeManager.selectedTheme.bodyTextFont)
+                }
             }
             .listStyle(.plain)
+            .foregroundStyle(themeManager.selectedTheme.primaryColor)
             .navigationTitle("Address")
             .navigationBarTitleDisplayMode(.inline)
         }
