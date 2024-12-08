@@ -18,8 +18,9 @@ let disneylandAttraction = Attraction(
     ],
     stayingTime: "Full Day",
     description: "Hong Kong Disneyland is a theme park located on Lantau Island. It features classic Disney attractions, shows and character meet-and-greets in a magical setting.",
-    latitude: 22.3130,
-    longitude: 114.0413
+    address: "Lantau Island, Hong Kong",
+    latitude: 22.3133203,
+    longitude: 114.0417638
 )
 
 let oceanParkAttraction = Attraction(
@@ -40,6 +41,7 @@ let oceanParkAttraction = Attraction(
     ],
     stayingTime: "6-8 hours",
     description: "Ocean Park Hong Kong is a marine life theme park featuring animal exhibits, exciting rides and shows. Known for its cable car ride offering spectacular views.",
+    address: "Ocean Park, Hong Kong",
     latitude: 22.2467,
     longitude: 114.1757
 )
@@ -60,8 +62,9 @@ let victoriaPeakAttraction = Attraction(
         OpenHour(weekdayIndex: 6, openTime: "07:00", closeTime: "00:00"),
         OpenHour(weekdayIndex: 7, openTime: "07:00", closeTime: "00:00")
     ],
-    stayingTime: "2-3 hours", 
+    stayingTime: "2-3 hours",
     description: "The Peak is the highest point on Hong Kong Island, offering breathtaking views of the city skyline, Victoria Harbour, and the surrounding islands.",
+    address: "Victoria Peak, Hong Kong",
     latitude: 22.2759,
     longitude: 114.1455
 )
@@ -84,6 +87,7 @@ let wongTaiSinAttraction = Attraction(
     ],
     stayingTime: "1-2 hours",
     description: "Wong Tai Sin Temple is a famous shrine and major tourist attraction in Hong Kong. The temple is dedicated to Wong Tai Sin, or the Great Immortal Wong.",
+    address: "Wong Tai Sin Temple, Hong Kong",
     latitude: 22.3421,
     longitude: 114.1931
 )
@@ -106,6 +110,7 @@ let tsimShaTsuiAttraction = Attraction(
     ],
     stayingTime: "2-3 hours",
     description: "The Tsim Sha Tsui Promenade offers stunning views of Victoria Harbour and Hong Kong Island's skyline. Perfect for the Symphony of Lights show in the evening.",
+    address: "Tsim Sha Tsui, Kowloon, Hong Kong",
     latitude: 22.2931,
     longitude: 114.1744
 )
@@ -128,6 +133,7 @@ let tianTanBuddhaAttraction = Attraction(
     ],
     stayingTime: "3-4 hours",
     description: "The Tian Tan Buddha is a large bronze statue of Buddha Shakyamuni, completed in 1993, and located at Ngong Ping, Lantau Island.",
+    address: "Ngong Ping, Lantau Island, Hong Kong",
     latitude: 22.2543,
     longitude: 113.9055
 )
@@ -150,6 +156,7 @@ let ladiesMarketAttraction = Attraction(
     ],
     stayingTime: "2-3 hours",
     description: "The Ladies' Market is a street market with over 100 stalls selling bargain clothing, accessories and souvenirs. Popular for its bargaining culture.",
+    address: "Ladies' Market, Mong Kok, Kowloon, Hong Kong",
     latitude: 22.3186,
     longitude: 114.1707
 )
@@ -172,6 +179,7 @@ let midLevelsEscalatorsAttraction = Attraction(
     ],
     stayingTime: "1-2 hours",
     description: "The Central-Mid-Levels escalator system is the longest outdoor covered escalator system in the world, offering a unique way to explore Hong Kong's urban areas.",
+    address: "Central, Hong Kong",
     latitude: 22.2837,
     longitude: 114.1548
 )
@@ -194,6 +202,7 @@ let hongKongParkAttraction = Attraction(
     ],
     stayingTime: "1-2 hours",
     description: "Hong Kong Park is an urban park featuring a greenhouse, an aviary, a squash centre, and tai chi garden. A peaceful oasis in the heart of the city.",
+    address: "Hong Kong Park, Hong Kong",
     latitude: 22.2771,
     longitude: 114.1608
 )
@@ -216,6 +225,7 @@ let starFerryAttraction = Attraction(
     ],
     stayingTime: "30 minutes",
     description: "The Star Ferry is a passenger ferry service operator and tourist attraction. Crossing Victoria Harbour, it offers spectacular views of Hong Kong's skyline.",
+    address: "Star Ferry, Hong Kong",
     latitude: 22.2932,
     longitude: 114.1692
 )

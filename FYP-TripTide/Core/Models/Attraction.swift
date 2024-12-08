@@ -10,6 +10,7 @@ struct Attraction: Identifiable {
     var openHours: [OpenHour]
     var stayingTime: String
     var description: String
+    var address: String
     var latitude: Double
     var longitude: Double
 }
@@ -25,6 +26,7 @@ extension Attraction {
         openHours: [],
         stayingTime: "",
         description: "",
+        address: "",
         latitude: 0,
         longitude: 0
     )

@@ -10,7 +10,6 @@ import CoreLocation
 import MapKit
 import Inject
 
-// TODO: Lock the map control
 // TODO: Add favorite functionality
 
 struct AttractionDetailView: View {
@@ -145,17 +144,16 @@ struct AttractionDetailView: View {
                 .font(themeManager.selectedTheme.boldTitleFont)
                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
 
-            // TODO: Add address
             Button {
                 showAddressOptions.toggle()
             } label: {
-                Text("Tsim Sha Tsui, Kowloon, Hong Kong")
+                Text(viewModel.attraction.address)
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     .underline()
             }
             .sheet(isPresented: $showAddressOptions) {
-                AddressActionSheet(address: "Tsim Sha Tsui, Kowloon, Hong Kong")
+                AddressActionSheet(address: viewModel.attraction.address)
             }
 
             Button {
