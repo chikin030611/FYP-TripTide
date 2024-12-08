@@ -28,6 +28,9 @@
     "Add" : {
       "shouldTranslate" : false
     },
+    "Address" : {
+
+    },
     "Body Text Font" : {
       "shouldTranslate" : false
     },
@@ -40,8 +43,17 @@
     "Central and Western" : {
       "shouldTranslate" : false
     },
+    "Closed" : {
+
+    },
     "Closed Now" : {
 
+    },
+    "Copy Address" : {
+
+    },
+    "Cozy attractions to stay" : {
+      "comment" : "Description of the accommodation section"
     },
     "Cozy places to stay" : {
       "extractionState" : "manual",
@@ -53,6 +65,9 @@
           }
         }
       }
+    },
+    "Discover attractions that are perfect for you" : {
+      "comment" : "Description of the For You section"
     },
     "Discover places that are perfect for you" : {
       "extractionState" : "manual",
@@ -98,6 +113,9 @@
     "Larger Title Font" : {
       "shouldTranslate" : false
     },
+    "Locals' favourite dining attractions" : {
+      "comment" : "Description of the restaurant section"
+    },
     "Locals' favourite dining places" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -118,7 +136,16 @@
     "Normal Title Font" : {
       "shouldTranslate" : false
     },
+    "Open in Google Maps" : {
+
+    },
+    "Open in Maps" : {
+
+    },
     "Open Now" : {
+
+    },
+    "Opening Hours" : {
 
     },
     "Password" : {

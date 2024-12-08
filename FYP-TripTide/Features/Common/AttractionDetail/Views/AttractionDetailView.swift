@@ -17,6 +17,7 @@ struct AttractionDetailView: View {
     @StateObject private var viewModel: AttractionDetailViewModel
     @State private var showMap = false
     @State private var showAddressOptions = false
+    @State private var showToast = false
     
     init(attraction: Attraction) {
         _viewModel = StateObject(wrappedValue: AttractionDetailViewModel(attractionId: attraction.id))
@@ -28,7 +29,6 @@ struct AttractionDetailView: View {
                 // Images
                 // TODO: Press to zoom in
                 ImageCarousel(images: viewModel.attraction.images)
-                    .padding(.top, 20)
                 
                 // Body
                 VStack {
@@ -49,8 +49,31 @@ struct AttractionDetailView: View {
                     locationSection
                 }
             }
-            .padding(.horizontal)
+            .padding()
         }
+        .sheet(isPresented: $showAddressOptions) {
+            AddressActionSheet(address: viewModel.attraction.address) {
+                showToast = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    showToast = false
+                }
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if showToast {
+                Text("Address copied!")
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(
+                        Capsule()
+                            .fill(themeManager.selectedTheme.primaryColor.opacity(0.8))
+                    )
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.bottom, 10)
+            }
+        }
+        .animation(.easeInOut, value: showToast)
     }
     
     // MARK: - View Components
@@ -154,7 +177,12 @@ struct AttractionDetailView: View {
                     .underline()
             }
             .sheet(isPresented: $showAddressOptions) {
-                AddressActionSheet(address: viewModel.attraction.address)
+                AddressActionSheet(address: viewModel.attraction.address, onCopy: {
+                    showToast = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        showToast = false
+                    }
+                })
             }
 
             Button {

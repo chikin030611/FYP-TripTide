@@ -63,6 +63,7 @@ struct Card: View {
                     endPoint: .bottom
                 )
                 
+                // TODO: Make the text align
                 Text(attraction.name)
                     .font(themeManager.selectedTheme.titleFont)
                     .foregroundColor(.white)

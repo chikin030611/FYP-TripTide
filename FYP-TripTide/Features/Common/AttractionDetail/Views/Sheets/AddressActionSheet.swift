@@ -3,36 +3,45 @@ import MapKit
 
 struct AddressActionSheet: View {
     let address: String
-
+    var onCopy: () -> Void
+    
     @StateObject var themeManager = ThemeManager()
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
             List {
-                Button {
-                    openInMaps()
-                    dismiss()
-                } label: {
-                    Label("Open in Maps", systemImage: "map")
+                Group {
+                    Button {
+                        openInMaps()
+                        dismiss()
+                    } label: {
+                        Text("Open in Maps")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                    
+                    Button {
+                        openInGoogleMaps()
+                        dismiss()
+                    } label: {
+                        Text("Open in Google Maps")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                    
+                    Button {
+                        UIPasteboard.general.string = address
+                        onCopy()
+                        dismiss()
+                    } label: {
+                        Text("Copy Address")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
                 }
-                .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                
-                Button {
-                    openInGoogleMaps()
-                    dismiss()
-                } label: {
-                    Label("Open in Google Maps", systemImage: "map.fill")
-                }
-                .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                
-                Button {
-                    UIPasteboard.general.string = address
-                    dismiss()
-                } label: {
-                    Label("Copy Address", systemImage: "doc.on.doc")
-                }
-                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                .listRowBackground(Color.clear)
+                .buttonStyle(.plain)
             }
             .listStyle(.plain)
             .navigationTitle("Address")
