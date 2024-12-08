@@ -13,7 +13,7 @@ struct OpenHourRow: View {
     @StateObject var themeManager = ThemeManager()
     
     var openHours: [OpenHour]
-//    let currentDate = Date()
+    @State private var showOpenHours = false
     
     private var todayOpenHour: OpenHour? {
         let now = Date()
@@ -66,46 +66,54 @@ struct OpenHourRow: View {
     
     var body: some View {
         // TODO: Add a button to show all open hours
-        HStack {
-            VStack(alignment: .leading) {
-                
-                // Display open or closed status
-                Text(isOpen ? "Open Now" : "Closed Now")
-                    .font(themeManager.selectedTheme.bodyTextFont)
-                    .foregroundStyle(isOpen ? themeManager.selectedTheme.accentColor : themeManager.selectedTheme.warningColor)
-                
-                HStack {
-                    if let openHour = todayOpenHour {
-                        Text(openHour.dayName())
-                            .font(themeManager.selectedTheme.captionTextFont)
-                            .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                        
-                        Text("•")
-                            .font(themeManager.selectedTheme.captionTextFont)
-                        
-                        if openHour.isRestDay {
-                            Text("Rest Day")
+        Button {
+            showOpenHours.toggle()
+        } label: {
+            HStack {
+                VStack(alignment: .leading) {
+                    
+                    // Display open or closed status
+                    Text(isOpen ? "Open Now" : "Closed Now")
+                        .font(themeManager.selectedTheme.bodyTextFont)
+                        .foregroundStyle(isOpen ? themeManager.selectedTheme.accentColor : themeManager.selectedTheme.warningColor)
+                    
+                    HStack {
+                        if let openHour = todayOpenHour {
+                            Text(openHour.dayName())
                                 .font(themeManager.selectedTheme.captionTextFont)
                                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                            
+                            Text("•")
+                                .font(themeManager.selectedTheme.captionTextFont)
+                                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                            
+                            if openHour.isRestDay {
+                                Text("Rest Day")
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                            } else {
+                                Text("\(openHour.openTime!) - \(openHour.closeTime!)")
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                            }
                         } else {
-                            Text("\(openHour.openTime!) - \(openHour.closeTime!)")
+                            Text("No open hours available")
                                 .font(themeManager.selectedTheme.captionTextFont)
                                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
                         }
-                    } else {
-                        Text("No open hours available")
-                            .font(themeManager.selectedTheme.captionTextFont)
-                            .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     }
                 }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(themeManager.selectedTheme.secondaryColor)
             }
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .foregroundStyle(themeManager.selectedTheme.secondaryColor)
-        }
         .listStyle(.plain)
+        }
+        .sheet(isPresented: $showOpenHours) {
+            OpenHoursSheet(openHours: openHours)
+        }
     }
 }
 
