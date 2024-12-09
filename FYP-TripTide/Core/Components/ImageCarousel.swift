@@ -10,7 +10,7 @@ import SwiftUI
 /** Image Carousel **/
 struct ImageCarousel: View {
     
-    var images: [String] = []
+    let images: [String]
     
     var body: some View {
         VStack {
@@ -25,12 +25,12 @@ struct ImageCarousel: View {
                             image
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: UIScreen.main.bounds.width)
+                                .frame(width: .infinity)
                                 .clipped()
                         case .failure:
                             Image(systemName: "exclamationmark.triangle.fill") // Error handling
                                 .foregroundColor(.red)
-                                .frame(width: UIScreen.main.bounds.width)
+                                .frame(width: .infinity)
                         @unknown default:
                             EmptyView()
                         }
