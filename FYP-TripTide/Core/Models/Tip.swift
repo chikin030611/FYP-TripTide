@@ -2,7 +2,7 @@ import Foundation
 
 struct Tip: Identifiable {
     let id: UUID
-    let images: [String]
+    let coverImage: String
     let author: String
     let publishDate: Date
     let title: String
@@ -12,7 +12,7 @@ struct Tip: Identifiable {
 
     enum CodingKeys: String, CodingKey {
         case id
-        case images
+        case coverImage
         case author
         case title
         case publishDate

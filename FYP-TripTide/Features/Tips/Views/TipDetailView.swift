@@ -28,7 +28,18 @@ struct TipDetailView: View {
                     }
                     .foregroundStyle(themeManager.selectedTheme.secondaryColor)
                 }
-                .padding(.horizontal)
+
+                // Cover Image
+                AsyncImage(url: URL(string: tip.coverImage)) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 200)
+                        .cornerRadius(10)
+                        .clipped()
+                } placeholder: {
+                    ProgressView()
+                }
                 
                 // Content
                 ForEach(Array(tip.content.enumerated()), id: \.offset) { _, content in
@@ -49,7 +60,7 @@ struct TipDetailView: View {
                             .padding(.horizontal)
                     }
                 }
-                .padding(.top, 16)
+                .padding(.vertical, 15)
             }
         }
         .navigationBarTitleDisplayMode(.inline)

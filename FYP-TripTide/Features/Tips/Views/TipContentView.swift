@@ -54,6 +54,5 @@ struct BlogContentView: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
 }

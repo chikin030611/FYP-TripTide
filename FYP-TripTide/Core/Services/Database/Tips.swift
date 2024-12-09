@@ -2,7 +2,7 @@ import SwiftUI
 
 let transportTip = Tip(
     id: UUID(),
-    images: [],
+    coverImage: "https://dummyimage.com/600x400/07162e/ffffff",
     author: "TripTide",
     publishDate: Date(),
     title: "Transport in Tokyo",
