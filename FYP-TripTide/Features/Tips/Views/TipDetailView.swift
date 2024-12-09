@@ -1,16 +1,19 @@
 import SwiftUI
 
 struct TipDetailView: View {
+    @StateObject private var viewModel: TipDetailViewModel
+    @StateObject private var themeManager = ThemeManager()
     
-    let tip: Tip
-    @StateObject var themeManager = ThemeManager()
+    init(tip: Tip) {
+        _viewModel = StateObject(wrappedValue: TipDetailViewModel(tip: tip))
+    }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(tip.title)
+                    Text(viewModel.tip.title)
                         .font(themeManager.selectedTheme.largeTitleFont)
                         .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     
@@ -18,19 +21,19 @@ struct TipDetailView: View {
                         HStack(spacing: 4) {
                             Text("By")
                                 .font(themeManager.selectedTheme.captionTextFont)
-                            Text(tip.author)
-                                .foregroundStyle(tip.author == "TripTide" ? themeManager.selectedTheme.accentColor : .primary)
+                            Text(viewModel.tip.author)
+                                .foregroundStyle(viewModel.tip.author == "TripTide" ? themeManager.selectedTheme.accentColor : .primary)
                         }
                         .font(themeManager.selectedTheme.captionTextFont)
                         Spacer()
-                        Text(tip.publishDate.formatted(date: .abbreviated, time: .omitted))
+                        Text(viewModel.tip.publishDate.formatted(date: .abbreviated, time: .omitted))
                             .font(themeManager.selectedTheme.captionTextFont)
                     }
                     .foregroundStyle(themeManager.selectedTheme.secondaryColor)
                 }
 
                 // Cover Image
-                AsyncImage(url: URL(string: tip.coverImage)) { image in
+                AsyncImage(url: URL(string: viewModel.tip.coverImage)) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -42,26 +45,25 @@ struct TipDetailView: View {
                 }
                 
                 // Content
-                ForEach(Array(tip.content.enumerated()), id: \.offset) { _, content in
+                ForEach(Array(viewModel.tip.content.enumerated()), id: \.offset) { _, content in
                     BlogContentView(content: content)
                 }
                 
                 // Reference
                 VStack(alignment: .leading) {
-                    Text("Reference: \n\(tip.reference)")
+                    Text("Reference: \n\(viewModel.tip.reference)")
                         .font(themeManager.selectedTheme.captionTextFont)
                         .foregroundStyle(themeManager.selectedTheme.secondaryColor)
-                        .padding(.horizontal)
-                    Link(destination: URL(string: tip.referenceLink)!) {
-                        Text(tip.referenceLink)
+                    Link(destination: URL(string: viewModel.tip.referenceLink)!) {
+                        Text(viewModel.tip.referenceLink)
                             .font(themeManager.selectedTheme.captionTextFont)
                             .underline()
                             .foregroundStyle(themeManager.selectedTheme.secondaryColor)
-                            .padding(.horizontal)
                     }
                 }
                 .padding(.vertical, 15)
             }
+            .padding()
         }
         .navigationBarTitleDisplayMode(.inline)
     }
