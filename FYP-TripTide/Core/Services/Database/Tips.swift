@@ -3,13 +3,13 @@ import SwiftUI
 let transportTip = Tip(
     id: UUID(),
     images: [],
-    author: "John Doe",
+    author: "TripTide",
     publishDate: Date(),
     title: "Transport in Tokyo",
     content: [
+        .image("https://dummyimage.com/600x400/07162e/ffffff"),
         .header("Introduction"),
         .text("Tokyo is a city of contrasts..."),
-        .image("https://dummyimage.com/600x400/07162e/ffffff"),
         .header("1. Secret Garden"),
         .text("Hidden behind the busy streets..."),
         .quote("This place is magical - Local resident"),

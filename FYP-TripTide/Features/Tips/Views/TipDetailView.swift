@@ -15,8 +15,13 @@ struct TipDetailView: View {
                         .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     
                     HStack {
-                        Text("By \(tip.author)")
-                            .font(themeManager.selectedTheme.captionTextFont)
+                        HStack(spacing: 4) {
+                            Text("By")
+                                .font(themeManager.selectedTheme.captionTextFont)
+                            Text(tip.author)
+                                .foregroundStyle(tip.author == "TripTide" ? themeManager.selectedTheme.accentColor : .primary)
+                        }
+                        .font(themeManager.selectedTheme.captionTextFont)
                         Spacer()
                         Text(tip.publishDate.formatted(date: .abbreviated, time: .omitted))
                             .font(themeManager.selectedTheme.captionTextFont)
