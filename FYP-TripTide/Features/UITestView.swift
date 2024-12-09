@@ -11,7 +11,7 @@ struct UITestView: View {
     @StateObject var themeManager = ThemeManager()
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var images: [Image] = []
+    @State private var images: [String] = []
 
     var body: some View {
         ScrollView {
@@ -72,25 +72,25 @@ struct TypographySection: View {
 // MARK: - Card Section
 struct CardView: View {
     @State private var cards: [Card] = [
-        Card(image: Image("test_light"), title: "Test1"),
-        Card(image: Image("test_dark"), title: "Test2"),
-        Card(image: Image("test_light"), title: "Test1"),
-        Card(image: Image("test_dark"), title: "Test2"),
-        Card(image: Image("test_light"), title: "Test1"),
-        Card(image: Image("test_dark"), title: "Test2")
+        Card(attractionId: "1"),
+        Card(attractionId: "2"),
+        Card(attractionId: "3"),
+        Card(attractionId: "4"),
+        Card(attractionId: "5"),
+        Card(attractionId: "6")
     ]
 
     var body: some View {
         CardGroup(cards: cards)
         
-        Card(image: Image("test_light"), title: "Test")
+        Card(attractionId: "7")
             .padding(.vertical, 10)
     }
 }
 
 // MARK: - Carousel Section
 struct CarouselSection: View {
-    @Binding var images: [Image]
+    @Binding var images: [String]
 
     var body: some View {
         ImageCarousel(images: images)
@@ -146,28 +146,12 @@ struct ButtonStylesSection: View {
 // MARK: - Image Loading Function
 extension UITestView {
     private func loadImages() {
-        let urls = [
-            URL(string: "https://dummyimage.com/600x400.png/123/fff")!,
-            URL(string: "https://dummyimage.com/1080x1999.png/000/fff")!,
-            URL(string: "https://dummyimage.com/600x400.png/2d39d6/fff")!,
-            URL(string: "https://dummyimage.com/600x400.png/fff/000")!
+        images = [
+            "https://dummyimage.com/600x400.png/123/fff",
+            "https://dummyimage.com/1080x1999.png/000/fff",
+            "https://dummyimage.com/600x400.png/2d39d6/fff",
+            "https://dummyimage.com/600x400.png/fff/000"
         ]
-
-        for url in urls {
-            URLSession.shared.dataTask(with: url) { data, _, error in
-                guard let data = data, error == nil else {
-                    print("Error loading image: \(error?.localizedDescription ?? "Unknown error")")
-                    return
-                }
-                
-                if let uiImage = UIImage(data: data) {
-                    let image = Image(uiImage: uiImage)
-                    DispatchQueue.main.async {
-                        self.images.append(image)
-                    }
-                }
-            }.resume()
-        }
     }
 }
 

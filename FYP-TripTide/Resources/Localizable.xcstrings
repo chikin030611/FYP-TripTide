@@ -1,6 +1,19 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "•" : {
+
+    },
     "Accommodation" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15,6 +28,12 @@
     "Add" : {
       "shouldTranslate" : false
     },
+    "Address" : {
+
+    },
+    "Address copied!" : {
+
+    },
     "Body Text Font" : {
       "shouldTranslate" : false
     },
@@ -27,6 +46,18 @@
     "Central and Western" : {
       "shouldTranslate" : false
     },
+    "Closed" : {
+
+    },
+    "Closed Now" : {
+
+    },
+    "Copy Address" : {
+
+    },
+    "Cozy attractions to stay" : {
+      "comment" : "Description of the accommodation section"
+    },
     "Cozy places to stay" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -37,6 +68,9 @@
           }
         }
       }
+    },
+    "Discover attractions that are perfect for you" : {
+      "comment" : "Description of the For You section"
     },
     "Discover places that are perfect for you" : {
       "extractionState" : "manual",
@@ -82,6 +116,9 @@
     "Larger Title Font" : {
       "shouldTranslate" : false
     },
+    "Locals' favourite dining attractions" : {
+      "comment" : "Description of the restaurant section"
+    },
     "Locals' favourite dining places" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -93,11 +130,35 @@
         }
       }
     },
+    "Location" : {
+
+    },
+    "No open hours available" : {
+
+    },
     "Normal Title Font" : {
       "shouldTranslate" : false
     },
+    "Open in Google Maps" : {
+
+    },
+    "Open in Maps" : {
+
+    },
+    "Open Now" : {
+
+    },
+    "Opening Hours" : {
+
+    },
     "Password" : {
       "shouldTranslate" : false
+    },
+    "Plan" : {
+
+    },
+    "Plan Coming Soon" : {
+
     },
     "Primary Button" : {
       "shouldTranslate" : false
@@ -105,8 +166,14 @@
     "Quaternary Button" : {
       "shouldTranslate" : false
     },
+    "Recommended Staying Time" : {
+
+    },
     "Remove" : {
       "shouldTranslate" : false
+    },
+    "Rest Day" : {
+
     },
     "Restaurant" : {
       "extractionState" : "manual",
@@ -119,14 +186,23 @@
         }
       }
     },
-    "Secondary Button" : {
-      "shouldTranslate" : false
+    "Search" : {
+
     },
-    "Styles" : {
+    "Search Coming Soon" : {
+
+    },
+    "Secondary Button" : {
       "shouldTranslate" : false
     },
     "Tertiary Button" : {
       "shouldTranslate" : false
+    },
+    "Tips" : {
+
+    },
+    "Tips Coming Soon" : {
+
     },
     "TripTide" : {
       "shouldTranslate" : false

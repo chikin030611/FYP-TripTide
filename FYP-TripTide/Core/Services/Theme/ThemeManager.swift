@@ -15,6 +15,7 @@ protocol ThemeProtocol {
     var titleFont: Font { get }
     var boldTitleFont: Font { get }
     var bodyTextFont: Font { get }
+    var boldBodyTextFont: Font { get }
     var captionTextFont: Font { get }
     
     var accentColor: Color { get }
@@ -22,6 +23,7 @@ protocol ThemeProtocol {
     var secondaryColor: Color { get }
     var teritaryColor: Color { get }
     var btnTextColor: Color { get }
+    var warningColor: Color { get }
 }
 
 struct Main: ThemeProtocol {
@@ -30,6 +32,7 @@ struct Main: ThemeProtocol {
     var titleFont: Font { .system(size: 22, weight: .semibold, design: .default) }
     var boldTitleFont: Font { .system(size: 22, weight: .bold, design: .default) }
     var bodyTextFont: Font { .system(size: 17, weight: .regular, design: .default) }
+    var boldBodyTextFont: Font { .system(size: 17, weight: .bold, design: .default) }
     var captionTextFont: Font { .system(size: 13, weight: .regular, design: .default) }
     
     var accentColor: Color { return Color("mnAccentColor") }
@@ -37,6 +40,7 @@ struct Main: ThemeProtocol {
     var secondaryColor: Color { return Color("mnSecondaryColor") }
     var teritaryColor: Color { return Color("mnTeritaryColor") }
     var btnTextColor: Color { return Color("mnBtnTextColor") }
+    var warningColor: Color { return Color("mnWarningColor") }
 }
 
 class ThemeManager: ObservableObject {
