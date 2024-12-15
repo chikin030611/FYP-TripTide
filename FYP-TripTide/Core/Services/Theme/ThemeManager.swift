@@ -24,6 +24,7 @@ protocol ThemeProtocol {
     var teritaryColor: Color { get }
     var btnTextColor: Color { get }
     var warningColor: Color { get }
+    var backgroundColor: Color { get }
 }
 
 struct Main: ThemeProtocol {
@@ -41,6 +42,7 @@ struct Main: ThemeProtocol {
     var teritaryColor: Color { return Color("mnTeritaryColor") }
     var btnTextColor: Color { return Color("mnBtnTextColor") }
     var warningColor: Color { return Color("mnWarningColor") }
+    var backgroundColor: Color { return Color("mnBackgroundColor") }
 }
 
 class ThemeManager: ObservableObject {

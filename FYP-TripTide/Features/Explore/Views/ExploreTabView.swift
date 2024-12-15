@@ -21,32 +21,30 @@ struct ExploreTabView: View {
                     
                     // For You
                     BodySection(themeManager: themeManager,
-                              imageName: viewModel.forYouSection.icon,
-                              title: viewModel.forYouSection.title,
-                              description: viewModel.forYouSection.description,
-                              cards: viewModel.forYouCards)
+                                imageName: viewModel.forYouSection.icon,
+                                title: viewModel.forYouSection.title,
+                                description: viewModel.forYouSection.description,
+                                cards: viewModel.forYouCards)
                         .padding(.vertical, 5)
                     
                     // Restaurant
                     BodySection(themeManager: themeManager,
-                              imageName: viewModel.restaurantSection.icon,
-                              title: viewModel.restaurantSection.title,
-                              description: viewModel.restaurantSection.description,
-                              cards: viewModel.restaurantCards)
+                                imageName: viewModel.restaurantSection.icon,
+                                title: viewModel.restaurantSection.title,
+                                description: viewModel.restaurantSection.description,
+                                cards: viewModel.restaurantCards)
                         .padding(.vertical, 5)
                     
                     // Accommodation
                     BodySection(themeManager: themeManager,
-                              imageName: viewModel.accommodationSection.icon,
-                              title: viewModel.accommodationSection.title,
-                              description: viewModel.accommodationSection.description,
-                              cards: viewModel.accommodationCards)
+                                imageName: viewModel.accommodationSection.icon,
+                                title: viewModel.accommodationSection.title,
+                                description: viewModel.accommodationSection.description,
+                                cards: viewModel.accommodationCards)
                         .padding(.vertical, 5)
                 }
                 .padding()
             }
-            .padding(.vertical, 10)
-            .padding(.trailing, 8)
         }
     }
 }

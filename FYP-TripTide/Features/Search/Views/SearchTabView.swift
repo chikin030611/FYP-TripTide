@@ -1,8 +1,12 @@
 import SwiftUI
 
+// TODO: Add filter
+// TODO: Add background color in themeManager
+
+
 struct SearchTabView: View {
     @StateObject private var viewModel = SearchTabViewModel()
-    @StateObject private var themeManager = ThemeManager()
+    @StateObject private var themeManager: ThemeManager = ThemeManager()
     @State private var searchText = ""
     
     var body: some View {
@@ -31,9 +35,10 @@ struct SearchTabView: View {
                     }
                 }
                 .padding()
+                .frame(height: 40)
                 .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(.gray.opacity(0.1))
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(themeManager.selectedTheme.backgroundColor)
                 )
                 .padding(.horizontal)
                 
