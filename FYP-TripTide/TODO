@@ -1,3 +1,18 @@
 - Make the text smaller
 - Make the images zoomable
 - Add favorite functionality
+
+New Tabs
+- Explore(new) <- Tips
+- Search(new)
+- Plan
+- Tips
+- User
+
+Search tab
+- Original explore tab with search bar(Replace For You with highest rating attractions)
+- When search bar is pressed, new view(with filter, Recent search keyword and Recent search&browsed results). 
+- When searched, new view(with search results)
+
+Tips
+- Save tips

@@ -1,7 +1,6 @@
 import SwiftUI
 
 // TODO: Add filter
-// TODO: Add background color in themeManager
 
 
 struct SearchTabView: View {
