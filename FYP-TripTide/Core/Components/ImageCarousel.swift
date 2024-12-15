@@ -10,37 +10,35 @@ import SwiftUI
 /** Image Carousel **/
 struct ImageCarousel: View {
     
-    var images: [String] = []
+    let images: [String]
     
     var body: some View {
-        VStack {
-            TabView {
-                ForEach(images.indices, id: \.self) { index in
-                    AsyncImage(url: stringToURL(images[index])) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()  // Placeholder when loading
-                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: UIScreen.main.bounds.width)
-                                .clipped()
-                        case .failure:
-                            Image(systemName: "exclamationmark.triangle.fill") // Error handling
-                                .foregroundColor(.red)
-                                .frame(width: UIScreen.main.bounds.width)
-                        @unknown default:
-                            EmptyView()
-                        }
+        TabView {
+            ForEach(images.indices, id: \.self) { index in
+                AsyncImage(url: stringToURL(images[index])) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()  // Placeholder when loading
+                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+                    case .failure:
+                        Image(systemName: "exclamationmark.triangle.fill") // Error handling
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity)
+                    @unknown default:
+                        EmptyView()
                     }
                 }
             }
-            .tabViewStyle(.page)
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
-            .frame(height: 200)
-            .cornerRadius(10)
         }
+        .tabViewStyle(.page)
+        .indexViewStyle(.page(backgroundDisplayMode: .always))
+        .frame(height: 200)
+        .cornerRadius(10)
     }
 }
