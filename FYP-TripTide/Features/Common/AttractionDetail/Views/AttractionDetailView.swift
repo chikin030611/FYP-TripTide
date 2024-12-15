@@ -84,7 +84,7 @@ struct AttractionDetailView: View {
                 Text(viewModel.attraction.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                ratingStars
+                RatingView(rating: viewModel.rating)
                 
                 priceAndTags
             }
@@ -98,22 +98,6 @@ struct AttractionDetailView: View {
                 }
         }
         .padding(.bottom, 10)
-    }
-    
-    private var ratingStars: some View {
-        HStack {
-            ForEach(0..<viewModel.rating, id: \.self) { _ in
-                Image(systemName: "star.fill")
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundStyle(themeManager.selectedTheme.accentColor)
-            }
-            
-            ForEach(0..<viewModel.remainingStars, id: \.self) { _ in
-                Image(systemName: "star")
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundStyle(themeManager.selectedTheme.accentColor)
-            }
-        }
     }
     
     private var priceAndTags: some View {

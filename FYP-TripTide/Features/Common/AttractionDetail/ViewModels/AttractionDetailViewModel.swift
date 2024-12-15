@@ -26,10 +26,6 @@ class AttractionDetailViewModel: ObservableObject {
         attraction.rating
     }
     
-    var remainingStars: Int {
-        5 - attraction.rating
-    }
-    
     // Add favorite functionality later
     func toggleFavorite() {
         // Implement favorite toggle logic
