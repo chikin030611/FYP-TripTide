@@ -84,9 +84,9 @@ struct AttractionDetailView: View {
                 Text(viewModel.attraction.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                RatingView(rating: viewModel.rating)
+                RatingView(rating: viewModel.attraction.rating)
                 
-                priceAndTags
+                PriceAndTagsView(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
             }
             
             Spacer()
@@ -100,22 +100,6 @@ struct AttractionDetailView: View {
         .padding(.bottom, 10)
     }
     
-    private var priceAndTags: some View {
-        HStack {
-            Text(viewModel.attraction.price)
-                .font(themeManager.selectedTheme.captionTextFont)
-            Text("•")
-                .font(themeManager.selectedTheme.captionTextFont)
-            ForEach(viewModel.attraction.tags, id: \.name) { tag in
-                Text(tag.name)
-                    .font(themeManager.selectedTheme.captionTextFont)
-                if tag != viewModel.attraction.tags.last {
-                    Text("•")
-                        .font(themeManager.selectedTheme.captionTextFont)
-                }
-            }
-        }
-    }
     
     private var stayingTimeSection: some View {
         HStack {
