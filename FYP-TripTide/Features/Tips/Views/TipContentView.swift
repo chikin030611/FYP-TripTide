@@ -56,6 +56,7 @@ struct TipContentView: View {
             case .link(let url, let text):
                 Link(destination: URL(string: url)!) {
                     Text(text)
+                        .font(themeManager.selectedTheme.bodyTextFont)
                         .foregroundStyle(themeManager.selectedTheme.accentColor)
                         .underline()
                 }
