@@ -247,3 +247,8 @@ let sampleAttractions = [
 func getAttraction(by id: String) -> Attraction? {
     return sampleAttractions.first { $0.id == id }
 }
+
+// Get all attractions
+func getAllAttractions() -> [Attraction] {
+    return sampleAttractions
+}
