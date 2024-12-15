@@ -1,7 +1,7 @@
 import SwiftUI
 
 
-struct BlogContentView: View {
+struct TipContentView: View {
     let content: TipContent
     @StateObject var themeManager = ThemeManager()
     
@@ -51,6 +51,13 @@ struct BlogContentView: View {
                     }
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                }
+
+            case .link(let url, let text):
+                Link(destination: URL(string: url)!) {
+                    Text(text)
+                        .foregroundStyle(themeManager.selectedTheme.accentColor)
+                        .underline()
                 }
             }
         }

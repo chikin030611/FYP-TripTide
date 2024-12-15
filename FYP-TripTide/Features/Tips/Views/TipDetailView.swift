@@ -46,7 +46,7 @@ struct TipDetailView: View {
                 
                 // Content
                 ForEach(Array(viewModel.tip.content.enumerated()), id: \.offset) { _, content in
-                    BlogContentView(content: content)
+                    TipContentView(content: content)
                 }
                 
                 // Reference

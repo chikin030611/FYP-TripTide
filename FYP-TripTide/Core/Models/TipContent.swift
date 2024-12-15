@@ -6,7 +6,7 @@ enum TipContent: Codable {
     case header(String)
     case quote(String)
     case bulletPoints([String])
-    
+    case link(String, String)
     enum CodingKeys: String, CodingKey {
         case type
         case content
@@ -30,6 +30,9 @@ enum TipContent: Codable {
         case .bulletPoints(let points):
             try container.encode("bulletPoints", forKey: .type)
             try container.encode(points, forKey: .content)
+        case .link(let url, let text):
+            try container.encode("link", forKey: .type)
+            try container.encode(url, forKey: .content)
         }
     }
     
@@ -53,6 +56,10 @@ enum TipContent: Codable {
         case "bulletPoints":
             let points = try container.decode([String].self, forKey: .content)
             self = .bulletPoints(points)
+        case "link":
+            let url = try container.decode(String.self, forKey: .content)
+            let text = try container.decode(String.self, forKey: .content)
+            self = .link(url, text)
         default:
             throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Invalid type")
         }
