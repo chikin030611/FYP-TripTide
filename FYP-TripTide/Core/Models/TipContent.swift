@@ -30,7 +30,7 @@ enum TipContent: Codable {
         case .bulletPoints(let points):
             try container.encode("bulletPoints", forKey: .type)
             try container.encode(points, forKey: .content)
-        case .link(let url, let text):
+        case .link(let url, _):
             try container.encode("link", forKey: .type)
             try container.encode(url, forKey: .content)
         }

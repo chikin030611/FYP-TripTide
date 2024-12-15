@@ -32,28 +32,7 @@ struct Card: View {
                         .foregroundColor(.gray)
                         .frame(width: 200, height: 150)
                 } else {
-                    AsyncImage(url: URL(string: attraction.images[0])) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        case .failure(_):
-                            Image(systemName: "photo")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.gray)
-                        @unknown default:
-                            Image(systemName: "photo")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    .frame(width: 200, height: 150)
-                    .clipped()
+                    AsyncImageView(imageUrl: attraction.images[0], width: 200, height: 150)
                 }
                 
                 // Gradient overlay

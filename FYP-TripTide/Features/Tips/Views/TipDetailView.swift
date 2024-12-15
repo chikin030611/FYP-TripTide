@@ -33,16 +33,7 @@ struct TipDetailView: View {
                 }
 
                 // Cover Image
-                AsyncImage(url: URL(string: viewModel.tip.coverImage)) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 200)
-                        .cornerRadius(10)
-                        .clipped()
-                } placeholder: {
-                    ProgressView()
-                }
+                AsyncImageView(imageUrl: viewModel.tip.coverImage, height: 200)
                 
                 // Content
                 ForEach(Array(viewModel.tip.content.enumerated()), id: \.offset) { _, content in
