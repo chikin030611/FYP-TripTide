@@ -4,7 +4,7 @@ struct Attraction: Identifiable {
     var id: String
     var images: [String]
     var name: String
-    var rating: Int
+    var rating: Float
     var price: String
     var tags: [Tag]
     var openHours: [OpenHour]

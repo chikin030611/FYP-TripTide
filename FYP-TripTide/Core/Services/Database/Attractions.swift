@@ -4,7 +4,7 @@ let disneylandAttraction = Attraction(
     id: "1",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Hong Kong Disneyland",
-    rating: 5,
+    rating: 4.2,
     price: "$599+",
     tags: [Tag(name: "Theme Park"), Tag(name: "Entertainment"), Tag(name: "Family")],
     openHours: [
@@ -27,7 +27,7 @@ let oceanParkAttraction = Attraction(
     id: "2",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Ocean Park Hong Kong",
-    rating: 4,
+    rating: 1.2,
     price: "$498",
     tags: [Tag(name: "Theme Park"), Tag(name: "Aquarium"), Tag(name: "Wildlife")],
     openHours: [
@@ -50,7 +50,7 @@ let victoriaPeakAttraction = Attraction(
     id: "3",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Victoria Peak",
-    rating: 4,
+    rating: 3.2,
     price: "$99",
     tags: [Tag(name: "Landmark"), Tag(name: "Viewpoint"), Tag(name: "Nature")],
     openHours: [
@@ -73,7 +73,7 @@ let wongTaiSinAttraction = Attraction(
     id: "4",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Wong Tai Sin Temple",
-    rating: 4,
+    rating: 2.2,
     price: "Free",
     tags: [Tag(name: "Temple"), Tag(name: "Cultural"), Tag(name: "Historical")],
     openHours: [
@@ -96,7 +96,7 @@ let tsimShaTsuiAttraction = Attraction(
     id: "5",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Tsim Sha Tsui Promenade",
-    rating: 4,
+    rating: 2.2,
     price: "Free",
     tags: [Tag(name: "Waterfront"), Tag(name: "Shopping"), Tag(name: "Entertainment")],
     openHours: [
@@ -119,7 +119,7 @@ let tianTanBuddhaAttraction = Attraction(
     id: "6",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Tian Tan Buddha",
-    rating: 3,
+    rating: 3.2,
     price: "$199",
     tags: [Tag(name: "Religious"), Tag(name: "Cultural"), Tag(name: "Historical")],
     openHours: [
@@ -142,7 +142,7 @@ let ladiesMarketAttraction = Attraction(
     id: "7",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Ladies' Market",
-    rating: 2,
+    rating: 2.7,
     price: "Free",
     tags: [Tag(name: "Shopping"), Tag(name: "Street Market"), Tag(name: "Local Culture")],
     openHours: [
@@ -165,7 +165,7 @@ let midLevelsEscalatorsAttraction = Attraction(
     id: "8",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Central and Mid-Levels Escalators",
-    rating: 4,
+    rating: 3.8,
     price: "Free", 
     tags: [Tag(name: "Urban Attraction"), Tag(name: "Transportation"), Tag(name: "Unique")],
     openHours: [
@@ -188,7 +188,7 @@ let hongKongParkAttraction = Attraction(
     id: "9",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Hong Kong Park",
-    rating: 1,
+    rating: 3.6,
     price: "Free",
     tags: [Tag(name: "Park"), Tag(name: "Nature"), Tag(name: "Family")],
     openHours: [
@@ -211,7 +211,7 @@ let starFerryAttraction = Attraction(
     id: "10",
     images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
     name: "Star Ferry",
-    rating: 3,
+    rating: 3.9,
     price: "$2.7",
     tags: [Tag(name: "Transportation"), Tag(name: "Historical"), Tag(name: "Views")],
     openHours: [
