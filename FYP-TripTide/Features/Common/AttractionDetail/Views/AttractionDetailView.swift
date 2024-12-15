@@ -84,9 +84,9 @@ struct AttractionDetailView: View {
                 Text(viewModel.attraction.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                RatingView(rating: viewModel.attraction.rating)
+                Rating(rating: viewModel.attraction.rating)
                 
-                PriceAndTagsView(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
+                PriceAndTags(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
             }
             
             Spacer()

@@ -1,13 +1,29 @@
 import SwiftUI
 
+enum CardStyle {
+    case regular
+    case large
+}
+
 struct CardGroup: View {
-    @State var cards: [Card]
+    let cards: [Card]
+    let style: CardStyle
+    
+    init(cards: [Card], style: CardStyle = .regular) {
+        self.cards = cards
+        self.style = style
+    }
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
+            HStack(alignment: .top) {
                 ForEach(cards, id: \.attractionId) { card in
-                    card
+                    switch style {
+                    case .regular:
+                        Card(attractionId: card.attractionId)
+                    case .large:
+                        LargeCard(attractionId: card.attractionId)
+                    }
                 }
             }
         }

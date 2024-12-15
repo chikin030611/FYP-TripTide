@@ -12,9 +12,9 @@ struct SearchResultRow: View {
                         .font(themeManager.selectedTheme.boldBodyTextFont)
                         .foregroundColor(themeManager.selectedTheme.primaryColor)
 
-                    RatingView(rating: attraction.rating)
+                    Rating(rating: attraction.rating)
 
-                    PriceAndTagsView(price: attraction.price, tags: attraction.tags)
+                    PriceAndTags(price: attraction.price, tags: attraction.tags)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")

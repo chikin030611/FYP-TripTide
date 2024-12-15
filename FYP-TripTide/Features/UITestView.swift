@@ -81,7 +81,7 @@ struct CardView: View {
     ]
 
     var body: some View {
-        CardGroup(cards: cards)
+        CardGroup(cards: cards, style: .regular)
         
         Card(attractionId: "7")
             .padding(.vertical, 10)

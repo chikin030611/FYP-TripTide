@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct PriceAndTagsView: View {
+struct PriceAndTags: View {
     let price: String
     let tags: [Tag]
     @StateObject var themeManager: ThemeManager = ThemeManager()
 
     var body: some View {
-        HStack {
+        HStack(spacing: 4) {
             Text(price)
                 .font(themeManager.selectedTheme.captionTextFont)
                 .foregroundColor(themeManager.selectedTheme.primaryColor)
@@ -14,16 +14,8 @@ struct PriceAndTagsView: View {
             Text("•")
                 .font(themeManager.selectedTheme.captionTextFont)
                 .foregroundColor(themeManager.selectedTheme.primaryColor)
-            ForEach(tags, id: \.name) { tag in
-                Text(tag.name)
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                if tag != tags.last {
-                    Text("•")
-                        .font(themeManager.selectedTheme.captionTextFont)
-                        .foregroundColor(themeManager.selectedTheme.primaryColor)
-                }
-            }
+
+            TagGroup(tags: tags, themeManager: themeManager)
         }   
     }
 }

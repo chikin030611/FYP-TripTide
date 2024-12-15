@@ -24,16 +24,7 @@ struct Card: View {
     var body: some View {
         NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
             ZStack {
-                if attraction.images.isEmpty {
-                    // Fallback for when there are no images
-                    Image(systemName: "photo")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.gray)
-                        .frame(width: 200, height: 150)
-                } else {
-                    AsyncImageView(imageUrl: attraction.images[0], width: 200, height: 150)
-                }
+                AsyncImageView(imageUrl: attraction.images[0], width: 150, height: 130)
                 
                 // Gradient overlay
                 LinearGradient(
@@ -44,11 +35,15 @@ struct Card: View {
                 
                 // TODO: Make the text align
                 Text(attraction.name)
-                    .font(themeManager.selectedTheme.titleFont)
+                    .font(themeManager.selectedTheme.boldBodyTextFont)
                     .foregroundColor(.white)
-                    .frame(width: 180, height: 130, alignment: .bottomLeading)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(width: 130, height: 110, alignment: .bottomLeading)
             }
-            .frame(width: 200, height: 150)
+            .frame(width: 150, height: 130)
             .cornerRadius(10)
         }
     }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct RatingView: View {
+struct Rating: View {
     let rating: Float
     @StateObject var themeManager: ThemeManager = ThemeManager()
     
