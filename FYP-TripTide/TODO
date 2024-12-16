@@ -1,24 +1,25 @@
-- Make the images zoomable
-- Add favorite functionality
-
 New Tabs
 - Explore(new)
 - Search(new)
-- Plan
+- Plan <- AI assistant
 - Tips
 - User
 
 Search tab
-- When search bar is pressed, new view(with filter, Recent search keyword and Recent search&browsed results). 
-- When searched, new view(with search results)
+- Add filter
 
-Tips
-- Save tips
+Plan
+- Add favorite functionality
+- Add AI assistant
 
 AI assistant
 - Floating button to open AI assistant
 
-- Make the font size adjust by device preference
+Tips
+- Save tips
+
 
 Optional:
+- Make the images zoomable
 - Pressing tag button show all attractions with that tag
+- Make the font size adjust by device preference
