@@ -3,13 +3,14 @@ import Foundation
 class SearchResultsViewModel: ObservableObject {
     @Published var searchResults: [Attraction] = []
     @Published var currentSearchText: String = ""
+    let searchHistoryViewModel: SearchHistoryViewModel
     
     private var allAttractions: [Attraction]
     
-    init() {
-        // Store all attractions but don't show them initially
+    init(searchHistoryViewModel: SearchHistoryViewModel = SearchHistoryViewModel()) {
+        self.searchHistoryViewModel = searchHistoryViewModel
         self.allAttractions = getAllAttractions()
-        self.searchResults = []  // Start with empty results
+        self.searchResults = []
     }
     
     func filterAttractions(searchText: String) {

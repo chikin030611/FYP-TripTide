@@ -97,9 +97,11 @@ struct RemoveButtonStyle: ButtonStyle {
 
 // MARK: - Tag Button Style
 struct TagButtonStyle: ButtonStyle {
+    @StateObject var themeManager: ThemeManager = ThemeManager()
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .regular, design: .default))
+            .font(themeManager.selectedTheme.bodyTextFont)
             .foregroundColor(Color("mnBtnTextColor"))
             .padding(7)
             .padding(.horizontal, 5)
@@ -111,13 +113,15 @@ struct TagButtonStyle: ButtonStyle {
 
 // MARK: - Remove Tag Button Style
 struct RemoveTagButtonStyle: ButtonStyle {
+    @StateObject var themeManager: ThemeManager = ThemeManager()
+
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             Image(systemName: "xmark")
                 .foregroundColor(Color("mnAccentColor"))
             configuration.label
         }
-        .font(.system(size: 16, weight: .regular, design: .default))
+        .font(themeManager.selectedTheme.bodyTextFont)
         .foregroundColor(Color("mnAccentColor"))
         .padding(7)
         .padding(.horizontal, 5)

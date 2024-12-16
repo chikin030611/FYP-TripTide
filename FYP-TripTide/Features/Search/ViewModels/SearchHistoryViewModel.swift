@@ -1,27 +1,48 @@
 import Foundation
 
 class SearchHistoryViewModel: ObservableObject {
-    @Published var recentTags: [String]
+    @Published var recentSearches: [String] = []
+    @Published var recentTags: [Tag]
     @Published var recentlyViewedAttractions: [Attraction]
     
+    private let userDefaults = UserDefaults.standard
+    private let recentSearchesKey = "recentSearches"
+    private let recentlyViewedKey = "recentlyViewed"
+    private let maxRecentSearches = 5
+    private let maxRecentlyViewed = 5
+    
     init() {
-        // Initialize with sample data - Later replace with actual data storage
-        self.recentTags = [
-            "Restaurant", "Hotel", "Beach", "Museum", 
-            "Park", "Shopping", "Attraction", "Transport", 
-            "Activity", "Nightlife"
-        ]
+        // Load recent searches from UserDefaults
+        self.recentSearches = userDefaults.stringArray(forKey: recentSearchesKey) ?? []
         
-        // Get attractions from IDs - Later implement proper data persistence
-        let recentlyViewedIds = ["2", "3", "8"]
+        // Load recently viewed from UserDefaults
+        let recentlyViewedIds = userDefaults.stringArray(forKey: recentlyViewedKey) ?? []
         self.recentlyViewedAttractions = recentlyViewedIds.compactMap { getAttraction(by: $0) }
+        
+        self.recentTags = [Tag(name: "Tag1"), Tag(name: "Tag2")]
+    }
+    
+    func addRecentSearch(_ searchText: String) {
+        let trimmedText = searchText.trimmingCharacters(in: .whitespaces)
+        if !trimmedText.isEmpty {
+            // Remove if already exists (to avoid duplicates)
+            recentSearches.removeAll { $0 == trimmedText }
+            // Add to beginning of array
+            recentSearches.insert(trimmedText, at: 0)
+            // Keep only maxRecentSearches items
+            if recentSearches.count > maxRecentSearches {
+                recentSearches.removeLast()
+            }
+            // Save to UserDefaults
+            userDefaults.set(recentSearches, forKey: recentSearchesKey)
+        }
     }
     
     // Add a tag to recent tags
-    func addRecentTag(_ tag: String) {
-        if !recentTags.contains(tag) {
+    func addRecentTag(_ tag: Tag) {
+        if !recentTags.contains(where: { $0.name == tag.name }) {
             recentTags.insert(tag, at: 0)
-            if recentTags.count > 10 {
+            if recentTags.count > 5 {
                 recentTags.removeLast()
             }
         }
@@ -31,9 +52,13 @@ class SearchHistoryViewModel: ObservableObject {
     func addRecentlyViewed(_ attraction: Attraction) {
         if !recentlyViewedAttractions.contains(where: { $0.id == attraction.id }) {
             recentlyViewedAttractions.insert(attraction, at: 0)
-            if recentlyViewedAttractions.count > 5 {
+            if recentlyViewedAttractions.count > maxRecentlyViewed {
                 recentlyViewedAttractions.removeLast()
             }
+            
+            // Save IDs to UserDefaults
+            let attractionIds = recentlyViewedAttractions.map { $0.id }
+            userDefaults.set(attractionIds, forKey: recentlyViewedKey)
         }
     }
     

@@ -8,6 +8,7 @@ struct SearchTabView: View {
     @State private var isSearchActive = false
     @FocusState private var isFocused: Bool 
     @StateObject private var searchViewModel = SearchResultsViewModel()
+    @StateObject private var searchHistoryViewModel = SearchHistoryViewModel()
     
     var body: some View {
         NavigationStack {
@@ -22,8 +23,13 @@ struct SearchTabView: View {
                             .textFieldStyle(.plain)
                             .autocorrectionDisabled()
                             .focused($isFocused)
-                            .onChange(of: searchText) { oldValue, newValue in
-                                searchViewModel.filterAttractions(searchText: newValue)
+                            .onSubmit {
+                                if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
+                                    searchViewModel.filterAttractions(searchText: searchText)
+                                    searchHistoryViewModel.addRecentSearch(searchText)
+                                } else {
+                                    searchViewModel.filterAttractions(searchText: "")
+                                }
                             }
                             .onChange(of: isFocused) { oldValue, newValue in
                                 withAnimation(.spring(duration: 0.3)) {
@@ -37,6 +43,8 @@ struct SearchTabView: View {
                             Button {
                                 withAnimation {
                                     searchText = ""
+                                    // Clear search results when text is cleared
+                                    searchViewModel.filterAttractions(searchText: "")
                                 }
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
@@ -58,6 +66,8 @@ struct SearchTabView: View {
                                 isFocused = false
                                 isSearchActive = false
                                 searchText = ""
+                                // Clear search results to show history view
+                                searchViewModel.filterAttractions(searchText: "")
                             }
                         } label: {
                             Text("Cancel")
@@ -76,6 +86,11 @@ struct SearchTabView: View {
                 ZStack {
                     if isSearchActive {
                         SearchResultsView(viewModel: searchViewModel)
+                            .environment(\.onSearch) { searchText in
+                                self.searchText = searchText
+                                searchViewModel.filterAttractions(searchText: searchText)
+                                searchHistoryViewModel.addRecentSearch(searchText)
+                            }
                             .transition(.opacity)
                     } else {
                         ScrollView {

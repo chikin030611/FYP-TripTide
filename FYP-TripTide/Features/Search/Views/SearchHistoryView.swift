@@ -1,39 +1,54 @@
 import SwiftUI
 
+// First, create an environment key for the search action
+private struct SearchActionKey: EnvironmentKey {
+    static let defaultValue: (String) -> Void = { _ in }
+}
+
+extension EnvironmentValues {
+    var onSearch: (String) -> Void {
+        get { self[SearchActionKey.self] }
+        set { self[SearchActionKey.self] = newValue }
+    }
+}
+
 struct SearchHistoryView: View {
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var viewModel = SearchHistoryViewModel()
+    @Environment(\.onSearch) private var onSearch
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // Recent Tags
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Recent Tags")
+            // Recent Searches
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Recent Searches")
                     .font(themeManager.selectedTheme.boldTitleFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
-                    
                 
-                FlowLayout(spacing: 8) {
-                    if !viewModel.recentTags.isEmpty {
-                        ForEach(viewModel.recentTags, id: \.self) { keyword in
-                            Text(keyword)
-                                .font(themeManager.selectedTheme.bodyTextFont)
-                                .foregroundColor(themeManager.selectedTheme.primaryColor)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(themeManager.selectedTheme.backgroundColor)
-                            )
+                if !viewModel.recentSearches.isEmpty {
+                    ForEach(viewModel.recentSearches, id: \.self) { search in
+                        Button {
+                            onSearch(search)
+                        } label: {
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                Text(search)
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                    .padding(.leading, 8)
+                                Spacer()
+                            }
                         }
-                    } else {
-                        Text("No recent tags")
-                            .font(themeManager.selectedTheme.bodyTextFont)
-                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        .padding(.vertical, 4)
                     }
+                } else {
+                    Text("No recent searches")
+                        .font(themeManager.selectedTheme.bodyTextFont)
+                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
                 }
             }
-
+            
             // Recently Viewed
             VStack(alignment: .leading, spacing: 16) {
                 Text("Recently Viewed")

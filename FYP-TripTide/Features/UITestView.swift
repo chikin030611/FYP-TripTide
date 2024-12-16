@@ -16,17 +16,17 @@ struct UITestView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                TypographySection(themeManager: themeManager)
-                
-                Divider()
-                
-                CardView()
-                
-                Divider()
-                
-                CarouselSection(images: $images)
-                
-                Divider()
+//                TypographySection(themeManager: themeManager)
+//                
+//                Divider()
+//                
+//                CardView()
+//                
+//                Divider()
+//                
+//                CarouselSection(images: $images)
+//                
+//                Divider()
                 
                 FormInputSection(email: $email, password: $password)
                 

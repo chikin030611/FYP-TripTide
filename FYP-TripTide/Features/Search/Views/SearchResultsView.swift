@@ -12,11 +12,15 @@ struct SearchResultsView: View {
         ScrollView {
             if viewModel.searchResults.isEmpty && viewModel.currentSearchText.isEmpty {
                 SearchHistoryView()
+                    .transition(.opacity)
             } else {
                 VStack(spacing: 16) {
                     ForEach(viewModel.searchResults) { attraction in
                         NavigationLink {
                             AttractionDetailView(attraction: attraction)
+                                .onAppear {
+                                    viewModel.searchHistoryViewModel.addRecentlyViewed(attraction)
+                                }
                         } label: {
                             SearchResultRow(attraction: attraction)
                                 .padding(.horizontal)
