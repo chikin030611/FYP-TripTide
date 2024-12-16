@@ -6,6 +6,7 @@ import SwiftUI
 struct SearchResultsView: View {
     @StateObject private var themeManager: ThemeManager = ThemeManager()
     @ObservedObject var viewModel: SearchResultsViewModel
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         ScrollView {
@@ -34,5 +35,6 @@ struct SearchResultsView: View {
                 .padding(.vertical)
             }
         }
+        .scrollDismissesKeyboard(.immediately)
     }
 }

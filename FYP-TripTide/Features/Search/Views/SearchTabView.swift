@@ -14,21 +14,6 @@ struct SearchTabView: View {
             VStack {
                 // Search Bar
                 HStack {
-                    // Return button
-                    if isSearchActive {
-                        Button {
-                            withAnimation(.spring(duration: 0.3)) {
-                                isFocused = false
-                                isSearchActive = false
-                                searchText = ""
-                            }
-                        } label: {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                        }
-                        .padding(.horizontal, 4)
-                        .transition(.move(edge: .leading).combined(with: .opacity))
-                    }
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(themeManager.selectedTheme.secondaryColor)
@@ -66,6 +51,23 @@ struct SearchTabView: View {
                         RoundedRectangle(cornerRadius: 30)
                             .fill(themeManager.selectedTheme.backgroundColor)
                     )
+
+                    if isSearchActive {
+                        Button {
+                            withAnimation(.spring(duration: 0.3)) {
+                                isFocused = false
+                                isSearchActive = false
+                                searchText = ""
+                            }
+                        } label: {
+                            Text("Cancel")
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                .underline()
+                        }
+                        .padding(.horizontal, 4)
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                    }
                 }
                 .padding(.horizontal)
                 .animation(.spring(duration: 0.3), value: isFocused)
@@ -92,7 +94,7 @@ struct SearchTabView: View {
                                         // NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
                                             Text("View All")
                                                 .font(themeManager.selectedTheme.bodyTextFont)
-                                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
                                                 .underline()
                                         // }
                                     }
@@ -147,7 +149,7 @@ private struct RegularBodySection: View {
                 // NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
                     Text("View All")
                         .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
                         .underline()
                 // }
             }
