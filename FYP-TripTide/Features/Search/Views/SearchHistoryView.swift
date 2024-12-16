@@ -13,8 +13,8 @@ extension EnvironmentValues {
 }
 
 struct SearchHistoryView: View {
-    @StateObject private var themeManager = ThemeManager()
-    @StateObject private var viewModel = SearchHistoryViewModel()
+    @StateObject var themeManager = ThemeManager()
+    @ObservedObject var viewModel: SearchHistoryViewModel
     @Environment(\.onSearch) private var onSearch
     
     var body: some View {

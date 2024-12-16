@@ -4,11 +4,16 @@ import SwiftUI
 struct SearchTabView: View {
     @StateObject var themeManager = ThemeManager()
     @StateObject private var viewModel = SearchTabViewModel()
+    @StateObject private var searchViewModel: SearchResultsViewModel
     @State private var searchText = ""
     @State private var isSearchActive = false
     @FocusState private var isFocused: Bool 
-    @StateObject private var searchViewModel = SearchResultsViewModel()
-    @StateObject private var searchHistoryViewModel = SearchHistoryViewModel()
+    
+    init() {
+        // Initialize searchViewModel with shared searchHistoryViewModel
+        let searchHistoryVM = SearchHistoryViewModel()
+        _searchViewModel = StateObject(wrappedValue: SearchResultsViewModel(searchHistoryViewModel: searchHistoryVM))
+    }
     
     var body: some View {
         NavigationStack {
@@ -26,7 +31,7 @@ struct SearchTabView: View {
                             .onSubmit {
                                 if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
                                     searchViewModel.filterAttractions(searchText: searchText)
-                                    searchHistoryViewModel.addRecentSearch(searchText)
+                                    searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
                                 } else {
                                     searchViewModel.filterAttractions(searchText: "")
                                 }
@@ -89,7 +94,7 @@ struct SearchTabView: View {
                             .environment(\.onSearch) { searchText in
                                 self.searchText = searchText
                                 searchViewModel.filterAttractions(searchText: searchText)
-                                searchHistoryViewModel.addRecentSearch(searchText)
+                                searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
                             }
                             .transition(.opacity)
                     } else {

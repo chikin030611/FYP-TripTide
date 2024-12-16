@@ -7,10 +7,14 @@ class SearchResultsViewModel: ObservableObject {
     
     private var allAttractions: [Attraction]
     
-    init(searchHistoryViewModel: SearchHistoryViewModel = SearchHistoryViewModel()) {
+    init(searchHistoryViewModel: SearchHistoryViewModel) {
         self.searchHistoryViewModel = searchHistoryViewModel
         self.allAttractions = getAllAttractions()
         self.searchResults = []
+    }
+    
+    func addRecentlyViewed(_ attraction: Attraction) {
+        searchHistoryViewModel.addRecentlyViewed(attraction)
     }
     
     func filterAttractions(searchText: String) {

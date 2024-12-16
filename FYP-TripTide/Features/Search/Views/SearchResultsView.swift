@@ -4,14 +4,14 @@ import SwiftUI
 
 
 struct SearchResultsView: View {
-    @StateObject private var themeManager: ThemeManager = ThemeManager()
+    @StateObject var themeManager = ThemeManager()
     @ObservedObject var viewModel: SearchResultsViewModel
     @FocusState private var isFocused: Bool
     
     var body: some View {
         ScrollView {
             if viewModel.searchResults.isEmpty && viewModel.currentSearchText.isEmpty {
-                SearchHistoryView()
+                SearchHistoryView(viewModel: viewModel.searchHistoryViewModel)
                     .transition(.opacity)
             } else {
                 VStack(spacing: 16) {
@@ -19,7 +19,7 @@ struct SearchResultsView: View {
                         NavigationLink {
                             AttractionDetailView(attraction: attraction)
                                 .onAppear {
-                                    viewModel.searchHistoryViewModel.addRecentlyViewed(attraction)
+                                    viewModel.addRecentlyViewed(attraction)
                                 }
                         } label: {
                             SearchResultRow(attraction: attraction)
