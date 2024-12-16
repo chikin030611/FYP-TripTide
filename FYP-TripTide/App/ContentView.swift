@@ -21,7 +21,7 @@ struct ContentView: View {
             //     }
             
             
-            SearchResultsView()
+            ExploreTabView()
                 .tabItem {
                     Image(systemName: "house")
                     Text("Explore")
