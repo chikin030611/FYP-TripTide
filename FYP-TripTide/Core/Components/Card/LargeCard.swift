@@ -26,7 +26,7 @@ struct LargeCard: View {
 
                 Rating(rating: attraction.rating)
 
-                TagView(name: attraction.tags[0].name)
+                TagGroup(tags: attraction.tags)
             }
             .frame(width: 220, alignment: .leading)
         }
