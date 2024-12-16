@@ -9,26 +9,30 @@ struct SearchResultsView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                ForEach(viewModel.searchResults) { attraction in
-                    NavigationLink {
-                        AttractionDetailView(attraction: attraction)
-                    } label: {
-                        SearchResultRow(attraction: attraction)
-                            .padding(.horizontal)
+            if viewModel.searchResults.isEmpty && viewModel.currentSearchText.isEmpty {
+                SearchHistoryView()
+            } else {
+                VStack(spacing: 16) {
+                    ForEach(viewModel.searchResults) { attraction in
+                        NavigationLink {
+                            AttractionDetailView(attraction: attraction)
+                        } label: {
+                            SearchResultRow(attraction: attraction)
+                                .padding(.horizontal)
+                        }
+                        .padding(.vertical, 5)
                     }
-                    .padding(.vertical, 5)
+                    
+                    if viewModel.searchResults.isEmpty {
+                        Text("No results found")
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                            .padding(.top, 32)
+                    }
+                    
+                    Divider()
                 }
-                
-                if viewModel.searchResults.isEmpty {
-                    Text("No results found")
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                        .padding(.top, 32)
-                }
-                
-                Divider()
+                .padding(.vertical)
             }
-            .padding(.vertical)
         }
     }
 }
