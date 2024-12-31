@@ -20,16 +20,6 @@ class AttractionDetailViewModel: ObservableObject {
         )
     }
     
-    // MARK: - View Helper Methods
-    
-    var rating: Int {
-        attraction.rating
-    }
-    
-    var remainingStars: Int {
-        5 - attraction.rating
-    }
-    
     // Add favorite functionality later
     func toggleFavorite() {
         // Implement favorite toggle logic

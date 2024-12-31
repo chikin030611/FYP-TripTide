@@ -44,6 +44,12 @@ struct ContentView: View {
                     Image(systemName: "lightbulb")
                     Text("Tips")
                 }
+
+            UserTabView()
+                .tabItem {
+                    Image(systemName: "person")
+                    Text("User")
+                }
             
         }
         .accentColor(themeManager.selectedTheme.accentColor)

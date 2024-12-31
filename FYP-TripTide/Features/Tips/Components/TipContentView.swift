@@ -14,14 +14,7 @@ struct TipContentView: View {
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                 
             case .image(let url):
-                AsyncImage(url: URL(string: url)) { image in
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .cornerRadius(10)
-                } placeholder: {
-                    ProgressView()
-                }
+                AsyncImageView(imageUrl: url)
                 
             case .header(let text):
                 Text(text)

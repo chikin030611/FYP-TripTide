@@ -7,16 +7,7 @@ struct TipCardView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            AsyncImage(url: URL(string: tip.coverImage)) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 150)
-                    .clipped()
-            } placeholder: {
-                ProgressView()
-            }
-            .cornerRadius(10)
+            AsyncImageView(imageUrl: tip.coverImage, height: 150)
             
             Text(tip.title)
                 .font(themeManager.selectedTheme.titleFont)

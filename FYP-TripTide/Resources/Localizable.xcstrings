@@ -40,6 +40,12 @@
     "Bold Title Font" : {
       "shouldTranslate" : false
     },
+    "By" : {
+
+    },
+    "Cancel" : {
+
+    },
     "Caption Text Font" : {
       "shouldTranslate" : false
     },
@@ -55,9 +61,6 @@
     "Copy Address" : {
 
     },
-    "Cozy attractions to stay" : {
-      "comment" : "Description of the accommodation section"
-    },
     "Cozy places to stay" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -68,9 +71,6 @@
           }
         }
       }
-    },
-    "Discover attractions that are perfect for you" : {
-      "comment" : "Description of the For You section"
     },
     "Discover places that are perfect for you" : {
       "extractionState" : "manual",
@@ -110,14 +110,14 @@
         }
       }
     },
+    "Highly Rated Attractions" : {
+      "comment" : "Title of the For You section"
+    },
     "Large Title Font" : {
       "shouldTranslate" : false
     },
     "Larger Title Font" : {
       "shouldTranslate" : false
-    },
-    "Locals' favourite dining attractions" : {
-      "comment" : "Description of the restaurant section"
     },
     "Locals' favourite dining places" : {
       "extractionState" : "manual",
@@ -134,6 +134,15 @@
 
     },
     "No open hours available" : {
+
+    },
+    "No recent searches" : {
+
+    },
+    "No recently viewed attractions" : {
+
+    },
+    "No results found" : {
 
     },
     "Normal Title Font" : {
@@ -166,7 +175,16 @@
     "Quaternary Button" : {
       "shouldTranslate" : false
     },
+    "Recent Searches" : {
+
+    },
+    "Recently Viewed" : {
+
+    },
     "Recommended Staying Time" : {
+
+    },
+    "Reference: \n%@" : {
 
     },
     "Remove" : {
@@ -189,7 +207,7 @@
     "Search" : {
 
     },
-    "Search Coming Soon" : {
+    "Search attractions..." : {
 
     },
     "Secondary Button" : {
@@ -201,11 +219,14 @@
     "Tips" : {
 
     },
-    "Tips Coming Soon" : {
+    "Travel Tips" : {
 
     },
-    "TripTide" : {
-      "shouldTranslate" : false
+    "User" : {
+
+    },
+    "View All" : {
+
     }
   },
   "version" : "1.0"

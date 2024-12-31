@@ -15,25 +15,7 @@ struct ImageCarousel: View {
     var body: some View {
         TabView {
             ForEach(images.indices, id: \.self) { index in
-                AsyncImage(url: stringToURL(images[index])) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()  // Placeholder when loading
-                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity)
-                            .clipped()
-                    case .failure:
-                        Image(systemName: "exclamationmark.triangle.fill") // Error handling
-                            .foregroundColor(.red)
-                            .frame(maxWidth: .infinity)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
+                AsyncImageView(imageUrl: images[index])
             }
         }
         .tabViewStyle(.page)

@@ -84,9 +84,9 @@ struct AttractionDetailView: View {
                 Text(viewModel.attraction.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                ratingStars
+                Rating(rating: viewModel.attraction.rating)
                 
-                priceAndTags
+                PriceAndTags(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
             }
             
             Spacer()
@@ -100,38 +100,6 @@ struct AttractionDetailView: View {
         .padding(.bottom, 10)
     }
     
-    private var ratingStars: some View {
-        HStack {
-            ForEach(0..<viewModel.rating, id: \.self) { _ in
-                Image(systemName: "star.fill")
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundStyle(themeManager.selectedTheme.accentColor)
-            }
-            
-            ForEach(0..<viewModel.remainingStars, id: \.self) { _ in
-                Image(systemName: "star")
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundStyle(themeManager.selectedTheme.accentColor)
-            }
-        }
-    }
-    
-    private var priceAndTags: some View {
-        HStack {
-            Text(viewModel.attraction.price)
-                .font(themeManager.selectedTheme.captionTextFont)
-            Text("•")
-                .font(themeManager.selectedTheme.captionTextFont)
-            ForEach(viewModel.attraction.tags, id: \.name) { tag in
-                Text(tag.name)
-                    .font(themeManager.selectedTheme.captionTextFont)
-                if tag != viewModel.attraction.tags.last {
-                    Text("•")
-                        .font(themeManager.selectedTheme.captionTextFont)
-                }
-            }
-        }
-    }
     
     private var stayingTimeSection: some View {
         HStack {
