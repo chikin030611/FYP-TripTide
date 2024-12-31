@@ -6,6 +6,9 @@ New Tabs
 - User
 
 Search tab
+- align the recent search and recent browsed results to leading when empty
+- Use @AppStorage/SwiftData instead of UserDefaults
+- dismiss keyboard when recent search is pressed
 - Add filter
 
 Plan
