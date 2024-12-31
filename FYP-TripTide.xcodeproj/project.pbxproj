@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5DA2C8ED2D23F00E001D5A4F /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */; };
 		5DAF4B672CEFAA5F0039CD4F /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 5DAF4B662CEFAA5F0039CD4F /* Inject */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DA2C8ED2D23F00E001D5A4F /* KeychainSwift in Frameworks */,
 				5DAF4B672CEFAA5F0039CD4F /* Inject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = "FYP-TripTide";
 			packageProductDependencies = (
 				5DAF4B662CEFAA5F0039CD4F /* Inject */,
+				5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */,
 			);
 			productName = "FYP-TripTide";
 			productReference = 5D5661062CA5B031001E5D6B /* FYP-TripTide.app */;
@@ -204,6 +207,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				5DAF4B652CEFAA5F0039CD4F /* XCRemoteSwiftPackageReference "Inject" */,
+				5DA2C8EB2D23F00E001D5A4F /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D5661072CA5B031001E5D6B /* Products */;
@@ -572,6 +576,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
 		5DAF4B652CEFAA5F0039CD4F /* XCRemoteSwiftPackageReference "Inject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
@@ -583,6 +594,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5DA2C8EB2D23F00E001D5A4F /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
 		5DAF4B662CEFAA5F0039CD4F /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5DAF4B652CEFAA5F0039CD4F /* XCRemoteSwiftPackageReference "Inject" */;
