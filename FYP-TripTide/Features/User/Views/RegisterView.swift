@@ -1,69 +1,57 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State private var username = ""
-    @State private var email = ""
-    @State private var password = ""
-    @State private var isLoading = false
-    @State private var error: Error?
-    @Environment(\.dismiss) private var dismiss
-    
+    @StateObject private var viewModel = RegisterViewModel()
+    @StateObject var themeManager = ThemeManager()
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack(spacing: 20) {
-            TextField("Username", text: $username)
-                .textFieldStyle(.roundedBorder)
+            Text("Become a TripTide member")
+                .font(themeManager.selectedTheme.largeTitleFont)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+
+            TextField("Username", text: $viewModel.username)
+                .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "person")))
                 .autocapitalization(.none)
-            
-            TextField("Email", text: $email)
-                .textFieldStyle(.roundedBorder)
+
+            TextField("Email", text: $viewModel.email)
+                .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
                 .textContentType(.emailAddress)
                 .autocapitalization(.none)
             
-            SecureField("Password", text: $password)
-                .textFieldStyle(.roundedBorder)
+            SecureField("Password", text: $viewModel.password)
+                .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
                 .textContentType(.newPassword)
             
-            Button(action: register) {
-                if isLoading {
+            Button(action: {
+                Task {
+                    await viewModel.register()
+                }
+            }) {
+                if viewModel.isLoading {
                     ProgressView()
                 } else {
                     Text("Create Account")
                         .frame(maxWidth: .infinity)
                 }
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(isLoading || username.isEmpty || email.isEmpty || password.isEmpty)
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(viewModel.isLoading || !viewModel.isFormValid)
             
-            if let error = error {
+            if let error = viewModel.error {
                 Text(error.localizedDescription)
-                    .foregroundColor(.red)
+                    .foregroundColor(themeManager.selectedTheme.warningColor)
                     .multilineTextAlignment(.center)
             }
+
+            Spacer()
         }
-        .padding()
-        .navigationTitle("Register")
-    }
-    
-    private func register() {
-        isLoading = true
-        error = nil
-        
-        Task {
-            do {
-                let response = try await AuthService.shared.register(
-                    username: username,
-                    email: email,
-                    password: password
-                )
-                if response.success {
-                    dismiss()
-                } else {
-                    error = AuthError.serverError(response.message ?? "Registration failed")
-                }
-            } catch {
-                self.error = error
+        .padding(.top, 40)
+        .alert("Registration Successful", isPresented: $viewModel.showSuccessAlert) {
+            Button("OK") {
+                dismiss()
             }
-            isLoading = false
         }
     }
 } 

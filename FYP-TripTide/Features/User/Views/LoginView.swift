@@ -5,12 +5,13 @@ struct LoginView: View {
     @State private var password = ""
     @State private var isLoading = false
     @State private var error: Error?
-
+    @State private var showRegisterSheet = false
     @StateObject var themeManager = ThemeManager()
     var body: some View {
-        VStack(spacing: 20) {
-            Image("user_login")
-                .resizable()
+        Group {
+            VStack(spacing: 20) {
+                Image("user_login")
+                    .resizable()
                 .scaledToFit()
                 .padding(.horizontal)
             
@@ -49,14 +50,20 @@ struct LoginView: View {
             
             HStack {
                 Text("New to TripTide?")
-                NavigationLink("Create Account", destination: RegisterView())
-                    .foregroundColor(themeManager.selectedTheme.accentColor)
+                Button("Create Account") {
+                    showRegisterSheet = true
+                }
+                .foregroundColor(themeManager.selectedTheme.accentColor)
             }
             .padding(.top)
 
             Spacer()
+            }
+            .padding(.top, 40)
         }
-        .padding(.top, 40)
+        .sheet(isPresented: $showRegisterSheet) {
+            RegisterView()
+        }
     }
 }
 
