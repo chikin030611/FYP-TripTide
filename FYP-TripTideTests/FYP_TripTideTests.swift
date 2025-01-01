@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import FYP_TripTide
+import FYP_TripTide
 
 struct FYP_TripTideTests {
 

@@ -34,6 +34,12 @@
     "Address copied!" : {
 
     },
+    "Are you sure you want to sign out?" : {
+
+    },
+    "Become a TripTide member" : {
+
+    },
     "Body Text Font" : {
       "shouldTranslate" : false
     },
@@ -72,6 +78,9 @@
         }
       }
     },
+    "Create Account" : {
+
+    },
     "Discover places that are perfect for you" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -85,6 +94,9 @@
     },
     "Eastern" : {
       "shouldTranslate" : false
+    },
+    "Email" : {
+
     },
     "Email Address" : {
       "shouldTranslate" : false
@@ -133,6 +145,12 @@
     "Location" : {
 
     },
+    "Login" : {
+
+    },
+    "New to TripTide?" : {
+
+    },
     "No open hours available" : {
 
     },
@@ -147,6 +165,9 @@
     },
     "Normal Title Font" : {
       "shouldTranslate" : false
+    },
+    "OK" : {
+
     },
     "Open in Google Maps" : {
 
@@ -187,6 +208,9 @@
     "Reference: \n%@" : {
 
     },
+    "Registration Successful" : {
+
+    },
     "Remove" : {
       "shouldTranslate" : false
     },
@@ -213,6 +237,9 @@
     "Secondary Button" : {
       "shouldTranslate" : false
     },
+    "Sign Out" : {
+
+    },
     "Tertiary Button" : {
       "shouldTranslate" : false
     },
@@ -223,6 +250,12 @@
 
     },
     "User" : {
+
+    },
+    "User is logged in" : {
+
+    },
+    "Username" : {
 
     },
     "View All" : {
