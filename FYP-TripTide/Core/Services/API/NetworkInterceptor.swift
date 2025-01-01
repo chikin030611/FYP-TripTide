@@ -18,7 +18,7 @@ class NetworkInterceptor: NSObject, URLSessionDelegate {
         if response.statusCode == 401 {
             do {
                 // Try to refresh the token
-                _ = try await AuthService.shared.refreshToken()
+                _ = try await AuthService.shared.refreshToken(refreshToken: AuthManager.shared.refreshToken ?? "")
                 
                 // Retry the original request with the new token
                 var newRequest = request

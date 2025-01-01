@@ -50,6 +50,7 @@ class AuthService {
         case 200:
             if let token = authResponse.token {
                 AuthManager.shared.token = token
+                AuthManager.shared.refreshToken = authResponse.refreshToken
                 return authResponse
             } else {
                 throw AuthError.invalidResponse
@@ -65,6 +66,40 @@ class AuthService {
         default:
             throw AuthError.serverError(authResponse.message ?? "Server error")
         }
+    }
+    
+    func validateToken(token: String) async throws -> AuthResponse {
+        let url = URL(string: "\(APIConfig.baseURL)/auth/validate")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(AuthResponse.self, from: data)
+    }
+    
+    func refreshToken(refreshToken: String) async throws -> AuthResponse {
+        let url = URL(string: "\(APIConfig.baseURL)/auth/refresh")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(refreshToken)", forHTTPHeaderField: "Authorization")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.networkError
+        }
+        
+        let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+        
+        if httpResponse.statusCode == 200 {
+            if let token = authResponse.token {
+                AuthManager.shared.token = token
+                return authResponse
+            }
+        }
+        
+        throw AuthError.serverError(authResponse.message ?? "Failed to refresh token")
     }
     
     func register(username: String, email: String, password: String) async throws -> AuthResponse {
@@ -95,37 +130,6 @@ class AuthService {
             }
         default:
             throw AuthError.serverError(authResponse.message ?? "Server error")
-        }
-    }
-    
-    func refreshToken() async throws -> AuthResponse {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/refresh")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        if let token = AuthManager.shared.token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AuthError.networkError
-        }
-        
-        let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-        
-        switch httpResponse.statusCode {
-        case 200:
-            if let token = authResponse.token {
-                AuthManager.shared.token = token
-                return authResponse
-            } else {
-                throw AuthError.invalidResponse
-            }
-        default:
-            throw AuthError.serverError(authResponse.message ?? "Failed to refresh token")
         }
     }
 }
