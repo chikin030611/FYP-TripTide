@@ -6,49 +6,54 @@ struct UserProfileView: View {
     @StateObject var themeManager = ThemeManager()
     
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "person.circle.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.gray)
-            
-            if viewModel.isLoading {
-                ProgressView()
-            } else if let user = viewModel.user {
-                VStack(spacing: 12) {
-                    Text(user.username)
-                        .font(themeManager.selectedTheme.titleFont)
+        ScrollView {
+            VStack(spacing: 20) {
+                HStack {
+                    Image(systemName: "person.circle.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(themeManager.selectedTheme.primaryColor)
                     
-                    Text(user.email)
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(.gray)
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else if let user = viewModel.user {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(user.username)
+                                .font(themeManager.selectedTheme.titleFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                            
+                            Text(user.email)
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        }
+                    } else if let error = viewModel.error {
+                        Text(error.localizedDescription)
+                            .foregroundColor(themeManager.selectedTheme.warningColor)
+                            .multilineTextAlignment(.center)
+                    }
+                    
+                    Spacer()
                 }
-            } else if let error = viewModel.error {
-                Text(error.localizedDescription)
-                    .foregroundColor(themeManager.selectedTheme.warningColor)
-                    .multilineTextAlignment(.center)
+                
+                Spacer()
+                
+                Button(role: .destructive, action: { showingLogoutAlert = true }) {
+                    Text("Sign Out")
+                }
+                .padding(.horizontal)
+                .buttonStyle(TertiaryButtonStyle())
             }
-            
-            Button(role: .destructive, action: { showingLogoutAlert = true }) {
-                Text("Sign Out")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            .padding()
+            .alert("Sign Out", isPresented: $showingLogoutAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Sign Out", role: .destructive) {
+                    AuthManager.shared.signOut()
+                }
+            } message: {
+                Text("Are you sure you want to sign out?")
             }
-            .padding(.horizontal)
-        }
-        .padding()
-        .alert("Sign Out", isPresented: $showingLogoutAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Sign Out", role: .destructive) {
-                AuthManager.shared.signOut()
+            .onAppear {
+                viewModel.fetchUserProfile()
             }
-        } message: {
-            Text("Are you sure you want to sign out?")
-        }
-        .onAppear {
-            viewModel.fetchUserProfile()
         }
     }
 }
