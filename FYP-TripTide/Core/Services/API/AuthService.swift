@@ -132,16 +132,14 @@ class AuthService {
             throw AuthError.serverError(authResponse.message ?? "Server error")
         }
     }
+    
+    func getUserProfile() async throws -> User {
+        let request = try APIRequest<User>(
+            endpoint: "/users/profile",
+            method: .get,
+            requiresAuth: true
+        )
+        
+        return try await APIClient.shared.perform(request)
+    }
 }
-
-// Request models
-struct LoginRequest: Codable {
-    let email: String
-    let password: String
-}
-
-struct RegistrationRequest: Codable {
-    let username: String
-    let email: String
-    let password: String
-} 
