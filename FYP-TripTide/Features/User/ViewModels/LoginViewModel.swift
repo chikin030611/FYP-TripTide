@@ -18,6 +18,8 @@ class LoginViewModel: ObservableObject {
             )
             if response.success {
                 // Handle successful login
+                AuthManager.shared.token = response.token
+                AuthManager.shared.refreshToken = response.refreshToken
             } else {
                 throw AuthError.serverError(response.message ?? "Login failed")
             }

@@ -1,13 +1,10 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var email = ""
-    @State private var password = ""
-    @State private var isLoading = false
-    @State private var error: Error?
     @State private var showRegisterSheet = false
     @StateObject var themeManager = ThemeManager()
     @FocusState private var focusedField: Field?
+    @StateObject private var viewModel = LoginViewModel()
     
     enum Field {
         case email, password
@@ -27,7 +24,7 @@ struct LoginView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20)
                     
-                    TextField("Email", text: $email)
+                    TextField("Email", text: $viewModel.email)
                         .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "envelope")))
                         .textContentType(.emailAddress)
                         .autocapitalization(.none)
@@ -35,13 +32,17 @@ struct LoginView: View {
                         .disableAutocorrection(true)
                         .focused($focusedField, equals: .email)
                     
-                    SecureField("Password", text: $password)
+                    SecureField("Password", text: $viewModel.password)
                         .textFieldStyle(UnderlinedTextFieldStyle(icon: Image(systemName: "lock")))
                         .textContentType(.password)
                         .focused($focusedField, equals: .password)
                     
-                    Button(action: login) {
-                        if isLoading {
+                    Button {
+                        Task {
+                            await viewModel.login()
+                        }
+                    } label: {
+                        if viewModel.isLoading {
                             ProgressView()
                         } else {
                             Text("Login")
@@ -49,9 +50,9 @@ struct LoginView: View {
                         }
                     }
                     .buttonStyle(PrimaryButtonStyle())
-                    .disabled(isLoading || email.isEmpty || password.isEmpty)
+                    .disabled(viewModel.isLoading || !viewModel.isFormValid)
                     
-                    if let error = error {
+                    if let error = viewModel.error {
                         Text(error.localizedDescription)
                             .foregroundColor(.red)
                             .multilineTextAlignment(.center)
@@ -81,24 +82,5 @@ struct LoginView: View {
                     focusedField = nil // This dismisses the keyboard
                 }
         )
-    }
-}
-
-extension LoginView {
-    private func login() {
-        isLoading = true
-        error = nil
-        
-        Task {
-            do {
-                let response = try await AuthService.shared.login(email: email, password: password)
-                guard response.success else {
-                    throw AuthError.serverError(response.message ?? "Login failed")
-                }
-            } catch {
-                self.error = error
-            }
-            isLoading = false
-        }
     }
 }
