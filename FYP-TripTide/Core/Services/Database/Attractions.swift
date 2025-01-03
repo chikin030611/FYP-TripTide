@@ -2,7 +2,7 @@ import SwiftUI
 
 let disneylandAttraction = Attraction(
     id: "1",
-    images: ["https://dummyimage.com/600x400/ffc14f/ffffff", "https://dummyimage.com/600x400/07162e/ffffff"],
+    images: ["https://lh3.googleusercontent.com/places/ANXAkqFIW71FO77Yr4lGzIZwOyejRRQDd2nbnbblFaVlb7VKgcVKlGG_uUvEQRw9VeYuzBV_Pr00FJNLFfkpWWPm_FNAHe4QVekoVg=s4800-w4000-h3024", "https://places.googleapis.com/v1/places/ChIJ5wsqFHsABDQRjRR4AEF6Zkg/photos/AWYs27yTMGIMufdVe8yuSvrS1Wjxk4V66sWKg_uHnahhuXe-gLHHwBAiUa4lDGhwUczabMZ18J-PSsnlxFLfQJdG8jyhE3ws4-q2d2eGiJ6PC8_ERwi258B-LLlQn2QgDdMero40V9x1FLcSU4sHHzmCgQtRQF_KZBKEwJEs/media?key=AIzaSyBMBCLGHAyfJKXXBJgVpkz98NZ1oqp28bg&maxHeightPx=4000&maxWidthPx=2800"],
     name: "Hong Kong Disneyland",
     rating: 4.2,
     price: "$599+",
