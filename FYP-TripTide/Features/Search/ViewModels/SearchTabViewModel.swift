@@ -4,7 +4,7 @@ class SearchTabViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var highlyRatedCards: [Card]
     @Published var restaurantCards: [Card]
-    @Published var accommodationCards: [Card]
+    @Published var lodgingCards: [Card]
     
     // MARK: - Constants
     let logoIcon = "airplane.departure"
@@ -19,9 +19,9 @@ class SearchTabViewModel: ObservableObject {
         title: NSLocalizedString("Restaurant", comment: "Title of the restaurant section")
     )
     
-    let accommodationSection = (
+    let lodgingSection = (
         icon: "bed.double.fill",
-        title: NSLocalizedString("Accommodation", comment: "Title of the accommodation section")
+        title: NSLocalizedString("Lodging", comment: "Title of the lodging section")
     )
     
     // MARK: - Initialization
@@ -39,7 +39,7 @@ class SearchTabViewModel: ObservableObject {
             Card(attractionId: "7")
         ]
         
-        self.accommodationCards = [
+        self.lodgingCards = [
             Card(attractionId: "8"),
             Card(attractionId: "9"),
             Card(attractionId: "10")

@@ -14,7 +14,7 @@
     "•" : {
 
     },
-    "Accommodation" : {
+    "Lodging" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-HK" : {
