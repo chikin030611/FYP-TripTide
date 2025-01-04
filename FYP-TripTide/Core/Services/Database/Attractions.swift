@@ -42,8 +42,8 @@ let oceanParkAttraction = Attraction(
     stayingTime: "6-8 hours",
     description: "Ocean Park Hong Kong is a marine life theme park featuring animal exhibits, exciting rides and shows. Known for its cable car ride offering spectacular views.",
     address: "Ocean Park, Hong Kong",
-    latitude: 22.2467,
-    longitude: 114.1757
+    latitude: 22.2346359,
+    longitude: 114.17217459999999
 )
 
 let victoriaPeakAttraction = Attraction(

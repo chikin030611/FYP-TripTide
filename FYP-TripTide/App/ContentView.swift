@@ -14,18 +14,17 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            // UITestView()
-            //     .tabItem {
-            //         Image(systemName: "paintbrush")
-            //         Text("Styles")
-            //     }
-            
-            
-            ExploreTabView()
+            UITestView()
                 .tabItem {
-                    Image(systemName: "house")
-                    Text("Explore")
+                    Image(systemName: "paintbrush")
+                    Text("Styles")
                 }
+            
+            // ExploreTabView()
+            //     .tabItem {
+            //         Image(systemName: "house")
+            //         Text("Explore")
+            //     }
 
             SearchTabView()
                 .tabItem {
@@ -50,6 +49,7 @@ struct ContentView: View {
                     Image(systemName: "person")
                     Text("User")
                 }
+
             
         }
         .accentColor(themeManager.selectedTheme.accentColor)
