@@ -1,5 +1,6 @@
 import Foundation
 
-struct Tag: Equatable {
-    var name: String
+struct Tag: Identifiable {
+    let id = UUID()
+    let name: String
 } 

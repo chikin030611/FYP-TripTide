@@ -86,7 +86,11 @@ struct AttractionDetailView: View {
                 
                 Rating(rating: viewModel.attraction.rating)
                 
-                PriceAndTags(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
+                if !viewModel.attraction.price.isEmpty || viewModel.attraction.price != "" {
+                    PriceAndTags(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
+                } else {
+                    TagGroup(tags: viewModel.attraction.tags)
+                }
             }
             
             Spacer()

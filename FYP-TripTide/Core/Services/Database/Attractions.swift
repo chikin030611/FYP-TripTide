@@ -5,7 +5,7 @@ let disneylandAttraction = Attraction(
     images: ["https://lh3.googleusercontent.com/places/ANXAkqFIW71FO77Yr4lGzIZwOyejRRQDd2nbnbblFaVlb7VKgcVKlGG_uUvEQRw9VeYuzBV_Pr00FJNLFfkpWWPm_FNAHe4QVekoVg=s4800-w4000-h3024", "https://places.googleapis.com/v1/places/ChIJ5wsqFHsABDQRjRR4AEF6Zkg/photos/AWYs27yTMGIMufdVe8yuSvrS1Wjxk4V66sWKg_uHnahhuXe-gLHHwBAiUa4lDGhwUczabMZ18J-PSsnlxFLfQJdG8jyhE3ws4-q2d2eGiJ6PC8_ERwi258B-LLlQn2QgDdMero40V9x1FLcSU4sHHzmCgQtRQF_KZBKEwJEs/media?key=AIzaSyBMBCLGHAyfJKXXBJgVpkz98NZ1oqp28bg&maxHeightPx=4000&maxWidthPx=2800"],
     name: "Hong Kong Disneyland",
     rating: 4.2,
-    price: "$599+",
+    price: "",
     tags: [Tag(name: "Theme Park"), Tag(name: "Entertainment"), Tag(name: "Family")],
     openHours: [
         OpenHour(weekdayIndex: 1, openTime: "10:30", closeTime: "20:30"),
