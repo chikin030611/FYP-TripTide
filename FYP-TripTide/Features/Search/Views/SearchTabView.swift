@@ -143,6 +143,9 @@ struct SearchTabView: View {
                 .animation(.spring(duration: 0.3), value: isSearchActive)
             }
         }
+        .task {
+            await viewModel.loadData()
+        }
     }
 }
 

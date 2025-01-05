@@ -28,28 +28,18 @@ class SearchTabViewModel: ObservableObject {
     )
     
     // MARK: - Initialization
-    init() {
-        Task {
-            await loadData()
-        }
-    }
+    init() { }
     
     func loadData() async {
+        if !highlyRatedCards.isEmpty { return }  // Skip if already loaded
+        
         isLoading = true
         defer { isLoading = false }
         
         do {
-            // Fetch tourist attractions
             let places = try await PlacesAPIController.shared.fetchPlaces(type: "tourist_attraction", limit: 5)
             let attractions = places.map { $0.toAttraction() }
-            print("Attractions: \(attractions)")
-            // Update the cards
             self.highlyRatedCards = attractions.map { Card(attraction: $0) }
-            
-            
-            // Similarly fetch and update restaurant and lodging cards
-            // You might want to adjust the API calls for different types
-            
         } catch {
             self.error = error
         }
