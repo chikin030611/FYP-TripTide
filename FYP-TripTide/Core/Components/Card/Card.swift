@@ -12,13 +12,10 @@ struct Card: View {
     
     @StateObject var themeManager = ThemeManager()
     
-    var attractionId: String
-    @State private var attraction: Attraction
+    let attraction: Attraction
     
-    init(attractionId: String) {
-        self.attractionId = attractionId
-        let initialAttraction = getAttraction(by: attractionId) ?? Attraction.empty
-        _attraction = State(initialValue: initialAttraction)
+    init(attraction: Attraction) {
+        self.attraction = attraction
     }
     
     var body: some View {

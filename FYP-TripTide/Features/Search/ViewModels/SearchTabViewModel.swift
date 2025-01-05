@@ -1,10 +1,13 @@
 import SwiftUI
 
+@MainActor
 class SearchTabViewModel: ObservableObject {
     // MARK: - Published Properties
-    @Published var highlyRatedCards: [Card]
-    @Published var restaurantCards: [Card]
-    @Published var lodgingCards: [Card]
+    @Published var highlyRatedCards: [Card] = []
+    @Published var restaurantCards: [Card] = []
+    @Published var lodgingCards: [Card] = []
+    @Published var isLoading = false
+    @Published var error: Error?
     
     // MARK: - Constants
     let logoIcon = "airplane.departure"
@@ -26,23 +29,29 @@ class SearchTabViewModel: ObservableObject {
     
     // MARK: - Initialization
     init() {
-        self.highlyRatedCards = [
-            Card(attractionId: "8"),
-            Card(attractionId: "2"),
-            Card(attractionId: "3")
-        ]
+        Task {
+            await loadData()
+        }
+    }
+    
+    func loadData() async {
+        isLoading = true
+        defer { isLoading = false }
         
-        self.restaurantCards = [
-            Card(attractionId: "4"),
-            Card(attractionId: "5"),
-            Card(attractionId: "6"),
-            Card(attractionId: "7")
-        ]
-        
-        self.lodgingCards = [
-            Card(attractionId: "8"),
-            Card(attractionId: "9"),
-            Card(attractionId: "10")
-        ]
+        do {
+            // Fetch tourist attractions
+            let places = try await PlacesAPIController.shared.fetchPlaces(type: "tourist_attraction", limit: 5)
+            let attractions = places.map { $0.toAttraction() }
+            print("Attractions: \(attractions)")
+            // Update the cards
+            self.highlyRatedCards = attractions.map { Card(attraction: $0) }
+            
+            
+            // Similarly fetch and update restaurant and lodging cards
+            // You might want to adjust the API calls for different types
+            
+        } catch {
+            self.error = error
+        }
     }
 } 

@@ -1,14 +1,11 @@
 import SwiftUI
 
 struct LargeCard: View {
-    let attractionId: String
-    @State private var attraction: Attraction
+    let attraction: Attraction
     @StateObject var themeManager = ThemeManager()
 
-    init(attractionId: String) {
-        self.attractionId = attractionId
-        let initialAttraction = getAttraction(by: attractionId) ?? Attraction.empty
-        _attraction = State(initialValue: initialAttraction)
+    init(attraction: Attraction) {
+        self.attraction = attraction
     }
 
     var body: some View {
