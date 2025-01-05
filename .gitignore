@@ -1,2 +1,5 @@
 FYP-TripTide/TODO
 *.xcconfig
+FYP-TripTide/Configurations/DEBUG.xcconfig
+FYP-TripTide/Configurations/RELEASE.xcconfig
+FYP-TripTide/Configurations/STAGING.xcconfig
