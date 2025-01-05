@@ -13,6 +13,24 @@ class PlacesAPIController {
         return try JSONDecoder().decode([PlaceBasicData
     ].self, from: data)
     }
+    
+    func fetchPlaceDetail(id: String) async throws -> PlaceDetailResponse {
+        guard let url = URL(string: "\(APIConfig.baseURL)/places/\(id)/details") else {
+            throw APIError.invalidURL
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(PlaceDetailResponse.self, from: data)
+    }
+    
+    func appendAPIKey(to photoUrl: String) -> String {
+        // Check if URL already has parameters
+        if photoUrl.contains("?") {
+            return "\(photoUrl)\(APIConfig.googleMapsAPIKey)"
+        } else {
+            return "\(photoUrl)\(APIConfig.googleMapsAPIKey)"
+        }
+    }
 }
 
 struct PlaceBasicData: Codable {

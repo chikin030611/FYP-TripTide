@@ -148,4 +148,46 @@ extension OpenHour {
         
         return openHours.sorted(by: { $0.weekdayIndex < $1.weekdayIndex })
     }
+}
+
+extension Array where Element == OpenHour {
+    static func from(_ apiHours: PlaceDetailResponse.OpeningHours) -> [OpenHour] {
+        var openHours: [OpenHour] = []
+        
+        // Convert each period to OpenHour
+        for period in apiHours.periods {
+            // Google uses 0-6 for Sunday-Saturday
+            // We need to convert to 1-7 for Monday-Sunday
+            let googleDay = period.open.day
+            let weekdayIndex = (googleDay + 6) % 7 + 1
+            
+            let openTime = String(format: "%02d:%02d", period.open.hour, period.open.minute)
+            let closeTime = String(format: "%02d:%02d", period.close.hour, period.close.minute)
+            
+            // Check if it's a 24-hour operation
+            let isOpen24Hours = openTime == "00:00" && closeTime == "24:00"
+            
+            openHours.append(OpenHour(
+                weekdayIndex: weekdayIndex,
+                openTime: openTime,
+                closeTime: closeTime,
+                isOpen24Hours: isOpen24Hours
+            ))
+        }
+        
+        // Fill in missing days as rest days
+        for weekday in 1...7 {
+            if !openHours.contains(where: { $0.weekdayIndex == weekday }) {
+                openHours.append(OpenHour(
+                    weekdayIndex: weekday,
+                    openTime: nil,
+                    closeTime: nil,
+                    isOpen24Hours: false
+                ))
+            }
+        }
+        
+        // Sort by weekday
+        return openHours.sorted(by: { $0.weekdayIndex < $1.weekdayIndex })
+    }
 } 

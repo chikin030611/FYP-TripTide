@@ -24,56 +24,64 @@ struct AttractionDetailView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack {
-                // Images
-                // TODO: Press to zoom in
-                ImageCarousel(images: viewModel.attraction.images)
-                
-                // Body
+        if viewModel.isLoading {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let error = viewModel.error {
+            Text("Error loading attraction: \(error.localizedDescription)")
+                .foregroundColor(.red)
+        } else {
+            ScrollView {
                 VStack {
-                    // Header
-                    headerSection
+                    // Images
+                    // TODO: Press to zoom in
+                    ImageCarousel(images: viewModel.attraction.images)
                     
-                    // Open Hour
-                    OpenHourRow(openHours: viewModel.attraction.openHours)
+                    // Body
+                    VStack {
+                        // Header
+                        headerSection
+                        
+                        // Open Hour
+                        OpenHourRow(openHours: viewModel.attraction.openHours)
+                            .padding(.bottom, 10)
+                        
+                        // Recommended Staying Time
+                        stayingTimeSection
+                        
+                        // Description
+                        descriptionSection
+                        
+                        // Location
+                        locationSection
+                    }
+                }
+                .padding()
+            }
+            .sheet(isPresented: $showAddressOptions) {
+                AddressActionSheet(address: viewModel.attraction.address) {
+                    showToast = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        showToast = false
+                    }
+                }
+            }
+            .overlay(alignment: .bottom) {
+                if showToast {
+                    Text("Address copied!")
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .fill(themeManager.selectedTheme.primaryColor.opacity(0.8))
+                        )
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                         .padding(.bottom, 10)
-                    
-                    // Recommended Staying Time
-                    stayingTimeSection
-                    
-                    // Description
-                    descriptionSection
-                    
-                    // Location
-                    locationSection
                 }
             }
-            .padding()
+            .animation(.easeInOut, value: showToast)
         }
-        .sheet(isPresented: $showAddressOptions) {
-            AddressActionSheet(address: viewModel.attraction.address) {
-                showToast = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    showToast = false
-                }
-            }
-        }
-        .overlay(alignment: .bottom) {
-            if showToast {
-                Text("Address copied!")
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(
-                        Capsule()
-                            .fill(themeManager.selectedTheme.primaryColor.opacity(0.8))
-                    )
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.bottom, 10)
-            }
-        }
-        .animation(.easeInOut, value: showToast)
     }
     
     // MARK: - View Components
