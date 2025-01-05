@@ -46,9 +46,9 @@ class AttractionDetailViewModel: ObservableObject {
                     guard !name.isEmpty else { return nil }
                     return Tag(name: name)
                 },
-                openHours: Array<OpenHour>.from(detail.openingHours),
+                openHours: detail.openingHours.map { Array<OpenHour>.from($0) } ?? [],
                 stayingTime: "1-2 hours", // Add if available in API
-                description: detail.description,
+                description: detail.description ?? "No description available",
                 address: detail.address,
                 latitude: detail.latitude,
                 longitude: detail.longitude

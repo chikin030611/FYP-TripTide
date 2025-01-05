@@ -154,7 +154,23 @@ extension Array where Element == OpenHour {
     static func from(_ apiHours: PlaceDetailResponse.OpeningHours) -> [OpenHour] {
         var openHours: [OpenHour] = []
         
-        // Convert each period to OpenHour
+        // Check if it's a 24/7 operation
+        if let firstPeriod = apiHours.periods.first,
+           firstPeriod.open.hour == 0 && firstPeriod.open.minute == 0 &&
+           firstPeriod.close.hour == 23 && firstPeriod.close.minute == 59 {
+            // Create 24-hour entries for all days
+            for weekday in 1...7 {
+                openHours.append(OpenHour(
+                    weekdayIndex: weekday,
+                    openTime: "00:00",
+                    closeTime: "24:00",
+                    isOpen24Hours: true
+                ))
+            }
+            return openHours
+        }
+        
+        // Handle normal operating hours
         for period in apiHours.periods {
             // Google uses 0-6 for Sunday-Saturday
             // We need to convert to 1-7 for Monday-Sunday
@@ -164,14 +180,11 @@ extension Array where Element == OpenHour {
             let openTime = String(format: "%02d:%02d", period.open.hour, period.open.minute)
             let closeTime = String(format: "%02d:%02d", period.close.hour, period.close.minute)
             
-            // Check if it's a 24-hour operation
-            let isOpen24Hours = openTime == "00:00" && closeTime == "24:00"
-            
             openHours.append(OpenHour(
                 weekdayIndex: weekdayIndex,
                 openTime: openTime,
                 closeTime: closeTime,
-                isOpen24Hours: isOpen24Hours
+                isOpen24Hours: false
             ))
         }
         

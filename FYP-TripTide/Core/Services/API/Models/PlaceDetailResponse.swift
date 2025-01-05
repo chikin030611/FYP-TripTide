@@ -4,8 +4,8 @@ struct PlaceDetailResponse: Codable {
     let tags: [String]
     let address: String
     let rating: Double
-    let openingHours: OpeningHours
-    let description: String
+    let openingHours: OpeningHours?
+    let description: String?
     let photos: [String]
     let latitude: Double
     let longitude: Double

@@ -155,6 +155,8 @@ struct AttractionDetailView: View {
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     .underline()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
             }
             .sheet(isPresented: $showAddressOptions) {
                 AddressActionSheet(address: viewModel.attraction.address, onCopy: {
