@@ -30,10 +30,14 @@ struct SearchTabView: View {
                             .focused($isFocused)
                             .onSubmit {
                                 if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
-                                    searchViewModel.filterAttractions(searchText: searchText)
-                                    searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                    Task {
+                                        await searchViewModel.filterAttractions(searchText: searchText)
+                                        searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                    }
                                 } else {
-                                    searchViewModel.filterAttractions(searchText: "")
+                                    Task {
+                                        await searchViewModel.filterAttractions(searchText: "")
+                                    }
                                 }
                             }
                             .onChange(of: isFocused) { oldValue, newValue in
@@ -49,7 +53,9 @@ struct SearchTabView: View {
                                 withAnimation {
                                     searchText = ""
                                     // Clear search results when text is cleared
-                                    searchViewModel.filterAttractions(searchText: "")
+                                    Task {
+                                        await searchViewModel.filterAttractions(searchText: "")
+                                    }
                                 }
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
@@ -72,7 +78,9 @@ struct SearchTabView: View {
                                 isSearchActive = false
                                 searchText = ""
                                 // Clear search results to show history view
-                                searchViewModel.filterAttractions(searchText: "")
+                                Task {
+                                    await searchViewModel.filterAttractions(searchText: "")
+                                }
                             }
                         } label: {
                             Text("Cancel")
@@ -93,8 +101,10 @@ struct SearchTabView: View {
                         SearchResultsView(viewModel: searchViewModel)
                             .environment(\.onSearch) { searchText in
                                 self.searchText = searchText
-                                searchViewModel.filterAttractions(searchText: searchText)
-                                searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                Task {
+                                    await searchViewModel.filterAttractions(searchText: searchText)
+                                    searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                }
                             }
                             .transition(.opacity)
                     } else {

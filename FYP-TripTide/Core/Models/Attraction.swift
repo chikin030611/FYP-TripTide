@@ -31,3 +31,9 @@ extension Attraction {
         longitude: 0
     )
 } 
+
+extension Attraction: Equatable {
+    static func == (lhs: Attraction, rhs: Attraction) -> Bool {
+        lhs.id == rhs.id
+    }
+}

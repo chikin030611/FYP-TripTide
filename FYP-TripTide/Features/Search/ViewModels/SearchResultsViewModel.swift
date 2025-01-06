@@ -1,32 +1,65 @@
 import Foundation
 
+@MainActor
 class SearchResultsViewModel: ObservableObject {
     @Published var searchResults: [Attraction] = []
     @Published var currentSearchText: String = ""
-    let searchHistoryViewModel: SearchHistoryViewModel
+    @Published var isLoading = false
+    @Published var error: Error?
+    @Published var hasMoreResults = true
+    @Published var currentPage = 0
     
-    private var allAttractions: [Attraction]
+    let searchHistoryViewModel: SearchHistoryViewModel
     
     init(searchHistoryViewModel: SearchHistoryViewModel) {
         self.searchHistoryViewModel = searchHistoryViewModel
-        self.allAttractions = getAllAttractions()
-        self.searchResults = []
     }
     
     func addRecentlyViewed(_ attraction: Attraction) {
         searchHistoryViewModel.addRecentlyViewed(attraction)
     }
     
-    func filterAttractions(searchText: String) {
+    func filterAttractions(searchText: String) async {
         currentSearchText = searchText
+        currentPage = 0 // Reset page when new search starts
+        
         if searchText.isEmpty {
             searchResults = []  // Return to empty state to show history
-        } else {
-            searchResults = allAttractions.filter { attraction in
-                attraction.name.localizedCaseInsensitiveContains(searchText) ||
-                attraction.tags.contains { tag in
-                    tag.name.localizedCaseInsensitiveContains(searchText)
-                }
+            hasMoreResults = true
+            return
+        }
+        
+        await loadNextPage(searchText: searchText)
+    }
+    
+    func loadNextPage() async {
+        guard !isLoading && hasMoreResults else { return }
+        await loadNextPage(searchText: currentSearchText)
+    }
+    
+    private func loadNextPage(searchText: String) async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let places = try await PlacesAPIController.shared.searchPlaces(name: searchText, page: currentPage)
+            
+            // If we're on page 0, replace results. Otherwise, append.
+            if currentPage == 0 {
+                searchResults = places.map { $0.toAttraction() }
+            } else {
+                searchResults.append(contentsOf: places.map { $0.toAttraction() })
+            }
+            
+            // Update pagination state
+            hasMoreResults = !places.isEmpty
+            if hasMoreResults {
+                currentPage += 1
+            }
+        } catch {
+            self.error = error
+            if currentPage == 0 {
+                searchResults = []
             }
         }
     }
