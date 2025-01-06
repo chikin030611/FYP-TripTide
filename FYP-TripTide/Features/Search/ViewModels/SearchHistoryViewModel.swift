@@ -14,12 +14,37 @@ class SearchHistoryViewModel: ObservableObject {
     init() {
         // Load recent searches from UserDefaults
         self.recentSearches = userDefaults.stringArray(forKey: recentSearchesKey) ?? []
-        
-        // Load recently viewed from UserDefaults
-        let recentlyViewedIds = userDefaults.stringArray(forKey: recentlyViewedKey) ?? []
-        self.recentlyViewedAttractions = recentlyViewedIds.compactMap { getAttraction(by: $0) }
-        
+        self.recentlyViewedAttractions = []  // Initialize empty, will be loaded async
         self.recentTags = [Tag(name: "Tag1"), Tag(name: "Tag2")]
+        
+        // Load recently viewed attractions asynchronously
+        Task {
+            await loadRecentlyViewed()
+        }
+    }
+    
+    @MainActor
+    private func loadRecentlyViewed() async {
+        let recentlyViewedIds = userDefaults.stringArray(forKey: recentlyViewedKey) ?? []
+        var loadedAttractions: [Attraction] = []
+        
+        for id in recentlyViewedIds {
+            if let attraction = await getAttraction(by: id) {
+                loadedAttractions.append(attraction)
+            }
+        }
+        
+        self.recentlyViewedAttractions = loadedAttractions
+    }
+    
+    private func getAttraction(by id: String) async -> Attraction? {
+        do {
+            let placeDetail = try await PlacesAPIController.shared.fetchPlaceDetail(id: id)
+            return placeDetail.toAttraction()
+        } catch {
+            print("Error fetching attraction details: \(error)")
+            return nil
+        }
     }
     
     func addRecentSearch(_ searchText: String) {

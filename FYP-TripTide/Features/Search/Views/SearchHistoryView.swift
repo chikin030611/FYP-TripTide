@@ -43,11 +43,15 @@ struct SearchHistoryView: View {
                         .padding(.vertical, 4)
                     }
                 } else {
-                    Text("No recent searches")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                    HStack {
+                        Text("No recent searches")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        Spacer()
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             // Recently Viewed
             VStack(alignment: .leading, spacing: 16) {
@@ -64,12 +68,17 @@ struct SearchHistoryView: View {
                         }
                     }
                 } else {
-                    Text("No recently viewed attractions")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                    HStack {
+                        Text("No recently viewed attractions")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        Spacer()
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
     }
 }
