@@ -30,7 +30,7 @@ extension Place {
         latitude: 0,
         longitude: 0
     )
-} 
+}
 
 extension Place: Equatable {
     static func == (lhs: Place, rhs: Place) -> Bool {
