@@ -2,15 +2,15 @@ import SwiftUI
 import CoreLocation
 import MapKit
 
-class AttractionDetailViewModel: ObservableObject {
-    @Published var attraction: Attraction
+class PlaceDetailViewModel: ObservableObject {
+    @Published var place: Place
     @Published var cameraPosition: MapCameraPosition
     @Published var isLoading = false
     @Published var error: Error?
     
-    init(attractionId: String) {
-        // Initialize with empty attraction first
-        self.attraction = .empty
+    init(placeId: String) {
+        // Initialize with empty place first
+        self.place = .empty
         self.cameraPosition = .camera(
             .init(
                 centerCoordinate: CLLocationCoordinate2D(
@@ -23,20 +23,20 @@ class AttractionDetailViewModel: ObservableObject {
         
         // Fetch the actual data
         Task {
-            await fetchAttractionDetail(id: attractionId)
+            await fetchPlaceDetail(id: placeId)
         }
     }
     
     @MainActor
-    private func fetchAttractionDetail(id: String) async {
+    private func fetchPlaceDetail(id: String) async {
         isLoading = true
         defer { isLoading = false }
         
         do {
             let detail = try await PlacesAPIController.shared.fetchPlaceDetail(id: id)
             
-            // Convert API response to Attraction model
-            self.attraction = Attraction(
+            // Convert API response to Place model
+            self.place = Place(
                 id: detail.id,
                 images: detail.photos.map { PlacesAPIController.shared.appendAPIKey(to: $0) },
                 name: detail.name,

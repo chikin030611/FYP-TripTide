@@ -3,7 +3,7 @@ import Foundation
 class SearchHistoryViewModel: ObservableObject {
     @Published var recentSearches: [String] = []
     @Published var recentTags: [Tag]
-    @Published var recentlyViewedAttractions: [Attraction]
+    @Published var recentlyViewedPlaces: [Place]
     
     private let userDefaults = UserDefaults.standard
     private let recentSearchesKey = "recentSearches"
@@ -14,10 +14,10 @@ class SearchHistoryViewModel: ObservableObject {
     init() {
         // Load recent searches from UserDefaults
         self.recentSearches = userDefaults.stringArray(forKey: recentSearchesKey) ?? []
-        self.recentlyViewedAttractions = []  // Initialize empty, will be loaded async
+        self.recentlyViewedPlaces = []  // Initialize empty, will be loaded async
         self.recentTags = [Tag(name: "Tag1"), Tag(name: "Tag2")]
         
-        // Load recently viewed attractions asynchronously
+        // Load recently viewed places asynchronously
         Task {
             await loadRecentlyViewed()
         }
@@ -26,23 +26,23 @@ class SearchHistoryViewModel: ObservableObject {
     @MainActor
     private func loadRecentlyViewed() async {
         let recentlyViewedIds = userDefaults.stringArray(forKey: recentlyViewedKey) ?? []
-        var loadedAttractions: [Attraction] = []
+        var loadedPlaces: [Place] = []
         
         for id in recentlyViewedIds {
-            if let attraction = await getAttraction(by: id) {
-                loadedAttractions.append(attraction)
+            if let place = await getPlace(by: id) {
+                loadedPlaces.append(place)
             }
         }
         
-        self.recentlyViewedAttractions = loadedAttractions
+        self.recentlyViewedPlaces = loadedPlaces
     }
     
-    private func getAttraction(by id: String) async -> Attraction? {
+    private func getPlace(by id: String) async -> Place? {
         do {
             let placeDetail = try await PlacesAPIController.shared.fetchPlaceDetail(id: id)
-            return placeDetail.toAttraction()
+            return placeDetail.toPlace()
         } catch {
-            print("Error fetching attraction details: \(error)")
+            print("Error fetching place details: \(error)")
             return nil
         }
     }
@@ -73,17 +73,17 @@ class SearchHistoryViewModel: ObservableObject {
         }
     }
     
-    // Add an attraction to recently viewed
-    func addRecentlyViewed(_ attraction: Attraction) {
-        if !recentlyViewedAttractions.contains(where: { $0.id == attraction.id }) {
-            recentlyViewedAttractions.insert(attraction, at: 0)
-            if recentlyViewedAttractions.count > maxRecentlyViewed {
-                recentlyViewedAttractions.removeLast()
+    // Add an place to recently viewed
+    func addRecentlyViewed(_ place: Place) {
+        if !recentlyViewedPlaces.contains(where: { $0.id == place.id }) {
+            recentlyViewedPlaces.insert(place, at: 0)
+            if recentlyViewedPlaces.count > maxRecentlyViewed {
+                recentlyViewedPlaces.removeLast()
             }
             
             // Save IDs to UserDefaults
-            let attractionIds = recentlyViewedAttractions.map { $0.id }
-            userDefaults.set(attractionIds, forKey: recentlyViewedKey)
+            let placeIds = recentlyViewedPlaces.map { $0.id }
+            userDefaults.set(placeIds, forKey: recentlyViewedKey)
         }
     }
     

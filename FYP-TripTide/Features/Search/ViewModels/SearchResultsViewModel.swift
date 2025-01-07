@@ -2,24 +2,24 @@ import Foundation
 
 @MainActor
 class SearchResultsViewModel: ObservableObject {
-    @Published var searchResults: [Attraction] = []
+    @Published var searchResults: [Place] = []
     @Published var currentSearchText: String = ""
     @Published var isLoading = false
     @Published var error: Error?
     @Published var hasMoreResults = true
     @Published var currentPage = 0
-    
+
     let searchHistoryViewModel: SearchHistoryViewModel
     
     init(searchHistoryViewModel: SearchHistoryViewModel) {
         self.searchHistoryViewModel = searchHistoryViewModel
     }
     
-    func addRecentlyViewed(_ attraction: Attraction) {
-        searchHistoryViewModel.addRecentlyViewed(attraction)
+    func addRecentlyViewed(_ place: Place) {
+        searchHistoryViewModel.addRecentlyViewed(place)
     }
     
-    func filterAttractions(searchText: String) async {
+    func filterPlaces(searchText: String) async {
         currentSearchText = searchText
         currentPage = 0 // Reset page when new search starts
         
@@ -46,9 +46,9 @@ class SearchResultsViewModel: ObservableObject {
             
             // If we're on page 0, replace results. Otherwise, append.
             if currentPage == 0 {
-                searchResults = places.map { $0.toAttraction() }
+                searchResults = places.map { $0.toPlace() }
             } else {
-                searchResults.append(contentsOf: places.map { $0.toAttraction() })
+                searchResults.append(contentsOf: places.map { $0.toPlace() })
             }
             
             // Update pagination state

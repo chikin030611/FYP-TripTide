@@ -1,6 +1,6 @@
 import Foundation
 
-struct Attraction: Identifiable {
+struct Place: Identifiable {
     var id: String
     var images: [String]
     var name: String
@@ -15,8 +15,8 @@ struct Attraction: Identifiable {
     var longitude: Double
 }
 
-extension Attraction {
-    static let empty = Attraction(
+extension Place {
+    static let empty = Place(
         id: "",
         images: [],
         name: "",
@@ -32,8 +32,8 @@ extension Attraction {
     )
 } 
 
-extension Attraction: Equatable {
-    static func == (lhs: Attraction, rhs: Attraction) -> Bool {
+extension Place: Equatable {
+    static func == (lhs: Place, rhs: Place) -> Bool {
         lhs.id == rhs.id
     }
 }

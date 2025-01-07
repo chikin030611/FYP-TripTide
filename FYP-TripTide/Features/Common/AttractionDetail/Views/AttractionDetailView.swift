@@ -1,5 +1,5 @@
 //
-//  Attraction.swift
+//  Place.swift
 //  FYP-TripTide
 //
 //  Created by Chi Kin Tang on 4/11/2024.
@@ -12,15 +12,15 @@ import Inject
 
 // TODO: Add favorite functionality
 
-struct AttractionDetailView: View {
+struct PlaceDetailView: View {
     @StateObject var themeManager = ThemeManager()
-    @StateObject private var viewModel: AttractionDetailViewModel
+    @StateObject private var viewModel: PlaceDetailViewModel
     @State private var showMap = false
     @State private var showAddressOptions = false
     @State private var showToast = false
     
-    init(attraction: Attraction) {
-        _viewModel = StateObject(wrappedValue: AttractionDetailViewModel(attractionId: attraction.id))
+    init(place: Place) {
+        _viewModel = StateObject(wrappedValue: PlaceDetailViewModel(placeId: place.id))
     }
     
     var body: some View {
@@ -28,14 +28,14 @@ struct AttractionDetailView: View {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let error = viewModel.error {
-            Text("Error loading attraction: \(error.localizedDescription)")
+            Text("Error loading place: \(error.localizedDescription)")
                 .foregroundColor(.red)
         } else {
             ScrollView {
                 VStack {
                     // Images
                     // TODO: Press to zoom in
-                    ImageCarousel(images: viewModel.attraction.images)
+                    ImageCarousel(images: viewModel.place.images)
                     
                     // Body
                     VStack {
@@ -43,7 +43,7 @@ struct AttractionDetailView: View {
                         headerSection
                         
                         // Open Hour
-                        OpenHourRow(openHours: viewModel.attraction.openHours)
+                        OpenHourRow(openHours: viewModel.place.openHours)
                             .padding(.bottom, 10)
                         
                         // Recommended Staying Time
@@ -59,7 +59,7 @@ struct AttractionDetailView: View {
                 .padding()
             }
             .sheet(isPresented: $showAddressOptions) {
-                AddressActionSheet(address: viewModel.attraction.address) {
+                AddressActionSheet(address: viewModel.place.address) {
                     showToast = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                         showToast = false
@@ -89,15 +89,15 @@ struct AttractionDetailView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(viewModel.attraction.name)
+                Text(viewModel.place.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                Rating(rating: viewModel.attraction.rating)
+                Rating(rating: viewModel.place.rating)
                 
-                if !viewModel.attraction.price.isEmpty || viewModel.attraction.price != "" {
-                    PriceAndTags(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
+                if !viewModel.place.price.isEmpty || viewModel.place.price != "" {
+                    PriceAndTags(price: viewModel.place.price, tags: viewModel.place.tags)
                 } else {
-                    TagGroup(tags: viewModel.attraction.tags)
+                    TagGroup(tags: viewModel.place.tags)
                 }
             }
             
@@ -125,7 +125,7 @@ struct AttractionDetailView: View {
                     .font(themeManager.selectedTheme.boldBodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                 
-                Text(viewModel.attraction.stayingTime)
+                Text(viewModel.place.stayingTime)
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
             }
@@ -135,7 +135,7 @@ struct AttractionDetailView: View {
     }
     
     private var descriptionSection: some View {
-        Text(viewModel.attraction.description)
+        Text(viewModel.place.description)
             .font(themeManager.selectedTheme.bodyTextFont)
             .foregroundStyle(themeManager.selectedTheme.primaryColor)
             .padding(.bottom, 10)
@@ -151,7 +151,7 @@ struct AttractionDetailView: View {
             Button {
                 showAddressOptions.toggle()
             } label: {
-                Text(viewModel.attraction.address)
+                Text(viewModel.place.address)
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     .underline()
@@ -159,7 +159,7 @@ struct AttractionDetailView: View {
                     .multilineTextAlignment(.leading)
             }
             .sheet(isPresented: $showAddressOptions) {
-                AddressActionSheet(address: viewModel.attraction.address, onCopy: {
+                AddressActionSheet(address: viewModel.place.address, onCopy: {
                     showToast = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                         showToast = false
@@ -171,9 +171,9 @@ struct AttractionDetailView: View {
                 showMap.toggle()
             } label: {
                 Map(position: $viewModel.cameraPosition, interactionModes: []) {
-                    Marker(viewModel.attraction.name, coordinate: CLLocationCoordinate2D(
-                        latitude: viewModel.attraction.latitude,
-                        longitude: viewModel.attraction.longitude))
+                    Marker(viewModel.place.name, coordinate: CLLocationCoordinate2D(
+                        latitude: viewModel.place.latitude,
+                        longitude: viewModel.place.longitude))
                 }
                 .frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -183,7 +183,7 @@ struct AttractionDetailView: View {
                 )
             }
             .sheet(isPresented: $showMap) {
-                AttractionMapView(attraction: viewModel.attraction)
+                PlaceMapView(place: viewModel.place)
             }
         }
     }

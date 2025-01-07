@@ -24,19 +24,19 @@ struct SearchTabView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(themeManager.selectedTheme.secondaryColor)
                         
-                        TextField("Search attractions...", text: $searchText)
+                        TextField("Search places...", text: $searchText)
                             .textFieldStyle(.plain)
                             .autocorrectionDisabled()
                             .focused($isFocused)
                             .onSubmit {
                                 if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
                                     Task {
-                                        await searchViewModel.filterAttractions(searchText: searchText)
+                                        await searchViewModel.filterPlaces(searchText: searchText)
                                         searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
                                     }
                                 } else {
                                     Task {
-                                        await searchViewModel.filterAttractions(searchText: "")
+                                        await searchViewModel.filterPlaces(searchText: "")
                                     }
                                 }
                             }
@@ -54,7 +54,7 @@ struct SearchTabView: View {
                                     searchText = ""
                                     // Clear search results when text is cleared
                                     Task {
-                                        await searchViewModel.filterAttractions(searchText: "")
+                                        await searchViewModel.filterPlaces(searchText: "")
                                     }
                                 }
                             } label: {
@@ -79,7 +79,7 @@ struct SearchTabView: View {
                                 searchText = ""
                                 // Clear search results to show history view
                                 Task {
-                                    await searchViewModel.filterAttractions(searchText: "")
+                                    await searchViewModel.filterPlaces(searchText: "")
                                 }
                             }
                         } label: {
@@ -102,7 +102,7 @@ struct SearchTabView: View {
                             .environment(\.onSearch) { searchText in
                                 self.searchText = searchText
                                 Task {
-                                    await searchViewModel.filterAttractions(searchText: searchText)
+                                    await searchViewModel.filterPlaces(searchText: searchText)
                                     searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
                                 }
                             }
@@ -121,7 +121,7 @@ struct SearchTabView: View {
 
                                         Spacer()
 
-                                        // NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
+                                        // NavigationLink(destination: PlaceDetailView(place: place)) {
                                             Text("View All")
                                                 .font(themeManager.selectedTheme.bodyTextFont)
                                                 .foregroundColor(themeManager.selectedTheme.secondaryColor)
@@ -166,7 +166,7 @@ private struct RegularBodySection: View {
     let icon: String
     var title: String
     var cards: [Card]
-    // var attraction: Attraction
+    // var place: Place
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -179,7 +179,7 @@ private struct RegularBodySection: View {
 
                 Spacer()
 
-                // NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
+                // NavigationLink(destination: PlaceDetailView(place: place)) {
                     Text("View All")
                         .font(themeManager.selectedTheme.bodyTextFont)
                         .foregroundColor(themeManager.selectedTheme.secondaryColor)

@@ -1,9 +1,9 @@
 import Foundation
 
 extension PlaceBasicData {
-    func toAttraction() -> Attraction {
+    func toPlace() -> Place {
         let photoUrlWithKey = "\(photoUrl)\(APIConfig.googleMapsAPIKey)"
-        return Attraction(
+        return Place(
             id: placeId,
             images: [photoUrlWithKey],
             name: name,
@@ -21,7 +21,7 @@ extension PlaceBasicData {
 }
 
 extension PlaceDetailResponse {
-    func toAttraction() -> Attraction {
+    func toPlace() -> Place {
         // Convert photos to full URLs with API key
         let photoUrlsWithKey = photos.map { "\($0)\(APIConfig.googleMapsAPIKey)" }
         
@@ -31,7 +31,7 @@ extension PlaceDetailResponse {
         // Convert opening hours using the existing extension
         let openHours = openingHours.map { [OpenHour].from($0) } ?? []
         
-        return Attraction(
+        return Place(
             id: id,
             images: photoUrlsWithKey,
             name: name,

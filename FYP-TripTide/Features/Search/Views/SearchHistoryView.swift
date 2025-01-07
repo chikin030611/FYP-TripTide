@@ -59,17 +59,17 @@ struct SearchHistoryView: View {
                     .font(themeManager.selectedTheme.boldTitleFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                 
-                if !viewModel.recentlyViewedAttractions.isEmpty {
-                    ForEach(viewModel.recentlyViewedAttractions) { attraction in
+                if !viewModel.recentlyViewedPlaces.isEmpty {
+                    ForEach(viewModel.recentlyViewedPlaces) { place in
                         NavigationLink {
-                            AttractionDetailView(attraction: attraction)
+                            PlaceDetailView(place: place)
                         } label: {
-                            SearchHistoryRow(attraction: attraction)
+                            SearchHistoryRow(place: place)
                         }
                     }
                 } else {
                     HStack {
-                        Text("No recently viewed attractions")
+                        Text("No recently viewed places")
                             .font(themeManager.selectedTheme.bodyTextFont)
                             .foregroundColor(themeManager.selectedTheme.secondaryColor)
                         Spacer()

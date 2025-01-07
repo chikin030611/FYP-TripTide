@@ -23,14 +23,14 @@ struct SearchResultsView: View {
                             .foregroundColor(.red)
                             .padding(.top, 32)
                     } else {
-                        ForEach(viewModel.searchResults) { attraction in
+                        ForEach(viewModel.searchResults) { place in
                             NavigationLink {
-                                AttractionDetailView(attraction: attraction)
+                                PlaceDetailView(place: place)
                                     .onAppear {
-                                        viewModel.addRecentlyViewed(attraction)
+                                        viewModel.addRecentlyViewed(place)
                                     }
                             } label: {
-                                SearchResultRow(attraction: attraction)
+                                SearchResultRow(place: place)
                                     .padding(.horizontal)
                             }
                             .padding(.vertical, 5)
