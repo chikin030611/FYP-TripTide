@@ -1,16 +1,16 @@
 import SwiftUI
 import MapKit
 
-struct AttractionMapView: View {
-    let attraction: Attraction
+struct PlaceMapView: View {
+    let place: Place
     @Environment(\.dismiss) private var dismiss
     @State private var cameraPosition: MapCameraPosition
     
-    init(attraction: Attraction) {
-        self.attraction = attraction
+    init(place: Place) {
+        self.place = place
         let coordinate = CLLocationCoordinate2D(
-            latitude: attraction.latitude,
-            longitude: attraction.longitude
+            latitude: place.latitude,
+            longitude: place.longitude
         )
         _cameraPosition = State(initialValue: .region(MKCoordinateRegion(
             center: coordinate,
@@ -21,12 +21,12 @@ struct AttractionMapView: View {
     var body: some View {
         NavigationStack {
             Map(position: $cameraPosition) {
-                Marker(attraction.name, coordinate: CLLocationCoordinate2D(
-                    latitude: attraction.latitude,
-                    longitude: attraction.longitude
+                Marker(place.name, coordinate: CLLocationCoordinate2D(
+                    latitude: place.latitude,
+                    longitude: place.longitude
                 ))
             }
-            .navigationTitle(attraction.name)
+            .navigationTitle(place.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

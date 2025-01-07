@@ -17,9 +17,15 @@ struct TagView: View {
     let name: String
     @StateObject var themeManager: ThemeManager = ThemeManager()
 
+    var formattedName: String {
+        name.split(separator: "_")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
+    }
+
     var body: some View {
         ZStack {
-            Text(name)
+            Text(formattedName)
                 .font(themeManager.selectedTheme.captionTextFont)
                 .foregroundColor(themeManager.selectedTheme.primaryColor)
         }

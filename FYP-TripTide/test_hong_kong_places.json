@@ -1,0 +1,177 @@
+[
+  {
+    "id": "ChIJ4SEGMiQABDQRRhn7SYWq0fM",
+    "name": "Ocean Park",
+    "types": [
+      "amusement_park",
+      "tourist_attraction",
+      "amusement_center" 
+    ],
+    "address": "Aberdeen, Hong Kong",
+    "rating": 4.3,
+    "openingHours": {
+      "openNow": false,
+      "periods": [
+        {
+          "open": {
+            "day": 0,
+            "hour": 10,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 5
+            }
+          },
+          "close": {
+            "day": 0,
+            "hour": 21,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 5
+            }
+          }
+        },
+        {
+          "open": {
+            "day": 1,
+            "hour": 13,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 6
+            }
+          },
+          "close": {
+            "day": 1,
+            "hour": 21,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 6
+            }
+          }
+        },
+        {
+          "open": {
+            "day": 3,
+            "hour": 13,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 8
+            }
+          },
+          "close": {
+            "day": 3,
+            "hour": 21,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 8
+            }
+          }
+        },
+        {
+          "open": {
+            "day": 4,
+            "hour": 13,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 9
+            }
+          },
+          "close": {
+            "day": 4,
+            "hour": 21,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 9
+            }
+          }
+        },
+        {
+          "open": {
+            "day": 5,
+            "hour": 13,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 3
+            }
+          },
+          "close": {
+            "day": 5,
+            "hour": 21,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 3
+            }
+          }
+        },
+        {
+          "open": {
+            "day": 6,
+            "hour": 10,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 4
+            }
+          },
+          "close": {
+            "day": 6,
+            "hour": 21,
+            "minute": 0,
+            "date": {
+              "year": 2025,
+              "month": 1,
+              "day": 4
+            }
+          }
+        }
+      ],
+      "weekdayDescriptions": [
+        "Monday: 1:00 – 9:00 PM",
+        "Tuesday: Closed",
+        "Wednesday: 1:00 – 9:00 PM",
+        "Thursday: 1:00 – 9:00 PM",
+        "Friday: 1:00 – 9:00 PM",
+        "Saturday: 10:00 AM – 9:00 PM",
+        "Sunday: 10:00 AM – 9:00 PM"
+      ],
+      "nextOpenTime": "2025-01-04T02:00:00Z"
+    },
+    "description": "Theme park with rollercoasters & water rides, a cable car & a marine park with animal enclosures.",
+    "photos": [
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27yaaaZfRFjq49g50QX4r3943nQZxbHUpsPd3Hg0y0f31KxLNGLeG5L1RhONTJc9Amwpg64803gO-3fGRaNlQXg7fsDqa6tkh5ezUR3LBAC6lBrfgD7YM-LobJO81uhb1QKgrLSywqdrx2PXVjCyxajBDbLcR0eQ59vD",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27waPK4v8QfxM3HZSz2mPk6-lJeE_ZZgDFfvNQ4cT0N0CFimmrn_s1C0LgxK8bdWh4T2wIdEnXrZy54nU9ooo9drmTjOj3-n4EGg7ZxyEXPkWdQjq2ztOsqRvFjixzuc6EjnjLHYsve9fBIgosu-qE3mBK68Oqa97CzY",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27xDU0ZynkagYy4H0FDOwE4bAW31Fd82coYtqdt0CAwe747cKRrrp_UdrChBE_sjv4cd9BcDhlYiV3LgIn7OGSFQqww_4HUeWcepQL6jOj8xGzdcNu3mIwKkBmybUl-KeDt9G_Mg-a4ip0VvhaSz4XxIA1uZCdjwdsdA",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27x2FmWUqcJYHtT9uI_FwoCcrJLv-tDh6YwBLuhxGUvrzqQJR5zVUjG_G9CAYT-UC1Bc_OCVSM5ug3Bgj7LYPZazR_xbyJRFUOEx-h5koxConb8xPlYqkq14d5FrDkx3xQMHuwEm0Ssu8QddNKg7jchuvJKyaAc6ZJgJ",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27xG2eMwKAGp8eRiKwqCCLsfkr8SB-bTNE7RQuD5_hTfNcsBHk_vB55NR6UtimVSj0RQJwLFcKDnyOxZW_utrrBg-0XCPWJ6rwMHoQyycWb57IqeyVYWAI8VJhPST2PM5QSGbJeU0LB9U1Bb7GO6yhHjzeE6A0-vw0ng",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27xxy5JK1oMBcjNit1O0XIMhH68G37IgVWcr9LIATkSHdm83kPoiueelNFhn6O0zo-lS-s1xJCbuLJsRwdYcmNCqL_7i9Dg8bB1j3z3TvkKQJiHzncwHvRQT0Scrcp2HmGh2FN2Ic3q5KJNw-YBDXVAgK_rYV5WI7pXP",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27x1eHXPLd6zY8Mi9SHErmcQikxWaivHjhDLeyqbTPTUqjHgvmu7IMJR3nAt5mIlxdaDukBIox9emKbmEFW2brwjB5NS1dOLX8P8c88m9CZRqffb9veiLdZlaAhwkzdu30VuKSlu_OHwstSz1kPVBl_3g0-KeB2BpEWJ",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27yNbntaMoa34-Ho8lQVHVnXbattpsX_jQKLyTDREmkZYuA7N1R9q9FusT6duYgN0zmn9b92zNRnEhRCdSJxdCcqmvjR3ZSZvXU4cyBMtAYRMlFKYLgcLM4MUNMT6F5VgV7WCfJCaYc_Obm38uVhP-kYA5BsFjeeUlG0",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27zYh_BS8TMqtspxtTveHVtGT2PRHQ-pJkVxr_SjPUi3WE_e88Rlg9VrTmkGC9cw83384xBC0RXGz4FqizMn-GMfW-OhYkvTz0nMW1YE6RXfVAWnKT4F-Tvrm07hbGYjLYI_mIzuMauy9joXQOOFVLDp5QeGE53qoTbP",
+      "places/ChIJ4SEGMiQABDQRRhn7SYWq0fM/photos/AWYs27zfKUL3SShYl-hA53Nb4_YvTQg4sru4mRqZOCPd3CjggBIlqeI5PmPgfRzJAaE91GElBXkxX0z9MoBGBMm3CFal6t0B0wFUMVR8hnbT8N4PPJTOdDDsYIOJAUYnbgfgrp3l8UAh5QCpdgFmiznz7pew3zkX73sBISpu"
+    ],
+    "location": {
+      "latitude": 22.2346359,
+      "longitude": 114.17217459999999
+    }
+  }
+]

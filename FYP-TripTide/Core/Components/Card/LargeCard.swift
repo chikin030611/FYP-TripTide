@@ -1,22 +1,19 @@
 import SwiftUI
 
 struct LargeCard: View {
-    let attractionId: String
-    @State private var attraction: Attraction
+    let place: Place
     @StateObject var themeManager = ThemeManager()
 
-    init(attractionId: String) {
-        self.attractionId = attractionId
-        let initialAttraction = getAttraction(by: attractionId) ?? Attraction.empty
-        _attraction = State(initialValue: initialAttraction)
+    init(place: Place) {
+        self.place = place
     }
 
     var body: some View {
-        NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
+        NavigationLink(destination: PlaceDetailView(place: place)) {
             VStack(alignment: .leading, spacing: 4) {
-                AsyncImageView(imageUrl: attraction.images[0], width: 220, height: 180)
+                AsyncImageView(imageUrl: place.images[0], width: 220, height: 180)
 
-                Text(attraction.name)
+                Text(place.name)
                     .font(themeManager.selectedTheme.boldBodyTextFont)
                     .foregroundColor(themeManager.selectedTheme.primaryColor)
                     .lineLimit(2)
@@ -24,9 +21,9 @@ struct LargeCard: View {
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Rating(rating: attraction.rating)
+                Rating(rating: place.rating)
 
-                TagGroup(tags: attraction.tags)
+                TagGroup(tags: place.tags)
             }
             .frame(width: 220, alignment: .leading)
         }

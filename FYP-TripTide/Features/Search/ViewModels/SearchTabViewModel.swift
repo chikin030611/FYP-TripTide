@@ -1,10 +1,13 @@
 import SwiftUI
 
+@MainActor
 class SearchTabViewModel: ObservableObject {
     // MARK: - Published Properties
-    @Published var highlyRatedCards: [Card]
-    @Published var restaurantCards: [Card]
-    @Published var accommodationCards: [Card]
+    @Published var highlyRatedCards: [Card] = []
+    @Published var restaurantCards: [Card] = []
+    @Published var lodgingCards: [Card] = []
+    @Published var isLoading = false
+    @Published var error: Error?
     
     // MARK: - Constants
     let logoIcon = "airplane.departure"
@@ -19,30 +22,34 @@ class SearchTabViewModel: ObservableObject {
         title: NSLocalizedString("Restaurant", comment: "Title of the restaurant section")
     )
     
-    let accommodationSection = (
+    let lodgingSection = (
         icon: "bed.double.fill",
-        title: NSLocalizedString("Accommodation", comment: "Title of the accommodation section")
+        title: NSLocalizedString("Lodging", comment: "Title of the lodging section")
     )
     
     // MARK: - Initialization
-    init() {
-        self.highlyRatedCards = [
-            Card(attractionId: "8"),
-            Card(attractionId: "2"),
-            Card(attractionId: "3")
-        ]
+    init() { }
+    
+    func loadData() async {
+        if !highlyRatedCards.isEmpty { return }  // Skip if already loaded
         
-        self.restaurantCards = [
-            Card(attractionId: "4"),
-            Card(attractionId: "5"),
-            Card(attractionId: "6"),
-            Card(attractionId: "7")
-        ]
+        isLoading = true
+        defer { isLoading = false }
         
-        self.accommodationCards = [
-            Card(attractionId: "8"),
-            Card(attractionId: "9"),
-            Card(attractionId: "10")
-        ]
+        do {
+            let touristAttractions = try await PlacesAPIController.shared.fetchPlaces(type: "tourist_attraction", limit: 5)
+            let touristAttractionCards = touristAttractions.map { $0.toPlace() }
+            self.highlyRatedCards = touristAttractionCards.map { Card(place: $0) }
+
+            let restaurants = try await PlacesAPIController.shared.fetchPlaces(type: "restaurant", limit: 5)
+            let restaurantCards = restaurants.map { $0.toPlace() }
+            self.restaurantCards = restaurantCards.map { Card(place: $0) }
+            
+            let lodgings = try await PlacesAPIController.shared.fetchPlaces(type: "lodging", limit: 5)
+            let lodgingCards = lodgings.map { $0.toPlace() }
+            self.lodgingCards = lodgingCards.map { Card(place: $0) }
+        } catch {
+            self.error = error
+        }
     }
 } 

@@ -43,11 +43,15 @@ struct SearchHistoryView: View {
                         .padding(.vertical, 4)
                     }
                 } else {
-                    Text("No recent searches")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                    HStack {
+                        Text("No recent searches")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        Spacer()
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             // Recently Viewed
             VStack(alignment: .leading, spacing: 16) {
@@ -55,21 +59,26 @@ struct SearchHistoryView: View {
                     .font(themeManager.selectedTheme.boldTitleFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                 
-                if !viewModel.recentlyViewedAttractions.isEmpty {
-                    ForEach(viewModel.recentlyViewedAttractions) { attraction in
+                if !viewModel.recentlyViewedPlaces.isEmpty {
+                    ForEach(viewModel.recentlyViewedPlaces) { place in
                         NavigationLink {
-                            AttractionDetailView(attraction: attraction)
+                            PlaceDetailView(place: place)
                         } label: {
-                            SearchHistoryRow(attraction: attraction)
+                            SearchHistoryRow(place: place)
                         }
                     }
                 } else {
-                    Text("No recently viewed attractions")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                    HStack {
+                        Text("No recently viewed places")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        Spacer()
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
     }
 }

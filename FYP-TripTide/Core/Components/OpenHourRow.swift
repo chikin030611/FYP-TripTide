@@ -25,7 +25,7 @@ struct OpenHourRow: View {
     }
     
     private var isOpen: Bool {
-        // If the attraction is closed on the current day, return false
+        // If the place is closed on the current day, return false
         guard let openHour = todayOpenHour, !openHour.isRestDay else {
             return false
         }
@@ -72,9 +72,17 @@ struct OpenHourRow: View {
                 VStack(alignment: .leading) {
                     
                     // Display open or closed status
-                    Text(isOpen ? "Open Now" : "Closed Now")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundStyle(isOpen ? themeManager.selectedTheme.accentColor : themeManager.selectedTheme.warningColor)
+                    if let openHour = todayOpenHour {
+                        if openHour.isOpen24Hours || isOpen == true {
+                            Text("Open Now")
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundStyle(themeManager.selectedTheme.accentColor)
+                        } else {
+                            Text("Closed Now")
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundStyle(themeManager.selectedTheme.warningColor)
+                        }
+                    }
                     
                     HStack {
                         if let openHour = todayOpenHour {
@@ -88,6 +96,10 @@ struct OpenHourRow: View {
                             
                             if openHour.isRestDay {
                                 Text("Rest Day")
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                            } else if openHour.isOpen24Hours {
+                                Text("Open 24 Hours")
                                     .font(themeManager.selectedTheme.captionTextFont)
                                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                             } else {

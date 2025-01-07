@@ -12,19 +12,16 @@ struct Card: View {
     
     @StateObject var themeManager = ThemeManager()
     
-    var attractionId: String
-    @State private var attraction: Attraction
+    let place: Place
     
-    init(attractionId: String) {
-        self.attractionId = attractionId
-        let initialAttraction = getAttraction(by: attractionId) ?? Attraction.empty
-        _attraction = State(initialValue: initialAttraction)
+    init(place: Place) {
+        self.place = place
     }
     
     var body: some View {
-        NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
+        NavigationLink(destination: PlaceDetailView(place: place)) {
             ZStack {
-                AsyncImageView(imageUrl: attraction.images[0], width: 150, height: 130)
+                AsyncImageView(imageUrl: place.images[0], width: 150, height: 130)
                 
                 // Gradient overlay
                 LinearGradient(
@@ -33,7 +30,7 @@ struct Card: View {
                     endPoint: .bottom
                 )
                 
-                Text(attraction.name)
+                Text(place.name)
                     .font(themeManager.selectedTheme.boldBodyTextFont)
                     .foregroundColor(.white)
                     .lineLimit(2)

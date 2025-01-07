@@ -1,5 +1,5 @@
 //
-//  Attraction.swift
+//  Place.swift
 //  FYP-TripTide
 //
 //  Created by Chi Kin Tang on 4/11/2024.
@@ -12,68 +12,76 @@ import Inject
 
 // TODO: Add favorite functionality
 
-struct AttractionDetailView: View {
+struct PlaceDetailView: View {
     @StateObject var themeManager = ThemeManager()
-    @StateObject private var viewModel: AttractionDetailViewModel
+    @StateObject private var viewModel: PlaceDetailViewModel
     @State private var showMap = false
     @State private var showAddressOptions = false
     @State private var showToast = false
     
-    init(attraction: Attraction) {
-        _viewModel = StateObject(wrappedValue: AttractionDetailViewModel(attractionId: attraction.id))
+    init(place: Place) {
+        _viewModel = StateObject(wrappedValue: PlaceDetailViewModel(placeId: place.id))
     }
     
     var body: some View {
-        ScrollView {
-            VStack {
-                // Images
-                // TODO: Press to zoom in
-                ImageCarousel(images: viewModel.attraction.images)
-                
-                // Body
+        if viewModel.isLoading {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let error = viewModel.error {
+            Text("Error loading place: \(error.localizedDescription)")
+                .foregroundColor(.red)
+        } else {
+            ScrollView {
                 VStack {
-                    // Header
-                    headerSection
+                    // Images
+                    // TODO: Press to zoom in
+                    ImageCarousel(images: viewModel.place.images)
                     
-                    // Open Hour
-                    OpenHourRow(openHours: viewModel.attraction.openHours)
+                    // Body
+                    VStack {
+                        // Header
+                        headerSection
+                        
+                        // Open Hour
+                        OpenHourRow(openHours: viewModel.place.openHours)
+                            .padding(.bottom, 10)
+                        
+                        // Recommended Staying Time
+                        stayingTimeSection
+                        
+                        // Description
+                        descriptionSection
+                        
+                        // Location
+                        locationSection
+                    }
+                }
+                .padding()
+            }
+            .sheet(isPresented: $showAddressOptions) {
+                AddressActionSheet(address: viewModel.place.address) {
+                    showToast = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        showToast = false
+                    }
+                }
+            }
+            .overlay(alignment: .bottom) {
+                if showToast {
+                    Text("Address copied!")
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .fill(themeManager.selectedTheme.primaryColor.opacity(0.8))
+                        )
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                         .padding(.bottom, 10)
-                    
-                    // Recommended Staying Time
-                    stayingTimeSection
-                    
-                    // Description
-                    descriptionSection
-                    
-                    // Location
-                    locationSection
                 }
             }
-            .padding()
+            .animation(.easeInOut, value: showToast)
         }
-        .sheet(isPresented: $showAddressOptions) {
-            AddressActionSheet(address: viewModel.attraction.address) {
-                showToast = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    showToast = false
-                }
-            }
-        }
-        .overlay(alignment: .bottom) {
-            if showToast {
-                Text("Address copied!")
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(
-                        Capsule()
-                            .fill(themeManager.selectedTheme.primaryColor.opacity(0.8))
-                    )
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.bottom, 10)
-            }
-        }
-        .animation(.easeInOut, value: showToast)
     }
     
     // MARK: - View Components
@@ -81,12 +89,16 @@ struct AttractionDetailView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(viewModel.attraction.name)
+                Text(viewModel.place.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                Rating(rating: viewModel.attraction.rating)
+                Rating(rating: viewModel.place.rating)
                 
-                PriceAndTags(price: viewModel.attraction.price, tags: viewModel.attraction.tags)
+                if !viewModel.place.price.isEmpty || viewModel.place.price != "" {
+                    PriceAndTags(price: viewModel.place.price, tags: viewModel.place.tags)
+                } else {
+                    TagGroup(tags: viewModel.place.tags)
+                }
             }
             
             Spacer()
@@ -113,7 +125,7 @@ struct AttractionDetailView: View {
                     .font(themeManager.selectedTheme.boldBodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                 
-                Text(viewModel.attraction.stayingTime)
+                Text(viewModel.place.stayingTime)
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
             }
@@ -123,7 +135,7 @@ struct AttractionDetailView: View {
     }
     
     private var descriptionSection: some View {
-        Text(viewModel.attraction.description)
+        Text(viewModel.place.description)
             .font(themeManager.selectedTheme.bodyTextFont)
             .foregroundStyle(themeManager.selectedTheme.primaryColor)
             .padding(.bottom, 10)
@@ -139,13 +151,15 @@ struct AttractionDetailView: View {
             Button {
                 showAddressOptions.toggle()
             } label: {
-                Text(viewModel.attraction.address)
+                Text(viewModel.place.address)
                     .font(themeManager.selectedTheme.bodyTextFont)
                     .foregroundStyle(themeManager.selectedTheme.primaryColor)
                     .underline()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
             }
             .sheet(isPresented: $showAddressOptions) {
-                AddressActionSheet(address: viewModel.attraction.address, onCopy: {
+                AddressActionSheet(address: viewModel.place.address, onCopy: {
                     showToast = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                         showToast = false
@@ -157,9 +171,9 @@ struct AttractionDetailView: View {
                 showMap.toggle()
             } label: {
                 Map(position: $viewModel.cameraPosition, interactionModes: []) {
-                    Marker(viewModel.attraction.name, coordinate: CLLocationCoordinate2D(
-                        latitude: viewModel.attraction.latitude,
-                        longitude: viewModel.attraction.longitude))
+                    Marker(viewModel.place.name, coordinate: CLLocationCoordinate2D(
+                        latitude: viewModel.place.latitude,
+                        longitude: viewModel.place.longitude))
                 }
                 .frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -169,7 +183,7 @@ struct AttractionDetailView: View {
                 )
             }
             .sheet(isPresented: $showMap) {
-                AttractionMapView(attraction: viewModel.attraction)
+                PlaceMapView(place: viewModel.place)
             }
         }
     }

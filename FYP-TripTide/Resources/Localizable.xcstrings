@@ -14,7 +14,7 @@
     "•" : {
 
     },
-    "Accommodation" : {
+    "Lodging" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-HK" : {
@@ -157,7 +157,7 @@
     "No recent searches" : {
 
     },
-    "No recently viewed attractions" : {
+    "No recently viewed places" : {
 
     },
     "No results found" : {
@@ -231,7 +231,7 @@
     "Search" : {
 
     },
-    "Search attractions..." : {
+    "Search places..." : {
 
     },
     "Secondary Button" : {

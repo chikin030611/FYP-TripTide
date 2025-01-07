@@ -24,16 +24,20 @@ struct SearchTabView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(themeManager.selectedTheme.secondaryColor)
                         
-                        TextField("Search attractions...", text: $searchText)
+                        TextField("Search places...", text: $searchText)
                             .textFieldStyle(.plain)
                             .autocorrectionDisabled()
                             .focused($isFocused)
                             .onSubmit {
                                 if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
-                                    searchViewModel.filterAttractions(searchText: searchText)
-                                    searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                    Task {
+                                        await searchViewModel.filterPlaces(searchText: searchText)
+                                        searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                    }
                                 } else {
-                                    searchViewModel.filterAttractions(searchText: "")
+                                    Task {
+                                        await searchViewModel.filterPlaces(searchText: "")
+                                    }
                                 }
                             }
                             .onChange(of: isFocused) { oldValue, newValue in
@@ -49,7 +53,9 @@ struct SearchTabView: View {
                                 withAnimation {
                                     searchText = ""
                                     // Clear search results when text is cleared
-                                    searchViewModel.filterAttractions(searchText: "")
+                                    Task {
+                                        await searchViewModel.filterPlaces(searchText: "")
+                                    }
                                 }
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
@@ -72,7 +78,9 @@ struct SearchTabView: View {
                                 isSearchActive = false
                                 searchText = ""
                                 // Clear search results to show history view
-                                searchViewModel.filterAttractions(searchText: "")
+                                Task {
+                                    await searchViewModel.filterPlaces(searchText: "")
+                                }
                             }
                         } label: {
                             Text("Cancel")
@@ -93,8 +101,10 @@ struct SearchTabView: View {
                         SearchResultsView(viewModel: searchViewModel)
                             .environment(\.onSearch) { searchText in
                                 self.searchText = searchText
-                                searchViewModel.filterAttractions(searchText: searchText)
-                                searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                Task {
+                                    await searchViewModel.filterPlaces(searchText: searchText)
+                                    searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
+                                }
                             }
                             .transition(.opacity)
                     } else {
@@ -111,7 +121,7 @@ struct SearchTabView: View {
 
                                         Spacer()
 
-                                        // NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
+                                        // NavigationLink(destination: PlaceDetailView(place: place)) {
                                             Text("View All")
                                                 .font(themeManager.selectedTheme.bodyTextFont)
                                                 .foregroundColor(themeManager.selectedTheme.secondaryColor)
@@ -129,10 +139,10 @@ struct SearchTabView: View {
                                             cards: viewModel.restaurantCards)
                                     .padding(.vertical, 5)
                                 
-                                // Accommodation
-                                RegularBodySection(icon: viewModel.accommodationSection.icon,
-                                            title: viewModel.accommodationSection.title,
-                                            cards: viewModel.accommodationCards)
+                                // Lodging
+                                RegularBodySection(icon: viewModel.lodgingSection.icon,
+                                            title: viewModel.lodgingSection.title,
+                                            cards: viewModel.lodgingCards)
                                     .padding(.vertical, 5)
                             }
                             .padding()
@@ -142,6 +152,9 @@ struct SearchTabView: View {
                 }
                 .animation(.spring(duration: 0.3), value: isSearchActive)
             }
+        }
+        .task {
+            await viewModel.loadData()
         }
     }
 }
@@ -153,7 +166,7 @@ private struct RegularBodySection: View {
     let icon: String
     var title: String
     var cards: [Card]
-    // var attraction: Attraction
+    // var place: Place
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -166,7 +179,7 @@ private struct RegularBodySection: View {
 
                 Spacer()
 
-                // NavigationLink(destination: AttractionDetailView(attraction: attraction)) {
+                // NavigationLink(destination: PlaceDetailView(place: place)) {
                     Text("View All")
                         .font(themeManager.selectedTheme.bodyTextFont)
                         .foregroundColor(themeManager.selectedTheme.secondaryColor)

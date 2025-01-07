@@ -17,12 +17,12 @@ struct CardGroup: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .top) {
-                ForEach(cards, id: \.attractionId) { card in
+                ForEach(cards, id: \.place.id) { card in
                     switch style {
                     case .regular:
-                        Card(attractionId: card.attractionId)
+                        Card(place: card.place)
                     case .large:
-                        LargeCard(attractionId: card.attractionId)
+                        LargeCard(place: card.place)
                     }
                 }
             }
