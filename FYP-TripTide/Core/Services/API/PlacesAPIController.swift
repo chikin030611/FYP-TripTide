@@ -13,12 +13,22 @@ class PlacesAPIController {
     }
     
     func fetchPlaceDetail(id: String) async throws -> PlaceDetailResponse {
+        // Check cache first
+        if let cached = await PlaceCache.shared.get(id) {
+            return cached
+        }
+        
         guard let url = URL(string: "\(APIConfig.baseURL)/places/\(id)/details") else {
             throw APIError.invalidURL
         }
         
         let (data, _) = try await URLSession.shared.data(from: url)
-        return try JSONDecoder().decode(PlaceDetailResponse.self, from: data)
+        let response = try JSONDecoder().decode(PlaceDetailResponse.self, from: data)
+        
+        // Store in cache
+        await PlaceCache.shared.set(response, for: id)
+        
+        return response
     }
     
     func appendAPIKey(to photoUrl: String) -> String {
