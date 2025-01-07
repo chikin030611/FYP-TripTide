@@ -140,10 +140,10 @@ struct SearchTabView: View {
                                     .padding(.vertical, 5)
                                 
                                 // Lodging
-                                // RegularBodySection(icon: viewModel.lodgingSection.icon,
-                                //             title: viewModel.lodgingSection.title,
-                                //             cards: viewModel.lodgingCards)
-                                //     .padding(.vertical, 5)
+                                RegularBodySection(icon: viewModel.lodgingSection.icon,
+                                            title: viewModel.lodgingSection.title,
+                                            cards: viewModel.lodgingCards)
+                                    .padding(.vertical, 5)
                             }
                             .padding()
                         }

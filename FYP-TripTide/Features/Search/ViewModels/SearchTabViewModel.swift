@@ -45,9 +45,9 @@ class SearchTabViewModel: ObservableObject {
             let restaurantCards = restaurants.map { $0.toPlace() }
             self.restaurantCards = restaurantCards.map { Card(place: $0) }
             
-            // let lodgings = try await PlacesAPIController.shared.fetchPlaces(type: "lodging", limit: 5)
-            // let lodgingCards = lodgings.map { Card(lodging: $0) }
-            // self.lodgingCards = lodgingCards
+            let lodgings = try await PlacesAPIController.shared.fetchPlaces(type: "lodging", limit: 5)
+            let lodgingCards = lodgings.map { $0.toPlace() }
+            self.lodgingCards = lodgingCards.map { Card(place: $0) }
         } catch {
             self.error = error
         }
