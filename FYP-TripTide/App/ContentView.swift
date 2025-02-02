@@ -14,11 +14,11 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            UITestView()
-                .tabItem {
-                    Image(systemName: "paintbrush")
-                    Text("Styles")
-                }
+            // UITestView()
+            //     .tabItem {
+            //         Image(systemName: "paintbrush")
+            //         Text("Styles")
+            //     }
             
             // ExploreTabView()
             //     .tabItem {
@@ -32,11 +32,11 @@ struct ContentView: View {
                     Text("Search")
                 }
 
-            PlanTabView()
-                .tabItem {
-                    Image(systemName: "calendar")
-                    Text("Plan")
-                }
+            // PlanTabView()
+            //     .tabItem {
+            //         Image(systemName: "calendar")
+            //         Text("Plan")
+            //     }
 
             TipsTabView()
                 .tabItem {
