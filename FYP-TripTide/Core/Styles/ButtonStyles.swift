@@ -96,9 +96,9 @@ struct RemoveButtonStyle: ButtonStyle {
 }
 
 // MARK: - Tag Button Style
-struct TagButtonStyle: ButtonStyle {
+struct RectangularButtonStyle: ButtonStyle {
     @StateObject var themeManager: ThemeManager = ThemeManager()
-
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(themeManager.selectedTheme.bodyTextFont)
@@ -107,10 +107,55 @@ struct TagButtonStyle: ButtonStyle {
             .padding(.horizontal, 5)
             .background(Color("mnAccentColor"))
             .cornerRadius(25)
+            .overlay(
+                RoundedRectangle(cornerRadius: 25)
+                    .stroke(Color("mnAccentColor"), lineWidth: 0)
+            )
             .opacity(configuration.isPressed ? 0.5 : 1.0)
     }
 }
 
+// MARK: - Tag Button Style
+struct TagButtonStyle: ButtonStyle {
+    @StateObject var themeManager: ThemeManager = ThemeManager()
+    let isSelected: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(themeManager.selectedTheme.bodyTextFont)
+            .foregroundColor(isSelected ? Color("mnBtnTextColor") : Color("mnAccentColor"))
+            .padding(7)
+            .padding(.horizontal, 5)
+            .background(isSelected ? Color("mnAccentColor") : Color.clear)
+            .cornerRadius(25)
+            .overlay(
+                RoundedRectangle(cornerRadius: 25)
+                    .stroke(Color("mnAccentColor"), lineWidth: isSelected ? 0 : 1)
+            )
+            .opacity(configuration.isPressed ? 0.5 : 1.0)
+    }
+}
+
+// MARK: - Secondary Tag Button Style
+struct SecondaryTagButtonStyle: ButtonStyle {
+    @StateObject var themeManager: ThemeManager = ThemeManager()
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.label
+        }
+        .font(themeManager.selectedTheme.bodyTextFont)
+        .foregroundColor(Color("mnAccentColor"))
+        .padding(7)
+        .padding(.horizontal, 5)
+        .cornerRadius(25)
+        .overlay(
+            RoundedRectangle(cornerRadius: 25)
+                .stroke(Color("mnAccentColor"), lineWidth: 1)
+        )
+        .opacity(configuration.isPressed ? 0.4 : 1.0)
+    }
+}
 // MARK: - Remove Tag Button Style
 struct RemoveTagButtonStyle: ButtonStyle {
     @StateObject var themeManager: ThemeManager = ThemeManager()

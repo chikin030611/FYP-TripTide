@@ -7,7 +7,10 @@ struct SearchTabView: View {
     @StateObject private var searchViewModel: SearchResultsViewModel
     @State private var searchText = ""
     @State private var isSearchActive = false
+    @State private var isFilterSheetPresented = false
     @FocusState private var isFocused: Bool 
+    @StateObject private var filterViewModel = FilterViewModel()
+    @State private var showingFilterSheet = false
     
     init() {
         // Initialize searchViewModel with shared searchHistoryViewModel
@@ -80,6 +83,7 @@ struct SearchTabView: View {
                                 // Clear search results to show history view
                                 Task {
                                     await searchViewModel.filterPlaces(searchText: "")
+                                    filterViewModel.selectedTags = []
                                 }
                             }
                         } label: {
@@ -95,6 +99,36 @@ struct SearchTabView: View {
                 .padding(.horizontal)
                 .animation(.spring(duration: 0.3), value: isFocused)
                 .animation(.spring(duration: 0.3), value: searchText)
+
+                if isSearchActive {
+                    HStack {
+                        Button {
+                            showingFilterSheet = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "slider.horizontal.3")
+                                Text("Filter")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                            }
+                        }
+                        .buttonStyle(RectangularButtonStyle())
+
+                        if filterViewModel.selectedTags.count > 0 {
+                            Button {
+                                showingFilterSheet = true
+                            } label: {
+                                Text("\(filterViewModel.selectedTags.count) filters is selected")
+                            }
+                            .buttonStyle(SecondaryTagButtonStyle())
+                        }
+
+                        Spacer()
+                    }
+                    .sheet(isPresented: $showingFilterSheet) {
+                        FilterSheet(viewModel: filterViewModel)
+                    }
+                    .padding(.horizontal)
+                }
 
                 ZStack {
                     if isSearchActive {

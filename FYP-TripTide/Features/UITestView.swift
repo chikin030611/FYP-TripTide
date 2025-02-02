@@ -8,45 +8,40 @@
 import SwiftUI
 
 struct UITestView: View {
-    @State private var openHours: [OpenHour] = []
+    @StateObject private var filterViewModel = FilterViewModel()
     @StateObject private var themeManager = ThemeManager()
+    @State private var isFilterSheetPresented = false
+    let filterOptions = ["Amusement Park", "Beach"]
+    @State private var filterOptionsCount = 5
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                // Test OpenHourRow
-                VStack(alignment: .leading) {
-                    Text("OpenHourRow Test")
-                        .font(themeManager.selectedTheme.largeTitleFont)
-                    
-                    OpenHourRow(openHours: openHours)
-                        .padding()
-                        .background(themeManager.selectedTheme.backgroundColor)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+        HStack {
+            Button {
+                isFilterSheetPresented = true
+            } label: {
+                HStack {
+                    Image(systemName: "slider.horizontal.3")
+                    Text("Filter")
+                        .font(themeManager.selectedTheme.bodyTextFont)
                 }
-                .padding(.horizontal)
-                
             }
-            .navigationTitle("Opening Hours Test")
-            .onAppear {
-                loadTestData()
+            .buttonStyle(RectangularButtonStyle())
+
+            if filterOptionsCount > 0 {
+                Button {
+                    isFilterSheetPresented = true
+                } label: {
+                    Text("\(filterOptionsCount) filters is selected")
+                }
+                .buttonStyle(SecondaryTagButtonStyle())
             }
+
+            Spacer()
         }
-    }
-    
-    private func loadTestData() {
-        // Load and parse test JSON file
-        guard let url = Bundle.main.url(forResource: "test_hong_kong_places", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]],
-              let place = json.first,
-              let openingHours = place["openingHours"] as? [String: Any] else {
-            print("Failed to load test data")
-            return
+        .sheet(isPresented: $isFilterSheetPresented) {
+            FilterSheet(viewModel: filterViewModel)
         }
-        
-        // Parse opening hours
-        openHours = OpenHour.createFromGooglePlaces(openingHours: openingHours)
+        .padding(.horizontal)
     }
 }
 
