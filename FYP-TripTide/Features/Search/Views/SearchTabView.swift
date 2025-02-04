@@ -189,6 +189,7 @@ struct SearchTabView: View {
         }
         .task {
             await viewModel.loadData()
+            await filterViewModel.loadTags()
         }
     }
 }

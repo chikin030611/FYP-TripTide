@@ -61,6 +61,18 @@ class PlacesAPIController {
         
         return try JSONDecoder().decode([PlaceBasicData].self, from: data)
     }
+    
+    func fetchTags(type: String) async throws -> [Tag] {
+        guard let url = URL(string: "\(APIConfig.baseURL)/places/tags?type=\(type)") else {
+            throw APIError.invalidURL
+        }
+        
+        print("Fetching tags for type: \(type) from URL: \(url)")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let tags = try JSONDecoder().decode([Tag].self, from: data)
+        print("Received tags for \(type): \(tags)")
+        return tags
+    }
 }
 
 struct PlaceBasicData: Codable {

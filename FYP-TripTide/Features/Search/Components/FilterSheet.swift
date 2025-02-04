@@ -60,7 +60,7 @@ struct FilterSheet: View {
                                 Button {
                                     viewModel.toggleTag(option)
                                 } label: {
-                                    Text(option.name)
+                                    Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
                                 .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
@@ -77,7 +77,7 @@ struct FilterSheet: View {
                                 Button {
                                     viewModel.toggleTag(option)
                                 } label: {
-                                    Text(option.name)
+                                    Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
                                 .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
@@ -94,7 +94,7 @@ struct FilterSheet: View {
                                 Button {
                                     viewModel.toggleTag(option)
                                 } label: {
-                                    Text(option.name)
+                                    Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
                                 .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
