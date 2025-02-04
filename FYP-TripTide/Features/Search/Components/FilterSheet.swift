@@ -15,25 +15,34 @@ struct FilterSheet: View {
                     .padding(.vertical, 15)
                     .padding(.top, 10)
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    if !viewModel.selectedTags.isEmpty {
-                        HStack(spacing: 8) {
-                            ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
-                                Button {
-                                    viewModel.toggleTag(tag)
-                                } label: {
-                                    Text(tag.name)
-                                        .font(themeManager.selectedTheme.bodyTextFont)
+                Divider()
+                    .padding(.bottom, 10)
+
+                VStack(alignment: .leading) {
+                    Text("Selected Filters")
+                        .font(themeManager.selectedTheme.bodyTextFont)
+                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        if !viewModel.selectedTags.isEmpty {
+                            HStack(spacing: 8) {
+                                ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
+                                    Button {
+                                        viewModel.toggleTag(tag)
+                                    } label: {
+                                        Text(tag.name.formatTagName())
+                                            .font(themeManager.selectedTheme.bodyTextFont)
+                                    }
+                                    .buttonStyle(RemoveTagButtonStyle())
                                 }
-                                .buttonStyle(RemoveTagButtonStyle())
                             }
+                        } else {
+                            Color.clear
+                                .frame(height: 33)
                         }
-                        .padding(.horizontal)
-                    } else {
-                        Color.clear
-                            .frame(height: 33)
                     }
                 }
+                .padding(.horizontal)
                 .padding(.bottom, 10)
                 
                 // Custom Tab Bar
@@ -104,6 +113,7 @@ struct FilterSheet: View {
                     }
                     .tag(2)
                 }
+                .animation(.easeInOut(duration: 0.3), value: selectedTab)
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 400)
 
