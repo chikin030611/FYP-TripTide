@@ -148,6 +148,7 @@ struct SearchTabView: View {
                         SearchResultsView(viewModel: searchViewModel)
                             .environment(\.onSearch) { searchText in
                                 self.searchText = searchText
+                                filterViewModel.selectedTags = []  // Clear filters when history search is clicked
                                 Task {
                                     await searchViewModel.filterPlaces(searchText: searchText, tags: [])
                                     searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
