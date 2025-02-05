@@ -8,12 +8,12 @@ struct FilterSheet: View {
     @State var filterOptions: [String] = []
     
     var body: some View {
+        NavigationView {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Filter")
                     .font(themeManager.selectedTheme.largeTitleFont)
                     .padding(.horizontal)
-                    .padding(.vertical, 15)
-                    .padding(.top, 10)
+                    .padding(.bottom, 15)
 
                 Divider()
                     .padding(.bottom, 10)
@@ -162,7 +162,16 @@ struct FilterSheet: View {
 
                 Spacer()
             }
-        
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.gray)
+                    }
+                }
+            }
+        }
     }
 }
 
