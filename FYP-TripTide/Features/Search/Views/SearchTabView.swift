@@ -34,7 +34,7 @@ struct SearchTabView: View {
                             .onSubmit {
                                 if !searchText.trimmingCharacters(in: .whitespaces).isEmpty {
                                     Task {
-                                        await searchViewModel.filterPlaces(searchText: searchText)
+                                        await searchViewModel.filterPlaces(searchText: searchText, tags: Array(filterViewModel.selectedTags).map { $0.name })
                                         searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
                                     }
                                 } else {
@@ -136,7 +136,7 @@ struct SearchTabView: View {
                             .environment(\.onSearch) { searchText in
                                 self.searchText = searchText
                                 Task {
-                                    await searchViewModel.filterPlaces(searchText: searchText)
+                                    await searchViewModel.filterPlaces(searchText: searchText, tags: [])
                                     searchViewModel.searchHistoryViewModel.addRecentSearch(searchText)
                                 }
                             }
@@ -190,6 +190,19 @@ struct SearchTabView: View {
         .task {
             await viewModel.loadData()
             await filterViewModel.loadTags()
+            
+            // Set up filter handling
+            filterViewModel.onApplyFilter = { tags in
+                Task {
+                    if searchText.isEmpty {
+                        // Search with only tags
+                        await searchViewModel.filterPlaces(searchText: "", tags: tags)
+                    } else {
+                        // Search with both text and tags
+                        await searchViewModel.filterPlaces(searchText: searchText, tags: tags)
+                    }
+                }
+            }
         }
     }
 }

@@ -122,6 +122,7 @@ struct FilterSheet: View {
 
                 VStack(alignment: .center) {
                     Button {
+                        viewModel.applyFilters()
                         dismiss()
                     } label: {
                         Text("Apply")

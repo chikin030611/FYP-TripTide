@@ -6,6 +6,8 @@ class FilterViewModel: ObservableObject {
     @Published var restaurantOptions: [Tag] = []
     @Published var lodgingOptions: [Tag] = []
     
+    var onApplyFilter: (([String]) -> Void)?
+    
     func loadTags() async {
         do {
             async let attractions = PlacesAPIController.shared.fetchTags(type: "tourist_attraction")
@@ -31,5 +33,10 @@ class FilterViewModel: ObservableObject {
         } else {
             selectedTags.insert(tag)
         }
+    }
+    
+    func applyFilters() {
+        let selectedTagNames = Array(selectedTags).map { $0.name }
+        onApplyFilter?(selectedTagNames)
     }
 } 

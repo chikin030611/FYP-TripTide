@@ -40,17 +40,24 @@ class PlacesAPIController {
         }
     }
     
-    func searchPlaces(name: String, page: Int) async throws -> [PlaceBasicData] {
+    func searchPlaces(name: String, tags: [String], page: Int) async throws -> [PlaceBasicData] {
         let baseURL = "\(APIConfig.baseURL)/places/search"
-        let queryItems = [
-            URLQueryItem(name: "name", value: name),
+        var queryItems = [
             URLQueryItem(name: "page", value: String(page))
         ]
+        
+        queryItems.append(URLQueryItem(name: "name", value: name.isEmpty ? " " : name))
+        
+        if !tags.isEmpty {
+            queryItems.append(URLQueryItem(name: "tags", value: tags.joined(separator: ",")))
+        }
         
         var urlComps = URLComponents(string: baseURL)!
         urlComps.queryItems = queryItems
         
         let request = URLRequest(url: urlComps.url!)
+
+        print("Fetching places with URL: \(urlComps.url!)")
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
