@@ -21,6 +21,19 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
+struct SmallerPrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(width: 140)
+            .foregroundColor(Color("mnBtnTextColor"))
+            .padding(7)
+            .padding(.horizontal, 5)
+            .background(Color("mnAccentColor"))
+            .cornerRadius(25)
+            .opacity(configuration.isPressed ? 0.5  : 1.0)
+    }
+}
+
 // MARK: - Secondary Button Style
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

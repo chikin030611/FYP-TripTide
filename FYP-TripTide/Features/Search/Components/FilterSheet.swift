@@ -19,9 +19,21 @@ struct FilterSheet: View {
                     .padding(.bottom, 10)
 
                 VStack(alignment: .leading) {
-                    Text("Selected Filters")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                    HStack {
+                        Text("Selected Filters")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+
+                        Spacer()
+
+                        Button {
+                            viewModel.selectedTags = []
+                        } label: {
+                            Text("Clear")
+                        }
+                        .buttonStyle(SecondaryTagButtonStyle())
+                        
+                    }
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         if !viewModel.selectedTags.isEmpty {
@@ -121,14 +133,29 @@ struct FilterSheet: View {
                     .padding(.vertical, 10)
 
                 VStack(alignment: .center) {
-                    Button {
-                        viewModel.applyFilters()
-                        dismiss()
-                    } label: {
-                        Text("Apply")
-                            .font(themeManager.selectedTheme.bodyTextFont)
+                    HStack {
+
+                        Spacer()
+
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text("Apply")
+                        }
+                        .buttonStyle(SmallerPrimaryButtonStyle())
+
+                        Spacer()
+
+                        Button {
+                            viewModel.applyAndSearchFilters()
+                            dismiss()
+                        } label: {
+                            Text("Apply and Search")
+                        }
+                        .buttonStyle(SmallerPrimaryButtonStyle())
+
+                        Spacer()
                     }
-                    .buttonStyle(PrimaryButtonStyle())
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal)

@@ -120,9 +120,22 @@ struct SearchTabView: View {
                                 Text("\(filterViewModel.selectedTags.count) filters is selected")
                             }
                             .buttonStyle(SecondaryTagButtonStyle())
-                        }
 
-                        Spacer()
+                            Spacer()
+
+                            Button {
+                                filterViewModel.selectedTags = []
+                                searchText = ""  // Clear search text
+                                Task {
+                                    await searchViewModel.filterPlaces(searchText: "")  // This will show history view
+                                }
+                            } label: {
+                                Text("Clear")
+                            }
+                            .buttonStyle(SecondaryTagButtonStyle())
+                        } else {
+                            Spacer()
+                        }
                     }
                     .sheet(isPresented: $showingFilterSheet) {
                         FilterSheet(viewModel: filterViewModel)
@@ -192,7 +205,7 @@ struct SearchTabView: View {
             await filterViewModel.loadTags()
             
             // Set up filter handling
-            filterViewModel.onApplyFilter = { tags in
+            filterViewModel.onApplyAndSearchFilter = { tags in
                 Task {
                     if searchText.isEmpty {
                         // Search with only tags

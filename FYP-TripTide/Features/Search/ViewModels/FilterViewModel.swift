@@ -6,7 +6,7 @@ class FilterViewModel: ObservableObject {
     @Published var restaurantOptions: [Tag] = []
     @Published var lodgingOptions: [Tag] = []
     
-    var onApplyFilter: (([String]) -> Void)?
+    var onApplyAndSearchFilter: (([String]) -> Void)?
     
     func loadTags() async {
         do {
@@ -35,8 +35,8 @@ class FilterViewModel: ObservableObject {
         }
     }
     
-    func applyFilters() {
+    func applyAndSearchFilters() {
         let selectedTagNames = Array(selectedTags).map { $0.name }
-        onApplyFilter?(selectedTagNames)
+        onApplyAndSearchFilter?(selectedTagNames)
     }
 } 
