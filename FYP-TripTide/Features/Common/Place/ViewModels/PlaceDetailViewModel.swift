@@ -40,7 +40,9 @@ class PlaceDetailViewModel: ObservableObject {
                 id: detail.id,
                 images: detail.photos.map { PlacesAPIController.shared.appendAPIKey(to: $0) },
                 name: detail.name,
+                type: detail.type,
                 rating: Float(detail.rating),
+                ratingCount: Int(detail.ratingCount) ?? 0,
                 price: "", // Add if available in API
                 tags: detail.tags.compactMap { name in
                     guard !name.isEmpty else { return nil }

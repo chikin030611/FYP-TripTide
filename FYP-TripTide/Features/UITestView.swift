@@ -17,7 +17,9 @@ struct UITestView: View {
         id: "1",
         images: ["https://picsum.photos/200/300"],
         name: "Amusement Park",
+        type: "Tourist Attraction",
         rating: 4.5,
+        ratingCount: 100,
         price: "$",
         tags: [Tag(name: "Amusement Park"), Tag(name: "Beach")],
         openHours: [OpenHour(from: ["open": ["day": 1, "hour": 9, "minute": 0], "close": ["day": 1, "hour": 17, "minute": 0]])],
@@ -29,7 +31,9 @@ struct UITestView: View {
     )
     
     var body: some View {
-        SearchResultRow(place: place)
+        // SearchResultRow(place: place)
+        
+        LargeCard(place: place)
     }
 }
 

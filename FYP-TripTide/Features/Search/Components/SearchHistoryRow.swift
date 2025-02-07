@@ -13,7 +13,7 @@ struct SearchHistoryRow: View {
                     .font(themeManager.selectedTheme.boldBodyTextFont)
                     .foregroundColor(themeManager.selectedTheme.primaryColor)
 
-                Rating(rating: place.rating)
+                Rating(rating: place.rating, ratingCount: place.ratingCount)
                 
                 TagGroup(tags: place.tags)
             }

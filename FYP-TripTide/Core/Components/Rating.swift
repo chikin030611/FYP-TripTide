@@ -2,17 +2,22 @@ import SwiftUI
 
 struct Rating: View {
     let rating: Float
+    let ratingCount: Int
     @StateObject var themeManager: ThemeManager = ThemeManager()
     
     var body: some View {
         HStack(spacing: 3) {
+            Text(String(format: "%.1f", rating))
+                .font(themeManager.selectedTheme.captionTextFont)
+                .foregroundStyle(themeManager.selectedTheme.primaryColor)
+
             ForEach(0..<5) { index in
                 starImage(for: Float(index))
                     .font(themeManager.selectedTheme.captionTextFont)
                     .foregroundStyle(themeManager.selectedTheme.accentColor)
             }
 
-            Text(String(format: "(%.1f)", rating))
+            Text("(\(ratingCount))")
                 .font(themeManager.selectedTheme.captionTextFont)
                 .foregroundStyle(themeManager.selectedTheme.primaryColor)
         }

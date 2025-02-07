@@ -13,7 +13,7 @@ struct SearchResultRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 // Type
                 ZStack {
-                    Text("Restaurant")
+                    Text(place.type.formatTagName())
                         .font(themeManager.selectedTheme.captionTextFont)
                         .foregroundColor(themeManager.selectedTheme.bgTextColor)
                 }
@@ -32,7 +32,7 @@ struct SearchResultRow: View {
                     .multilineTextAlignment(.leading)
                 
                 // Rating
-                Rating(rating: place.rating)
+                Rating(rating: place.rating, ratingCount: place.ratingCount)
                 
                 // Tags
                 TagGroup(tags: place.tags)

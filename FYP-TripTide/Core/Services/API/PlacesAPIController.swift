@@ -82,14 +82,6 @@ class PlacesAPIController {
     }
 }
 
-struct PlaceBasicData: Codable {
-    let placeId: String
-    let name: String
-    let tags: [String]
-    let photoUrl: String
-    let rating: Double
-}
-
 enum APIError: Error {
     case invalidURL
     case decodingError
