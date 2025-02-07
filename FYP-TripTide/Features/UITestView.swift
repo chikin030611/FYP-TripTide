@@ -13,35 +13,23 @@ struct UITestView: View {
     @State private var isFilterSheetPresented = false
     let filterOptions = ["Amusement Park", "Beach"]
     @State private var filterOptionsCount = 5
+    let place = Place(
+        id: "1",
+        images: ["https://picsum.photos/200/300"],
+        name: "Amusement Park",
+        rating: 4.5,
+        price: "$",
+        tags: [Tag(name: "Amusement Park"), Tag(name: "Beach")],
+        openHours: [OpenHour(from: ["open": ["day": 1, "hour": 9, "minute": 0], "close": ["day": 1, "hour": 17, "minute": 0]])],
+        stayingTime: "2 hours",
+        description: "A fun amusement park with rides and games",
+        address: "123 Main St, Anytown, USA",
+        latitude: 37.7749,
+        longitude: 122.4194
+    )
     
     var body: some View {
-        HStack {
-            Button {
-                isFilterSheetPresented = true
-            } label: {
-                HStack {
-                    Image(systemName: "slider.horizontal.3")
-                    Text("Filter")
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                }
-            }
-            .buttonStyle(RectangularButtonStyle())
-
-            if filterOptionsCount > 0 {
-                Button {
-                    isFilterSheetPresented = true
-                } label: {
-                    Text("\(filterOptionsCount) filters is selected")
-                }
-                .buttonStyle(SecondaryTagButtonStyle())
-            }
-
-            Spacer()
-        }
-        .sheet(isPresented: $isFilterSheetPresented) {
-            FilterSheet(viewModel: filterViewModel)
-        }
-        .padding(.horizontal)
+        SearchResultRow(place: place)
     }
 }
 
