@@ -9,8 +9,8 @@ struct TagLayout: View {
     @StateObject var themeManager: ThemeManager = ThemeManager()
     
     let tags: [Tag]
-    let onTagSelected: (Tag) -> Void
     let variant: TagButtonVariant
+    let onTagSelected: (Tag) -> Void
     
     var body: some View {
         switch variant {
@@ -20,7 +20,7 @@ struct TagLayout: View {
                     Button(tag.name) {
                         onTagSelected(tag)
                     }
-                    .buttonStyle(TagButtonStyle())
+                    .buttonStyle(RectangularButtonStyle())
                 }
             }
         case .removeTag:

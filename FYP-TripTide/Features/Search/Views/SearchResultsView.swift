@@ -10,7 +10,7 @@ struct SearchResultsView: View {
     
     var body: some View {
         ScrollView {
-            if viewModel.searchResults.isEmpty && viewModel.currentSearchText.isEmpty {
+            if viewModel.places.isEmpty && viewModel.currentSearchText.isEmpty {
                 SearchHistoryView(viewModel: viewModel.searchHistoryViewModel)
                     .transition(.opacity)
             } else {
@@ -23,7 +23,7 @@ struct SearchResultsView: View {
                             .foregroundColor(.red)
                             .padding(.top, 32)
                     } else {
-                        ForEach(viewModel.searchResults) { place in
+                        ForEach(viewModel.places) { place in
                             NavigationLink {
                                 PlaceDetailView(place: place)
                                     .onAppear {
@@ -36,18 +36,18 @@ struct SearchResultsView: View {
                             .padding(.vertical, 5)
                         }
                         
-                        if viewModel.searchResults.isEmpty {
+                        if viewModel.places.isEmpty {
                             Text("No results found")
                                 .foregroundColor(themeManager.selectedTheme.secondaryColor)
                                 .padding(.top, 32)
                         }
                         
-                        if viewModel.isLoading && !viewModel.searchResults.isEmpty {
+                        if viewModel.isLoading && !viewModel.places.isEmpty {
                             ProgressView()
                                 .padding()
                         }
                         
-                        if !viewModel.searchResults.isEmpty && !viewModel.isLoading {
+                        if !viewModel.places.isEmpty && !viewModel.isLoading {
                             GeometryReader { geometry in
                                 Color.clear.preference(key: ScrollViewPositionKey.self,
                                     value: geometry.frame(in: .global).maxY)

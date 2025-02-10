@@ -1,9 +1,21 @@
+struct PlaceBasicData: Codable {
+    let placeId: String
+    let name: String
+    let type: String
+    let tags: [String]
+    let photoUrl: String
+    let rating: Double
+    let ratingCount: String
+}
+
 struct PlaceDetailResponse: Codable {
     let id: String
     let name: String
+    let type: String
     let tags: [String]
     let address: String
     let rating: Double
+    let ratingCount: String
     let openingHours: OpeningHours?
     let description: String?
     let photos: [String]

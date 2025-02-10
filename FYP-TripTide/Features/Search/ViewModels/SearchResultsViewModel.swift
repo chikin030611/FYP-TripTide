@@ -2,12 +2,13 @@ import Foundation
 
 @MainActor
 class SearchResultsViewModel: ObservableObject {
-    @Published var searchResults: [Place] = []
+    @Published var places: [Place] = []
     @Published var currentSearchText: String = ""
     @Published var isLoading = false
     @Published var error: Error?
     @Published var hasMoreResults = true
     @Published var currentPage = 0
+    @Published var currentTags: [String] = []
 
     let searchHistoryViewModel: SearchHistoryViewModel
     
@@ -19,36 +20,52 @@ class SearchResultsViewModel: ObservableObject {
         searchHistoryViewModel.addRecentlyViewed(place)
     }
     
-    func filterPlaces(searchText: String) async {
+    @MainActor
+    func filterPlaces(searchText: String, tags: [String] = []) async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        // Reset pagination and store current search params
         currentSearchText = searchText
-        currentPage = 0 // Reset page when new search starts
+        currentTags = tags
+        currentPage = 0
         
-        if searchText.isEmpty {
-            searchResults = []  // Return to empty state to show history
-            hasMoreResults = true
-            return
+        do {
+            let results = try await PlacesAPIController.shared.searchPlaces(
+                name: searchText,
+                tags: tags,
+                page: currentPage
+            )
+            self.places = results.map { $0.toPlace() }
+            
+            // Update pagination state
+            hasMoreResults = !results.isEmpty
+            if hasMoreResults {
+                currentPage += 1
+            }
+        } catch {
+            print("Error fetching places: \(error)")
+            self.places = []
         }
-        
-        await loadNextPage(searchText: searchText)
     }
     
     func loadNextPage() async {
         guard !isLoading && hasMoreResults else { return }
-        await loadNextPage(searchText: currentSearchText)
+        await loadNextPage(searchText: currentSearchText, tags: currentTags)
     }
     
-    private func loadNextPage(searchText: String) async {
+    private func loadNextPage(searchText: String, tags: [String]) async {
         isLoading = true
         defer { isLoading = false }
         
         do {
-            let places = try await PlacesAPIController.shared.searchPlaces(name: searchText, page: currentPage)
+            let places = try await PlacesAPIController.shared.searchPlaces(name: searchText, tags: tags, page: currentPage)
             
             // If we're on page 0, replace results. Otherwise, append.
             if currentPage == 0 {
-                searchResults = places.map { $0.toPlace() }
+                self.places = places.map { $0.toPlace() }
             } else {
-                searchResults.append(contentsOf: places.map { $0.toPlace() })
+                self.places.append(contentsOf: places.map { $0.toPlace() })
             }
             
             // Update pagination state
@@ -59,7 +76,7 @@ class SearchResultsViewModel: ObservableObject {
         } catch {
             self.error = error
             if currentPage == 0 {
-                searchResults = []
+                self.places = []
             }
         }
     }

@@ -14,11 +14,11 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            // UITestView()
-            //     .tabItem {
-            //         Image(systemName: "paintbrush")
-            //         Text("Styles")
-            //     }
+            UITestView()
+                .tabItem {
+                    Image(systemName: "paintbrush")
+                    Text("Styles")
+                }
             
             // ExploreTabView()
             //     .tabItem {

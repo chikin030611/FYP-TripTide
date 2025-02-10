@@ -92,7 +92,7 @@ struct PlaceDetailView: View {
                 Text(viewModel.place.name)
                     .font(themeManager.selectedTheme.largeTitleFont)
                 
-                Rating(rating: viewModel.place.rating)
+                Rating(rating: viewModel.place.rating, ratingCount: viewModel.place.ratingCount)
                 
                 if !viewModel.place.price.isEmpty || viewModel.place.price != "" {
                     PriceAndTags(price: viewModel.place.price, tags: viewModel.place.tags)
