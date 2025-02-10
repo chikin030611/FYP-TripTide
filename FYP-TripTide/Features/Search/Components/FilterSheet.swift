@@ -155,6 +155,8 @@ struct FilterSheet: View {
                                 Text("Apply and Search")
                             }
                             .buttonStyle(SmallerPrimaryButtonStyle())
+
+                            Spacer()
                         } else {
                             Button {
                                 dismiss()

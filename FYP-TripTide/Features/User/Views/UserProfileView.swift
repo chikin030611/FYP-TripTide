@@ -123,7 +123,7 @@ extension UserProfileView {
                 if !filterViewModel.selectedTags.isEmpty {
                     Button {
                     } label: {
-                        Text("\(filterViewModel.selectedTags.count) interests")
+                        Text("\(filterViewModel.selectedTags.count) Interests")
                     }
                     .buttonStyle(SecondaryTagButtonStyle())
                 }
