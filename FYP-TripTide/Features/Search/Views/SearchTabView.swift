@@ -138,7 +138,7 @@ struct SearchTabView: View {
                         }
                     }
                     .sheet(isPresented: $showingFilterSheet) {
-                        FilterSheet(viewModel: filterViewModel)
+                        FilterSheet(viewModel: filterViewModel, isForSearching: true)
                     }
                     .padding(.horizontal)
                 }

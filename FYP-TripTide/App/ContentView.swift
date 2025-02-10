@@ -26,11 +26,11 @@ struct ContentView: View {
             //         Text("Explore")
             //     }
 
-            SearchTabView()
-                .tabItem {
-                    Image(systemName: "magnifyingglass")
-                    Text("Search")
-                }
+            // SearchTabView()
+            //     .tabItem {
+            //         Image(systemName: "magnifyingglass")
+            //         Text("Search")
+            //     }
 
             // PlanTabView()
             //     .tabItem {

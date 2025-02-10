@@ -5,6 +5,7 @@ struct FilterSheet: View {
     @StateObject var themeManager: ThemeManager = ThemeManager()
     @Environment(\.dismiss) var dismiss
     @State private var selectedTab = 0
+    @State var isForSearching = false
     @State var filterOptions: [String] = []
     
     var body: some View {
@@ -128,33 +129,40 @@ struct FilterSheet: View {
                 .animation(.easeInOut(duration: 0.3), value: selectedTab)
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 400)
-
+        
                 Divider()
                     .padding(.vertical, 10)
 
                 VStack(alignment: .center) {
                     HStack {
+                        
+                        if isForSearching {
+                            Spacer()
 
-                        Spacer()
+                            Button {
+                                dismiss()
+                            } label: {
+                                Text("Apply")
+                            }
+                            .buttonStyle(SmallerPrimaryButtonStyle())
 
-                        Button {
-                            dismiss()
-                        } label: {
-                            Text("Apply")
+                            Spacer()
+
+                            Button {
+                                viewModel.applyAndSearchFilters()
+                                dismiss()
+                            } label: {
+                                Text("Apply and Search")
+                            }
+                            .buttonStyle(SmallerPrimaryButtonStyle())
+                        } else {
+                            Button {
+                                dismiss()
+                            } label: {
+                                Text("Apply")
+                            }
+                            .buttonStyle(PrimaryButtonStyle())
                         }
-                        .buttonStyle(SmallerPrimaryButtonStyle())
-
-                        Spacer()
-
-                        Button {
-                            viewModel.applyAndSearchFilters()
-                            dismiss()
-                        } label: {
-                            Text("Apply and Search")
-                        }
-                        .buttonStyle(SmallerPrimaryButtonStyle())
-
-                        Spacer()
                     }
                 }
                 .frame(maxWidth: .infinity)
