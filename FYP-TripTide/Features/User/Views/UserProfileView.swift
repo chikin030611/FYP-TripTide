@@ -16,30 +16,6 @@ struct UserProfileView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     interestRow()
-                    // HStack {
-                    //     Text("Interests")
-                    //         .font(themeManager.selectedTheme.titleFont)
-                    //         .foregroundColor(themeManager.selectedTheme.primaryColor)
-                        
-                    //     Spacer()
-                        
-                    //     Button {
-                    //         showingFilterSheet = true
-                    //     } label: {
-                    //         Text("Edit")
-                    //             .font(themeManager.selectedTheme.bodyTextFont)
-                    //             .foregroundColor(themeManager.selectedTheme.accentColor)
-                    //     }
-                    //     .buttonStyle(SecondaryTagButtonStyle())
-                    // }
-                    
-                    // if !filterViewModel.selectedTags.isEmpty {
-                    //     TagGroup(tags: Array(filterViewModel.selectedTags))
-                    // } else {
-                    //     Text("No interests selected")
-                    //         .font(themeManager.selectedTheme.bodyTextFont)
-                    //         .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                    // }
                 }
                 .padding(.horizontal)
                 

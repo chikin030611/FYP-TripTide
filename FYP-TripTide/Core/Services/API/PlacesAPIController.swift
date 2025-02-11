@@ -74,10 +74,8 @@ class PlacesAPIController {
             throw APIError.invalidURL
         }
         
-        print("Fetching tags for type: \(type) from URL: \(url)")
         let (data, _) = try await URLSession.shared.data(from: url)
         let tags = try JSONDecoder().decode([Tag].self, from: data)
-        print("Received tags for \(type): \(tags)")
         return tags
     }
 }
