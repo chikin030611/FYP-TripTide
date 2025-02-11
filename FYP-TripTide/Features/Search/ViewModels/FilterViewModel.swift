@@ -28,8 +28,8 @@ class FilterViewModel: ObservableObject {
     }
     
     func toggleTag(_ tag: Tag) {
-        if selectedTags.contains(tag) {
-            selectedTags.remove(tag)
+        if let index = selectedTags.firstIndex(where: { $0.name == tag.name }) {
+            selectedTags.remove(at: index)
         } else {
             selectedTags.insert(tag)
         }

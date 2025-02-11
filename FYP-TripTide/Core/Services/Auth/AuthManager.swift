@@ -53,8 +53,15 @@ class AuthManager: ObservableObject {
     }
     
     func signOut() {
-        token = nil
-        refreshToken = nil
+        // Clear existing auth data
+        self.token = nil
+        self.refreshToken = nil
+        UserDefaults.standard.removeObject(forKey: "token")
+        UserDefaults.standard.removeObject(forKey: "refreshToken")
+        
+        // Clear all caches
+        PreferencesService.shared.clearCache()
+        PlacesAPIController.shared.clearCache()
     }
     
     func validateToken() async {

@@ -3,6 +3,11 @@ import Foundation
 class PlacesAPIController {
     static let shared = PlacesAPIController()
     
+    private let tagsCache = NSCache<NSString, NSArray>()
+    private let tagsCacheKey = "tags" as NSString
+    private let tagsCacheDuration: TimeInterval = 300 // 5 minutes
+    private var lastTagsFetchTime: [String: Date] = [:]
+    
     func fetchPlaces(type: String, limit: Int) async throws -> [PlaceBasicData] {
         guard let url = URL(string: "\(APIConfig.baseURL)/places?type=\(type)&limit=\(limit)") else {
             throw APIError.invalidURL
@@ -70,13 +75,31 @@ class PlacesAPIController {
     }
     
     func fetchTags(type: String) async throws -> [Tag] {
+        // Check cache first
+        let cacheKey = "\(type)_tags" as NSString
+        if let lastFetch = lastTagsFetchTime[type],
+           Date().timeIntervalSince(lastFetch) < tagsCacheDuration,
+           let cachedTags = tagsCache.object(forKey: cacheKey) as? [Tag] {
+            return cachedTags
+        }
+        
         guard let url = URL(string: "\(APIConfig.baseURL)/places/tags?type=\(type)") else {
             throw APIError.invalidURL
         }
         
         let (data, _) = try await URLSession.shared.data(from: url)
         let tags = try JSONDecoder().decode([Tag].self, from: data)
+        
+        // Update cache
+        tagsCache.setObject(tags as NSArray, forKey: cacheKey)
+        lastTagsFetchTime[type] = Date()
+        
         return tags
+    }
+    
+    func clearCache() {
+        tagsCache.removeAllObjects()
+        lastTagsFetchTime.removeAll()
     }
 }
 

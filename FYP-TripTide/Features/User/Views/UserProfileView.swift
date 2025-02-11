@@ -6,6 +6,7 @@ struct UserProfileView: View {
     @State private var showingLogoutAlert = false
     @State private var showingFilterSheet = false
     @StateObject var themeManager = ThemeManager()
+    @State private var hasLoadedInitialData = false
     
     var body: some View {
         ScrollView {
@@ -48,13 +49,18 @@ struct UserProfileView: View {
                 Text("Are you sure you want to sign out?")
             }
             .task {
-                viewModel.fetchUserProfile()
+                guard !hasLoadedInitialData else { return }
+                
+                // Load data only once when view first appears
+                await viewModel.fetchUserProfile()
                 await filterViewModel.loadTags()
                 await viewModel.fetchPreferences()
                 
                 // Set initial selected tags from preferences
                 let prefTags = viewModel.preferences.map { Tag(name: $0) }
                 filterViewModel.selectedTags = Set(prefTags)
+                
+                hasLoadedInitialData = true
             }
         }
     }

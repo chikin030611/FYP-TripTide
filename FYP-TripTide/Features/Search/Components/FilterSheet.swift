@@ -85,7 +85,7 @@ struct FilterSheet: View {
                                     Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
-                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
+                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(where: { $0.name == option.name })))
                             }
                         }
                         .padding()
@@ -102,7 +102,7 @@ struct FilterSheet: View {
                                     Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
-                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
+                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(where: { $0.name == option.name })))
                             }
                         }
                         .padding()
@@ -119,7 +119,7 @@ struct FilterSheet: View {
                                     Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
-                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
+                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(where: { $0.name == option.name })))
                             }
                         }
                         .padding()
