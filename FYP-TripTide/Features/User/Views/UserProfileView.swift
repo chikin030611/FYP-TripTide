@@ -56,6 +56,12 @@ struct UserProfileView: View {
             .padding()
             .sheet(isPresented: $showingFilterSheet) {
                 FilterSheet(viewModel: filterViewModel)
+                    .onDisappear {
+                        // Update preferences when sheet is dismissed
+                        Task {
+                            await viewModel.updatePreferences(tags: filterViewModel.selectedTags)
+                        }
+                    }
             }
             .alert("Sign Out", isPresented: $showingLogoutAlert) {
                 Button("Cancel", role: .cancel) { }
@@ -68,6 +74,11 @@ struct UserProfileView: View {
             .task {
                 viewModel.fetchUserProfile()
                 await filterViewModel.loadTags()
+                await viewModel.fetchPreferences()
+                
+                // Set initial selected tags from preferences
+                let prefTags = viewModel.preferences.map { Tag(name: $0) }
+                filterViewModel.selectedTags = Set(prefTags)
             }
         }
     }
@@ -122,6 +133,7 @@ extension UserProfileView {
 
                 if !filterViewModel.selectedTags.isEmpty {
                     Button {
+                        showingFilterSheet = true
                     } label: {
                         Text("\(filterViewModel.selectedTags.count) Interests")
                     }
