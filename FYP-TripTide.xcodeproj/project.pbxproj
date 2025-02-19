@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D14993C2D65D7CC004C08D1 /* BottomBar-SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5D14993B2D65D7CC004C08D1 /* BottomBar-SwiftUI */; };
 		5D6E27882D26CC18007747FD /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 5D6E27872D26CC18007747FD /* JWTDecode */; };
 		5DA2C8ED2D23F00E001D5A4F /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */; };
 		5DAF4B672CEFAA5F0039CD4F /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 5DAF4B662CEFAA5F0039CD4F /* Inject */; };
@@ -48,6 +49,7 @@
 				5DA2C8ED2D23F00E001D5A4F /* KeychainSwift in Frameworks */,
 				5DAF4B672CEFAA5F0039CD4F /* Inject in Frameworks */,
 				5D6E27882D26CC18007747FD /* JWTDecode in Frameworks */,
+				5D14993C2D65D7CC004C08D1 /* BottomBar-SwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +95,7 @@
 				5DAF4B662CEFAA5F0039CD4F /* Inject */,
 				5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */,
 				5D6E27872D26CC18007747FD /* JWTDecode */,
+				5D14993B2D65D7CC004C08D1 /* BottomBar-SwiftUI */,
 			);
 			productName = "FYP-TripTide";
 			productReference = 5D5661062CA5B031001E5D6B /* FYP-TripTide.app */;
@@ -127,6 +130,7 @@
 				5DAF4B652CEFAA5F0039CD4F /* XCRemoteSwiftPackageReference "Inject" */,
 				5DA2C8EB2D23F00E001D5A4F /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				5D6E27862D26CC18007747FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */,
+				5D14993A2D65D7CC004C08D1 /* XCRemoteSwiftPackageReference "bottombar-swiftui" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D5661072CA5B031001E5D6B /* Products */;
@@ -472,6 +476,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5D14993A2D65D7CC004C08D1 /* XCRemoteSwiftPackageReference "bottombar-swiftui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/smartvipere75/bottombar-swiftui";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		5D6E27862D26CC18007747FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/auth0/JWTDecode.swift.git";
@@ -499,6 +511,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5D14993B2D65D7CC004C08D1 /* BottomBar-SwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D14993A2D65D7CC004C08D1 /* XCRemoteSwiftPackageReference "bottombar-swiftui" */;
+			productName = "BottomBar-SwiftUI";
+		};
 		5D6E27872D26CC18007747FD /* JWTDecode */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5D6E27862D26CC18007747FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */;
