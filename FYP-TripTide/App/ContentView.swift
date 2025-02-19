@@ -29,33 +29,36 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                Group {
-                    switch selectedIndex {
-                    case 0:
-                        UITestView()
-                    case 1:
-                        HomeTabView()
-                    case 2:
-                        SearchTabView(viewModel: searchTabViewModel)
-                    case 3:
-                        TipsTabView()
-                    case 4:
-                        UserTabView()
-                    default:
-                        UITestView()
+            ZStack {
+                themeManager.selectedTheme.appBackgroundColor.edgesIgnoringSafeArea(.all)
+                VStack(spacing: 0) {
+                    Group {
+                        switch selectedIndex {
+                        case 0:
+                            UITestView()
+                        case 1:
+                            HomeTabView()
+                        case 2:
+                            SearchTabView(viewModel: searchTabViewModel)
+                        case 3:
+                            TipsTabView()
+                        case 4:
+                            UserTabView()
+                        default:
+                            UITestView()
+                        }
                     }
-                }
                 
-                Spacer()
-                
-                // Bottom Bar
-                BottomBar(selectedIndex: $selectedIndex, items: items)
-                    .padding(.bottom, 35)
-                    .frame(height: 90)
+                    Spacer()
+                    
+                    // Bottom Bar
+                    BottomBar(selectedIndex: $selectedIndex, items: items)
+                        .padding(.bottom, 35)
+                        .frame(height: 90)
 
+                }
+                .edgesIgnoringSafeArea(.bottom)
             }
-            .edgesIgnoringSafeArea(.bottom)
         }
         .accentColor(themeManager.selectedTheme.accentColor)
         .environmentObject(themeManager)

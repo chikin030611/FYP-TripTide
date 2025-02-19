@@ -24,12 +24,13 @@ struct UnderlinedTextFieldStyle: TextFieldStyle {
                     .padding(.horizontal, 20)
             }
             configuration
+                .foregroundColor(themeManager.selectedTheme.primaryColor)
         }
         .padding(10)
         .background(
             VStack {
                 Spacer()
-                Color(themeManager.selectedTheme.teritaryColor)
+                Color(themeManager.selectedTheme.secondaryColor)
                     .frame(height: 1)
             }
             .padding(.horizontal, 10)
