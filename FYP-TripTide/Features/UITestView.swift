@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct UITestView: View {
-    @StateObject private var filterViewModel = FilterViewModel()
     @StateObject private var themeManager = ThemeManager()
     @State private var isFilterSheetPresented = false
     let filterOptions = ["Amusement Park", "Beach"]
     @State private var filterOptionsCount = 5
+
     let place = Place(
         id: "1",
         images: ["https://picsum.photos/200/300"],

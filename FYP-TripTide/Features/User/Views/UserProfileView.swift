@@ -71,7 +71,7 @@ extension UserProfileView {
         HStack {
             Image(systemName: "person.circle.fill")
                 .font(.system(size: 60))
-                .foregroundColor(themeManager.selectedTheme.accentColor)
+                .foregroundColor(themeManager.selectedTheme.primaryColor)
             
             if viewModel.isLoading {
                 ProgressView()
