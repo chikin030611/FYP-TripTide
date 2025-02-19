@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct ExploreTabView: View {
+struct HomeTabView: View {
     var body: some View {
-        Text("Explore")
+        Text("Home")
     }
 }

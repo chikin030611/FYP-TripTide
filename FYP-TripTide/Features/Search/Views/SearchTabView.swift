@@ -3,7 +3,7 @@ import SwiftUI
 
 struct SearchTabView: View {
     @StateObject var themeManager = ThemeManager()
-    @StateObject private var viewModel = SearchTabViewModel()
+    @ObservedObject var viewModel: SearchTabViewModel
     @StateObject private var searchViewModel: SearchResultsViewModel
     @State private var searchText = ""
     @State private var isSearchActive = false
@@ -12,7 +12,8 @@ struct SearchTabView: View {
     @StateObject private var filterViewModel = FilterViewModel()
     @State private var showingFilterSheet = false
     
-    init() {
+    init(viewModel: SearchTabViewModel) {
+        self.viewModel = viewModel
         // Initialize searchViewModel with shared searchHistoryViewModel
         let searchHistoryVM = SearchHistoryViewModel()
         _searchViewModel = StateObject(wrappedValue: SearchResultsViewModel(searchHistoryViewModel: searchHistoryVM))

@@ -14,53 +14,34 @@ struct ContentView: View {
     @State private var selectedIndex: Int = 0
     @StateObject var themeManager = ThemeManager()
     
-    // private var items: [BottomBarItem] {
-    //     [
-    //         BottomBarItem(icon: "house.fill", title: "Explore", color: themeManager.selectedTheme.accentColor),
-    //         BottomBarItem(icon: "magnifyingglass", title: "Search", color: themeManager.selectedTheme.accentColor),
-    //         BottomBarItem(icon: "lightbulb.fill", title: "Tips", color: themeManager.selectedTheme.accentColor),
-    //         BottomBarItem(icon: "person.fill", title: "Profile", color: themeManager.selectedTheme.accentColor)
-    //     ]
-    // }
+    // Add StateObjects for tab view models to preserve their state
+    @StateObject private var searchTabViewModel = SearchTabViewModel()
 
     private var items: [BottomBarItem] {
         [
             BottomBarItem(icon: "paintbrush.fill", title: "UI Test", color: themeManager.selectedTheme.accentColor),
-            BottomBarItem(icon: "house.fill", title: "Explore", color: themeManager.selectedTheme.accentColor),
+            BottomBarItem(icon: "house.fill", title: "Home", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "magnifyingglass", title: "Search", color: themeManager.selectedTheme.accentColor),
-            BottomBarItem(icon: "lightbulb.fill", title: "Tips", color: themeManager.selectedTheme.accentColor)
+            BottomBarItem(icon: "lightbulb.fill", title: "Tips", color: themeManager.selectedTheme.accentColor),
+            BottomBarItem(icon: "person.fill", title: "Profile", color: themeManager.selectedTheme.accentColor)
         ]
     }
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Main content area
-                // Group {
-                //     switch selectedIndex {
-                //     case 0:
-                //         ExploreTabView()
-                //     case 1:
-                //         SearchTabView()
-                //     case 2:
-                //         TipsTabView()
-                //     case 3:
-                //         UserTabView()
-                //     default:
-                //         ExploreTabView()
-                //     }
-                // }
-
                 Group {
                     switch selectedIndex {
                     case 0:
                         UITestView()
                     case 1:
-                        ExploreTabView()
+                        HomeTabView()
                     case 2:
-                        SearchTabView()
+                        SearchTabView(viewModel: searchTabViewModel)
                     case 3:
                         TipsTabView()
+                    case 4:
+                        UserTabView()
                     default:
                         UITestView()
                     }
@@ -71,7 +52,7 @@ struct ContentView: View {
                 // Bottom Bar
                 BottomBar(selectedIndex: $selectedIndex, items: items)
                     .padding(.bottom, 35)
-                    .frame(height: 100)
+                    .frame(height: 90)
 
             }
             .edgesIgnoringSafeArea(.bottom)

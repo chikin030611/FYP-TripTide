@@ -1,5 +1,5 @@
 import SwiftUI
 
-class ExploreTabViewModel: ObservableObject {
+class HomeViewModel: ObservableObject {
     @Published var highlyRatedCards: [Card] = []
 }

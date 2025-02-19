@@ -9,6 +9,9 @@ class SearchTabViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: Error?
     
+    // Add a flag to track if data has been loaded
+    private var hasLoadedData = false
+    
     // MARK: - Constants
     let logoIcon = "airplane.departure"
     
@@ -31,7 +34,8 @@ class SearchTabViewModel: ObservableObject {
     init() { }
     
     func loadData() async {
-        if !highlyRatedCards.isEmpty { return }  // Skip if already loaded
+        // Check if data is already loaded
+        if hasLoadedData { return }
         
         isLoading = true
         defer { isLoading = false }
@@ -48,8 +52,17 @@ class SearchTabViewModel: ObservableObject {
             let lodgings = try await PlacesAPIController.shared.fetchPlaces(type: "lodging", limit: 5)
             let lodgingCards = lodgings.map { $0.toPlace() }
             self.lodgingCards = lodgingCards.map { Card(place: $0) }
+            
+            // Set the flag to true after successful data load
+            hasLoadedData = true
         } catch {
             self.error = error
         }
+    }
+    
+    // Add a method to force refresh data if needed
+    func refreshData() async {
+        hasLoadedData = false
+        await loadData()
     }
 } 
