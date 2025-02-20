@@ -7,6 +7,9 @@
     "(Today)" : {
 
     },
+    "%.1f" : {
+
+    },
     "%@ - %@" : {
       "localizations" : {
         "en" : {
@@ -87,6 +90,9 @@
         }
       }
     },
+    "Discover Your Next Journey" : {
+
+    },
     "Email" : {
 
     },
@@ -97,6 +103,7 @@
 
     },
     "Explore" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-HK" : {
           "stringUnit" : {
@@ -105,6 +112,9 @@
           }
         }
       }
+    },
+    "Explore Hong Kong" : {
+
     },
     "Filter" : {
 
@@ -234,10 +244,19 @@
     "Travel Tips" : {
 
     },
+    "TripTide" : {
+
+    },
     "Username" : {
 
     },
     "View All" : {
+
+    },
+    "We think you'll like..." : {
+
+    },
+    "Your personal guide to the best of Hong Kong" : {
 
     }
   },

@@ -25,15 +25,15 @@ struct HomeTabView: View {
                             endPoint: .bottom
                         )
 
-                        // Top padding to position content below fixed header
+                        // Top content now uses relative positioning
                         VStack(alignment: .leading, spacing: 3) {
                             Text("TripTide")
                                 .font(themeManager.selectedTheme.largerTitleFont)
                                 .foregroundColor(themeManager.selectedTheme.accentColor)
                                 .padding(.bottom, 5)
-                                .shadow(color: themeManager.selectedTheme.accentColor.opacity(0.5), radius: 10, x: 0, y: 0)
+                                .shadow(color: themeManager.selectedTheme.accentColor.opacity(0.7), radius: 15, x: 0, y: 0)
 
-                            Text("Discover the city with TripTide")
+                            Text("Discover Your Next Journey")
                                 .font(themeManager.selectedTheme.largeTitleFont)
                                 .foregroundColor(.white)
 
@@ -42,45 +42,119 @@ struct HomeTabView: View {
                                 .foregroundColor(.white)
                                 .padding(.bottom, 10)
                         }
-                        .padding(.top, 175)
+                        .padding(.top, geometry.size.height * 0.4)
+                        .padding(.horizontal, 15)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(
                         width: geometry.size.width,
-                        height: geometry.size.height * 0.6 // 45% of screen height
+                        height: geometry.size.height * 0.6
                     )
-                    .blur(radius: min(scrollOffset / 5, 30))
-                    .opacity(1.0 - (scrollOffset / 200))
-
+                    .blur(radius: -scrollOffset / 10 )
+                    
                     // Content that scrolls
-                    ScrollView {
-                        GeometryReader { geometry in
-                            Color.clear.preference(key: ScrollOffsetPreferenceKey.self,
-                                value: geometry.frame(in: .named("scroll")).minY)
-                        }
-                        .frame(height: 0)
+                    Rectangle()
+                        .foregroundColor(themeManager.selectedTheme.appBackgroundColor)
+                        .cornerRadius(20)
+                        .overlay(
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    HStack {
+                                        Text("We think you'll like...")
+                                            .font(themeManager.selectedTheme.titleFont)
+                                            .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                        Spacer()
+                                        Text("View All")
+                                            .font(themeManager.selectedTheme.bodyTextFont)
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                            .underline()
+                                    }
+                                    .padding(.bottom)
 
-                        ZStack(alignment: .top) {
-                            Rectangle()
-                                .foregroundColor(.white)
-                                .cornerRadius(20)
-                                .frame(minHeight: UIScreen.main.bounds.height)
+                                    CardGroup(cards: viewModel.cards, style: .wide)
 
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text("Explore Hong Kong")
-                                    .font(themeManager.selectedTheme.largeTitleFont)
-                                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                    HStack {
+                                        Text("We think you'll like...")
+                                            .font(themeManager.selectedTheme.titleFont)
+                                            .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                        Spacer()
+                                        Text("View All")
+                                            .font(themeManager.selectedTheme.bodyTextFont)
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                            .underline()
+                                    }
+                                    .padding(.bottom)
+
+                                    CardGroup(cards: viewModel.cards, style: .wide)
+
+                                    Text("Explore Hong Kong")
+                                        .font(themeManager.selectedTheme.titleFont)
+                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                        HStack {
+                                        Text("We think you'll like...")
+                                            .font(themeManager.selectedTheme.titleFont)
+                                            .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                        Spacer()
+                                        Text("View All")
+                                            .font(themeManager.selectedTheme.bodyTextFont)
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                            .underline()
+                                    }
+                                    .padding(.bottom)
+
+                                    CardGroup(cards: viewModel.cards, style: .wide)
+
+                                    Text("Explore Hong Kong")
+                                        .font(themeManager.selectedTheme.titleFont)
+                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                }
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal, 20)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 25)
-                        }
-                        .padding(.top, 375)
-                    }
-                    .coordinateSpace(name: "scroll")
-                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                        scrollOffset = -value/5
-                    }
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .padding(.top, -360)
+                        )
+                        .offset(y: geometry.size.height * 0.6 + scrollOffset)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    withAnimation(.interactiveSpring(
+                                        response: 0.3,
+                                        dampingFraction: 0.8,
+                                        blendDuration: 0.5
+                                    )) {
+                                        let translation = value.translation.height * 0.2
+                                        
+                                        let resistance: CGFloat = 0.4
+                                        if translation < 0 && scrollOffset <= -325 {
+                                            let excess = translation * resistance
+                                            scrollOffset = -325 + excess
+                                        } else if translation > 0 && scrollOffset >= 0 {
+                                            let excess = translation * resistance
+                                            scrollOffset = excess
+                                        } else {
+                                            scrollOffset = min(0, max(-325, scrollOffset + translation))
+                                        }
+                                    }
+                                }
+                                .onEnded { value in
+                                    withAnimation(.spring(
+                                        response: 0.35,
+                                        dampingFraction: 0.8,
+                                        blendDuration: 0
+                                    )) {
+                                        let rawVelocity = value.predictedEndLocation.y - value.location.y
+                                        let maxVelocity: CGFloat = 500
+                                        let cappedVelocity = max(-maxVelocity, min(maxVelocity, rawVelocity))
+                                        let scaledVelocity = cappedVelocity * 0.1
+                                        
+                                        let finalOffset = scrollOffset + scaledVelocity
+                                        scrollOffset = min(0, max(-325, finalOffset))
+                                    }
+                                }
+                        )
+
                 }
+                // .background(Color.black)
                 .ignoresSafeArea(edges: .top)
             }
         }
