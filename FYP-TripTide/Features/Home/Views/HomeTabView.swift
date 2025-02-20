@@ -57,7 +57,7 @@ struct HomeTabView: View {
                         .foregroundColor(themeManager.selectedTheme.appBackgroundColor)
                         .cornerRadius(20)
                         .overlay(
-                            HStack(alignment: .top) {
+                            GeometryReader { cardGeometry in
                                 VStack(alignment: .leading, spacing: 0) {
                                     HStack {
                                         Text("We think you'll like...")
@@ -70,11 +70,12 @@ struct HomeTabView: View {
                                             .underline()
                                     }
                                     .padding(.bottom)
+                                    .padding(.top, 20)
 
                                     CardGroup(cards: viewModel.cards, style: .wide)
 
                                     HStack {
-                                        Text("We think you'll like...")
+                                        Text("Popular Destinations")
                                             .font(themeManager.selectedTheme.titleFont)
                                             .foregroundColor(themeManager.selectedTheme.primaryColor)
                                         Spacer()
@@ -90,28 +91,14 @@ struct HomeTabView: View {
                                     Text("Explore Hong Kong")
                                         .font(themeManager.selectedTheme.titleFont)
                                         .foregroundColor(themeManager.selectedTheme.primaryColor)
-                                        HStack {
-                                        Text("We think you'll like...")
-                                            .font(themeManager.selectedTheme.titleFont)
-                                            .foregroundColor(themeManager.selectedTheme.primaryColor)
-                                        Spacer()
-                                        Text("View All")
-                                            .font(themeManager.selectedTheme.bodyTextFont)
-                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                                            .underline()
-                                    }
-                                    .padding(.bottom)
+                                        .padding(.bottom)
 
                                     CardGroup(cards: viewModel.cards, style: .wide)
-
-                                    Text("Explore Hong Kong")
-                                        .font(themeManager.selectedTheme.titleFont)
-                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
                                 }
                                 .padding(.horizontal)
+                                .frame(maxWidth: .infinity, alignment: .top)
+                                .padding(.top, cardGeometry.size.height * 0.01)
                             }
-                            .frame(maxWidth: .infinity, alignment: .topLeading)
-                            .padding(.top, -360)
                         )
                         .offset(y: geometry.size.height * 0.6 + scrollOffset)
                         .gesture(
@@ -125,14 +112,14 @@ struct HomeTabView: View {
                                         let translation = value.translation.height * 0.2
                                         
                                         let resistance: CGFloat = 0.4
-                                        if translation < 0 && scrollOffset <= -325 {
+                                        if translation < 0 && scrollOffset <= -600 {
                                             let excess = translation * resistance
-                                            scrollOffset = -325 + excess
+                                            scrollOffset = -600 + excess
                                         } else if translation > 0 && scrollOffset >= 0 {
                                             let excess = translation * resistance
                                             scrollOffset = excess
                                         } else {
-                                            scrollOffset = min(0, max(-325, scrollOffset + translation))
+                                            scrollOffset = min(0, max(-600, scrollOffset + translation))
                                         }
                                     }
                                 }
@@ -148,7 +135,7 @@ struct HomeTabView: View {
                                         let scaledVelocity = cappedVelocity * 0.1
                                         
                                         let finalOffset = scrollOffset + scaledVelocity
-                                        scrollOffset = min(0, max(-325, finalOffset))
+                                        scrollOffset = min(0, max(-600, finalOffset))
                                     }
                                 }
                         )
