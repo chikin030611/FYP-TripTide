@@ -179,6 +179,7 @@ struct SearchTabView: View {
                                     }
                                     
                                     CardGroup(cards: viewModel.highlyRatedCards, style: .large)
+                                        .padding(.horizontal, -10)
                 
                                 }
                                 
@@ -251,7 +252,7 @@ private struct RegularBodySection: View {
             }
             
             CardGroup(cards: cards, style: .regular)
-            
+                .padding(.horizontal, -10)
         }
     }
 }

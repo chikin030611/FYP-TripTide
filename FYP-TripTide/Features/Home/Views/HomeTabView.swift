@@ -27,30 +27,62 @@ struct HomeTabView: View {
 
                         // Top content now uses relative positioning
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("TripTide")
-                                .font(themeManager.selectedTheme.largerTitleFont)
-                                .foregroundColor(themeManager.selectedTheme.accentColor)
-                                .padding(.bottom, 5)
-                                .shadow(color: themeManager.selectedTheme.accentColor.opacity(0.7), radius: 15, x: 0, y: 0)
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                
+                                TextField("Search places...", text: .constant(""))
+                                    .textFieldStyle(.plain)
+                                    .autocorrectionDisabled()
+                            }
+                                .padding()
+                                .frame(height: 40)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 30)
+                                        .fill(themeManager.selectedTheme.backgroundColor)
+                                )
 
-                            Text("Discover Your Next Journey")
-                                .font(themeManager.selectedTheme.largeTitleFont)
-                                .foregroundColor(.white)
+                            Spacer()
 
-                            Text("Your personal guide to the best of Hong Kong")
-                                .font(themeManager.selectedTheme.bodyTextFont)
-                                .foregroundColor(.white)
-                                .padding(.bottom, 10)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("TripTide")
+                                    .font(themeManager.selectedTheme.largerTitleFont)
+                                    .foregroundColor(themeManager.selectedTheme.accentColor)
+                                    .padding(.bottom, 5)
+                                    .shadow(color: themeManager.selectedTheme.accentColor.opacity(0.5), radius: 15, x: 0, y: 0)
+
+                                Text("Discover Your Next Journey")
+                                    .font(themeManager.selectedTheme.largeTitleFont)
+                                    .foregroundColor(.white)
+
+                                Text("Your personal guide to the best of Hong Kong")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                    .foregroundColor(.white)
+                                    .padding(.bottom, 10)
+
+                                Button(action: {
+                                    print("Button pressed")
+                                }) {
+                                    Text("Start Planning")
+                                        .font(themeManager.selectedTheme.bodyTextFont)
+                                        .foregroundColor(.white)
+                                }
+                                .buttonStyle(SmallerPrimaryButtonStyle())
+                                .shadow(color: themeManager.selectedTheme.accentColor.opacity(0.62), radius: 15, x: 0, y: 0)
+
+                            }
+                            .padding(.bottom, geometry.size.height * 0.15)
+
                         }
-                        .padding(.top, geometry.size.height * 0.4)
-                        .padding(.horizontal, 15)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(
-                        width: geometry.size.width,
-                        height: geometry.size.height * 0.6
-                    )
-                    .blur(radius: -scrollOffset / 10 )
+                            .padding(.top, geometry.size.height * 0.1)
+                            .padding(.horizontal, 15)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height * 0.7
+                        )
+                        .blur(radius: -scrollOffset / 10 )
                     
                     // Content that scrolls
                     Rectangle()
@@ -73,6 +105,7 @@ struct HomeTabView: View {
                                     .padding(.top, 20)
 
                                     CardGroup(cards: viewModel.cards, style: .wide)
+                                        .padding(.horizontal, -10)
 
                                     HStack {
                                         Text("Popular Destinations")
@@ -87,6 +120,7 @@ struct HomeTabView: View {
                                     .padding(.bottom)
 
                                     CardGroup(cards: viewModel.cards, style: .wide)
+                                        .padding(.horizontal, -10)
 
                                     Text("Explore Hong Kong")
                                         .font(themeManager.selectedTheme.titleFont)
@@ -94,6 +128,7 @@ struct HomeTabView: View {
                                         .padding(.bottom)
 
                                     CardGroup(cards: viewModel.cards, style: .wide)
+                                        .padding(.horizontal, -10)
                                 }
                                 .padding(.horizontal)
                                 .frame(maxWidth: .infinity, alignment: .top)

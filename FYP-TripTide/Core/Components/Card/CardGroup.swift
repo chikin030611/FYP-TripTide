@@ -46,6 +46,7 @@ struct CardGroup: View {
                 }
             }
             .padding(.bottom, bottomPadding)
+            .padding(.horizontal, 10)
         }
     }
 }
