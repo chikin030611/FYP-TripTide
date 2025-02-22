@@ -92,7 +92,7 @@ struct HomeTabView: View {
                             GeometryReader { cardGeometry in
                                 VStack(alignment: .leading, spacing: 0) {
                                     HStack {
-                                        Text("We think you'll like...")
+                                        Text("Recommended for you")
                                             .font(themeManager.selectedTheme.titleFont)
                                             .foregroundColor(themeManager.selectedTheme.primaryColor)
                                         Spacer()
@@ -107,28 +107,28 @@ struct HomeTabView: View {
                                     CardGroup(cards: viewModel.cards, style: .wide)
                                         .padding(.horizontal, -10)
 
-                                    HStack {
-                                        Text("Popular Destinations")
-                                            .font(themeManager.selectedTheme.titleFont)
-                                            .foregroundColor(themeManager.selectedTheme.primaryColor)
-                                        Spacer()
-                                        Text("View All")
-                                            .font(themeManager.selectedTheme.bodyTextFont)
-                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                                            .underline()
-                                    }
-                                    .padding(.bottom)
+                                    // HStack {
+                                    //     Text("Popular Destinations")
+                                    //         .font(themeManager.selectedTheme.titleFont)
+                                    //         .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                    //     Spacer()
+                                    //     Text("View All")
+                                    //         .font(themeManager.selectedTheme.bodyTextFont)
+                                    //         .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                    //         .underline()
+                                    // }
+                                    // .padding(.bottom)
 
-                                    CardGroup(cards: viewModel.cards, style: .wide)
-                                        .padding(.horizontal, -10)
+                                    // CardGroup(cards: viewModel.cards, style: .wide)
+                                    //     .padding(.horizontal, -10)
 
-                                    Text("Explore Hong Kong")
-                                        .font(themeManager.selectedTheme.titleFont)
-                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
-                                        .padding(.bottom)
+                                    // Text("Explore Hong Kong")
+                                    //     .font(themeManager.selectedTheme.titleFont)
+                                    //     .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                    //     .padding(.bottom)
 
-                                    CardGroup(cards: viewModel.cards, style: .wide)
-                                        .padding(.horizontal, -10)
+                                    // CardGroup(cards: viewModel.cards, style: .wide)
+                                    //     .padding(.horizontal, -10)
                                 }
                                 .padding(.horizontal)
                                 .frame(maxWidth: .infinity, alignment: .top)

@@ -101,10 +101,44 @@ class PlacesAPIController {
         tagsCache.removeAllObjects()
         lastTagsFetchTime.removeAll()
     }
+    
+    func fetchRecommendations() async throws -> [PlaceBasicData] {
+        guard let url = URL(string: "\(APIConfig.baseURL)/recommendations") else {
+            throw APIError.invalidURL
+        }
+        
+        // Create request with authorization header
+        var request = URLRequest(url: url)
+        if let token = await AuthManager.shared.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw APIError.unauthorized
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        // Check for unauthorized response
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.networkError
+        }
+        
+        if httpResponse.statusCode == 401 {
+            throw APIError.unauthorized
+        }
+        
+        // Print the response for debugging
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("API Response: \(jsonString)")
+        }
+        
+        // Decode the array directly
+        return try JSONDecoder().decode([PlaceBasicData].self, from: data)
+    }
 }
 
 enum APIError: Error {
     case invalidURL
     case decodingError
     case networkError
+    case unauthorized
 } 

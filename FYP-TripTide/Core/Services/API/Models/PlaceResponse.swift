@@ -44,3 +44,12 @@ struct PlaceDetailResponse: Codable {
         }
     }
 } 
+
+struct RecommendationsResponse: Codable {
+    let recommendations: [PlaceBasicData]
+    
+    // If the API returns recommendations under a different key, change "recommendations" to match
+    private enum CodingKeys: String, CodingKey {
+        case recommendations = "recommendations" // Change this if needed
+    }
+}
