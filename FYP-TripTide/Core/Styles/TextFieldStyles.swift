@@ -38,3 +38,39 @@ struct UnderlinedTextFieldStyle: TextFieldStyle {
     }
 }
 
+// MARK: - Underlined TextEditor Style
+struct BoxedTextEditorStyle: ViewModifier {
+    @StateObject var themeManager = ThemeManager()
+    let placeholder: String
+    @Binding var text: String
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .topLeading) {
+            content
+                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                .padding(6)
+
+            if text.isEmpty {
+                Text(placeholder)
+                    .foregroundColor(themeManager.selectedTheme.secondaryColor.opacity(0.5))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 14)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(themeManager.selectedTheme.secondaryColor, lineWidth: 1)
+        )
+    }
+}
+
+extension View {
+    func textEditorStyle(_ style: BoxedTextEditorStyle) -> some View {
+        modifier(style)
+    }
+    
+    // Add a convenience method
+    func boxedTextEditorStyle(text: Binding<String>, placeholder: String = "") -> some View {
+        modifier(BoxedTextEditorStyle(placeholder: placeholder, text: text))
+    }
+}

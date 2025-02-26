@@ -14,6 +14,16 @@ class PlanTabViewModel: ObservableObject {
                 lodgings: [],
                 startDate: Date(),
                 endDate: Date()
+            ),
+            Trip(
+                id: "2",
+                name: "Trip to Hong Kong",
+                description: "A trip to Tokyo",
+                touristAttractions: [],
+                restaurants: [],
+                lodgings: [],
+                startDate: Date(),
+                endDate: Date()
             )
         ]
     }

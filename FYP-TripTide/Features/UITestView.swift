@@ -5,12 +5,17 @@
 //  Created by Chi Kin Tang on 3/11/2024.
 //
 
+import UIKit
 import SwiftUI
 import Inject
+import HorizonCalendar
 
 struct UITestView: View {
     @ObserveInjection var injection
     @StateObject private var themeManager = ThemeManager()
+    @State private var selectedStartDate: Date?
+    @State private var selectedEndDate: Date?
+    @State private var trip: Trip
 
     let place = Place(
         id: "1",
@@ -29,8 +34,6 @@ struct UITestView: View {
         longitude: 122.4194
     )
 
-    @State private var trip: Trip
-
     init() {
         trip = Trip(
             id: "1",
@@ -43,19 +46,14 @@ struct UITestView: View {
             endDate: Date()
         )
     }
+
+    @State private var text: String = "Hello, world!"
     
     var body: some View {
         NavigationView {
-            // WideCard(place: place)
-            // LargeCard(place: place)
-            TripCard(trip: trip)
+            TextEditor(text: $text)
+                .boxedTextEditorStyle(text: $text, placeholder: "Enter trip description")
         }
         .enableInjection()
     }
-    
-}
-
-
-#Preview {
-    UITestView()
 }
