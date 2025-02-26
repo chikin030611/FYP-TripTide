@@ -28,15 +28,31 @@ struct UITestView: View {
         latitude: 37.7749,
         longitude: 122.4194
     )
+
+    @State private var trip: Trip
+
+    init() {
+        trip = Trip(
+            id: "1",
+            name: "Trip to Tokyo",
+            description: "A trip to Tokyo",
+            touristAttractions: [place],
+            restaurants: [],
+            lodgings: [],
+            startDate: Date(),
+            endDate: Date()
+        )
+    }
     
     var body: some View {
         NavigationView {
-            WideCard(place: place)
-            LargeCard(place: place)
-
+            // WideCard(place: place)
+            // LargeCard(place: place)
+            TripCard(trip: trip)
         }
         .enableInjection()
     }
+    
 }
 
 

@@ -22,6 +22,7 @@ struct ContentView: View {
             BottomBarItem(icon: "paintbrush.fill", title: "UI Test", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "house.fill", title: "Home", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "magnifyingglass", title: "Search", color: themeManager.selectedTheme.accentColor),
+            BottomBarItem(icon: "calendar", title: "Plan", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "lightbulb.fill", title: "Tips", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "person.fill", title: "Profile", color: themeManager.selectedTheme.accentColor)
         ]
@@ -39,8 +40,10 @@ struct ContentView: View {
                     case 2:
                         SearchTabView(viewModel: searchTabViewModel)
                     case 3:
-                        TipsTabView()
+                        PlanTabView()
                     case 4:
+                        TipsTabView()
+                    case 5:
                         UserTabView()
                     default:
                         UITestView()
