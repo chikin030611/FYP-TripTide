@@ -1,8 +1,5 @@
 import SwiftUI
 
-// TODO: Add filter
-
-
 struct SearchResultsView: View {
     @StateObject var themeManager = ThemeManager()
     @ObservedObject var viewModel: SearchResultsViewModel

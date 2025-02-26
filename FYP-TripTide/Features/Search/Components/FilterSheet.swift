@@ -5,6 +5,7 @@ struct FilterSheet: View {
     @StateObject var themeManager: ThemeManager = ThemeManager()
     @Environment(\.dismiss) var dismiss
     @State private var selectedTab = 0
+    @State var isForSearching = false
     @State var filterOptions: [String] = []
     
     var body: some View {
@@ -84,7 +85,7 @@ struct FilterSheet: View {
                                     Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
-                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
+                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(where: { $0.name == option.name })))
                             }
                         }
                         .padding()
@@ -101,7 +102,7 @@ struct FilterSheet: View {
                                     Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
-                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
+                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(where: { $0.name == option.name })))
                             }
                         }
                         .padding()
@@ -118,7 +119,7 @@ struct FilterSheet: View {
                                     Text(option.name.formatTagName())
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 }
-                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(option)))
+                                .buttonStyle(TagButtonStyle(isSelected: viewModel.selectedTags.contains(where: { $0.name == option.name })))
                             }
                         }
                         .padding()
@@ -128,33 +129,42 @@ struct FilterSheet: View {
                 .animation(.easeInOut(duration: 0.3), value: selectedTab)
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 400)
-
+        
                 Divider()
                     .padding(.vertical, 10)
 
                 VStack(alignment: .center) {
                     HStack {
+                        
+                        if isForSearching {
+                            Spacer()
 
-                        Spacer()
+                            Button {
+                                dismiss()
+                            } label: {
+                                Text("Apply")
+                            }
+                            .buttonStyle(SmallerPrimaryButtonStyle())
 
-                        Button {
-                            dismiss()
-                        } label: {
-                            Text("Apply")
+                            Spacer()
+
+                            Button {
+                                viewModel.applyAndSearchFilters()
+                                dismiss()
+                            } label: {
+                                Text("Apply and Search")
+                            }
+                            .buttonStyle(SmallerPrimaryButtonStyle())
+
+                            Spacer()
+                        } else {
+                            Button {
+                                dismiss()
+                            } label: {
+                                Text("Apply")
+                            }
+                            .buttonStyle(PrimaryButtonStyle())
                         }
-                        .buttonStyle(SmallerPrimaryButtonStyle())
-
-                        Spacer()
-
-                        Button {
-                            viewModel.applyAndSearchFilters()
-                            dismiss()
-                        } label: {
-                            Text("Apply and Search")
-                        }
-                        .buttonStyle(SmallerPrimaryButtonStyle())
-
-                        Spacer()
                     }
                 }
                 .frame(maxWidth: .infinity)

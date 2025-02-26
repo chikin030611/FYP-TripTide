@@ -25,7 +25,7 @@ struct Card: View {
                 
                 // Gradient overlay
                 LinearGradient(
-                    gradient: Gradient(colors: [Color.gray.opacity(0.01), Color.gray]),
+                    gradient: Gradient(colors: [Color.black.opacity(0.01), Color.black.opacity(0.5)]),
                     startPoint: .center,
                     endPoint: .bottom
                 )

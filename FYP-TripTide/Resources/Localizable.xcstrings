@@ -1,6 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "(%lld)" : {
+
+    },
+    "(Today)" : {
+
+    },
+    "%.1f" : {
+
+    },
     "%@ - %@" : {
       "localizations" : {
         "en" : {
@@ -11,27 +20,25 @@
         }
       }
     },
-    "•" : {
+    "%lld filters is selected" : {
 
     },
-    "Lodging" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "住宿"
-          }
-        }
-      }
+    "%lld Interests" : {
+
     },
-    "Add" : {
-      "shouldTranslate" : false
+    "•" : {
+
     },
     "Address" : {
 
     },
     "Address copied!" : {
+
+    },
+    "Apply" : {
+
+    },
+    "Apply and Search" : {
 
     },
     "Are you sure you want to sign out?" : {
@@ -40,23 +47,14 @@
     "Become a TripTide member" : {
 
     },
-    "Body Text Font" : {
-      "shouldTranslate" : false
-    },
-    "Bold Title Font" : {
-      "shouldTranslate" : false
-    },
     "By" : {
 
     },
     "Cancel" : {
 
     },
-    "Caption Text Font" : {
-      "shouldTranslate" : false
-    },
-    "Central and Western" : {
-      "shouldTranslate" : false
+    "Clear" : {
+
     },
     "Closed" : {
 
@@ -92,16 +90,20 @@
         }
       }
     },
-    "Eastern" : {
-      "shouldTranslate" : false
+    "Discover Your Next Journey" : {
+
     },
     "Email" : {
 
     },
-    "Email Address" : {
-      "shouldTranslate" : false
+    "Error loading place: %@" : {
+
+    },
+    "Error: %@" : {
+
     },
     "Explore" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-HK" : {
           "stringUnit" : {
@@ -110,6 +112,12 @@
           }
         }
       }
+    },
+    "Explore Hong Kong" : {
+
+    },
+    "Filter" : {
+
     },
     "For You" : {
       "extractionState" : "manual",
@@ -125,11 +133,8 @@
     "Highly Rated Attractions" : {
       "comment" : "Title of the For You section"
     },
-    "Large Title Font" : {
-      "shouldTranslate" : false
-    },
-    "Larger Title Font" : {
-      "shouldTranslate" : false
+    "Interests" : {
+
     },
     "Locals' favourite dining places" : {
       "extractionState" : "manual",
@@ -144,6 +149,17 @@
     },
     "Location" : {
 
+    },
+    "Lodging" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "住宿"
+          }
+        }
+      }
     },
     "Login" : {
 
@@ -163,10 +179,10 @@
     "No results found" : {
 
     },
-    "Normal Title Font" : {
-      "shouldTranslate" : false
-    },
     "OK" : {
+
+    },
+    "Open 24 Hours" : {
 
     },
     "Open in Google Maps" : {
@@ -184,17 +200,11 @@
     "Password" : {
       "shouldTranslate" : false
     },
-    "Plan" : {
-
-    },
     "Plan Coming Soon" : {
 
     },
-    "Primary Button" : {
-      "shouldTranslate" : false
-    },
-    "Quaternary Button" : {
-      "shouldTranslate" : false
+    "Popular Destinations" : {
+
     },
     "Recent Searches" : {
 
@@ -211,9 +221,6 @@
     "Registration Successful" : {
 
     },
-    "Remove" : {
-      "shouldTranslate" : false
-    },
     "Rest Day" : {
 
     },
@@ -228,34 +235,34 @@
         }
       }
     },
-    "Search" : {
-
-    },
     "Search places..." : {
 
     },
-    "Secondary Button" : {
-      "shouldTranslate" : false
+    "Selected Filters" : {
+
     },
     "Sign Out" : {
 
     },
-    "Tertiary Button" : {
-      "shouldTranslate" : false
-    },
-    "Tips" : {
+    "Start Planning" : {
 
     },
     "Travel Tips" : {
 
     },
-    "User" : {
+    "TripTide" : {
 
     },
     "Username" : {
 
     },
     "View All" : {
+
+    },
+    "We think you'll like..." : {
+
+    },
+    "Your personal guide to the best of Hong Kong" : {
 
     }
   },

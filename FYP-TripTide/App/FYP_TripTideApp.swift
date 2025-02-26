@@ -11,10 +11,11 @@ import Inject
 @main
 struct FYP_TripTideApp: App {
     @ObserveInjection var inject
+    @StateObject var themeManager = ThemeManager()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .preferredColorScheme(.light)
                 .enableInjection()
         }
     }

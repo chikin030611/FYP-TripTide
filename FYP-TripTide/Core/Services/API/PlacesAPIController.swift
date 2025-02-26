@@ -3,6 +3,11 @@ import Foundation
 class PlacesAPIController {
     static let shared = PlacesAPIController()
     
+    private let tagsCache = NSCache<NSString, NSArray>()
+    private let tagsCacheKey = "tags" as NSString
+    private let tagsCacheDuration: TimeInterval = 300 // 5 minutes
+    private var lastTagsFetchTime: [String: Date] = [:]
+    
     func fetchPlaces(type: String, limit: Int) async throws -> [PlaceBasicData] {
         guard let url = URL(string: "\(APIConfig.baseURL)/places?type=\(type)&limit=\(limit)") else {
             throw APIError.invalidURL
@@ -70,15 +75,64 @@ class PlacesAPIController {
     }
     
     func fetchTags(type: String) async throws -> [Tag] {
+        // Check cache first
+        let cacheKey = "\(type)_tags" as NSString
+        if let lastFetch = lastTagsFetchTime[type],
+           Date().timeIntervalSince(lastFetch) < tagsCacheDuration,
+           let cachedTags = tagsCache.object(forKey: cacheKey) as? [Tag] {
+            return cachedTags
+        }
+        
         guard let url = URL(string: "\(APIConfig.baseURL)/places/tags?type=\(type)") else {
             throw APIError.invalidURL
         }
         
-        print("Fetching tags for type: \(type) from URL: \(url)")
         let (data, _) = try await URLSession.shared.data(from: url)
         let tags = try JSONDecoder().decode([Tag].self, from: data)
-        print("Received tags for \(type): \(tags)")
+        
+        // Update cache
+        tagsCache.setObject(tags as NSArray, forKey: cacheKey)
+        lastTagsFetchTime[type] = Date()
+        
         return tags
+    }
+    
+    func clearCache() {
+        tagsCache.removeAllObjects()
+        lastTagsFetchTime.removeAll()
+    }
+    
+    func fetchRecommendations() async throws -> [PlaceBasicData] {
+        guard let url = URL(string: "\(APIConfig.baseURL)/recommendations") else {
+            throw APIError.invalidURL
+        }
+        
+        // Create request with authorization header
+        var request = URLRequest(url: url)
+        if let token = await AuthManager.shared.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw APIError.unauthorized
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        // Check for unauthorized response
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.networkError
+        }
+        
+        if httpResponse.statusCode == 401 {
+            throw APIError.unauthorized
+        }
+        
+        // Print the response for debugging
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("API Response: \(jsonString)")
+        }
+        
+        // Decode the array directly
+        return try JSONDecoder().decode([PlaceBasicData].self, from: data)
     }
 }
 
@@ -86,4 +140,5 @@ enum APIError: Error {
     case invalidURL
     case decodingError
     case networkError
+    case unauthorized
 } 

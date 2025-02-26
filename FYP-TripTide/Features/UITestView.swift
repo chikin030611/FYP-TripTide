@@ -6,22 +6,21 @@
 //
 
 import SwiftUI
+import Inject
 
 struct UITestView: View {
-    @StateObject private var filterViewModel = FilterViewModel()
+    @ObserveInjection var injection
     @StateObject private var themeManager = ThemeManager()
-    @State private var isFilterSheetPresented = false
-    let filterOptions = ["Amusement Park", "Beach"]
-    @State private var filterOptionsCount = 5
+
     let place = Place(
         id: "1",
-        images: ["https://picsum.photos/200/300"],
+        images: ["https://picsum.photos/300/300"],
         name: "Amusement Park",
         type: "Tourist Attraction",
         rating: 4.5,
         ratingCount: 100,
         price: "$",
-        tags: [Tag(name: "Amusement Park"), Tag(name: "Beach")],
+        tags: [Tag(name: "Amusement Park"), Tag(name: "Beach"), Tag(name: "Family Friendly")],
         openHours: [OpenHour(from: ["open": ["day": 1, "hour": 9, "minute": 0], "close": ["day": 1, "hour": 17, "minute": 0]])],
         stayingTime: "2 hours",
         description: "A fun amusement park with rides and games",
@@ -31,11 +30,15 @@ struct UITestView: View {
     )
     
     var body: some View {
-        // SearchResultRow(place: place)
-        
-        LargeCard(place: place)
+        NavigationView {
+            WideCard(place: place)
+            LargeCard(place: place)
+
+        }
+        .enableInjection()
     }
 }
+
 
 #Preview {
     UITestView()

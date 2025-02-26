@@ -1,6 +1,24 @@
 {
-  "originHash" : "d574337d612afcd528368c14cb2c06c9087048c441c4848cd9fe036706ce9aad",
+  "originHash" : "30e094f8560a29e4d9758cd65155a5d4eb326e17faedfcedd8211fcdbde0a429",
   "pins" : [
+    {
+      "identity" : "bottombar-swiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/smartvipere75/bottombar-swiftui",
+      "state" : {
+        "branch" : "master",
+        "revision" : "26c5c48842632b39242bb268399651097ace653a"
+      }
+    },
+    {
+      "identity" : "cardslider#requirements",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Ramotion/cardslider#requirements",
+      "state" : {
+        "revision" : "016e2996d9f9fc20ac108ad82fd9fce007546be1",
+        "version" : "0.1.0"
+      }
+    },
     {
       "identity" : "inject",
       "kind" : "remoteSourceControl",
