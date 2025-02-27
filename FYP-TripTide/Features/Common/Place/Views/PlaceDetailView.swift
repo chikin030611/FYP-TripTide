@@ -61,23 +61,11 @@ struct PlaceDetailView: View {
             .sheet(isPresented: $showAddressOptions) {
                 AddressActionSheet(address: viewModel.place.address) {
                     showToast = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        showToast = false
-                    }
                 }
             }
             .overlay(alignment: .bottom) {
                 if showToast {
-                    Text("Address copied!")
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(
-                            Capsule()
-                                .fill(themeManager.selectedTheme.primaryColor.opacity(0.8))
-                        )
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .padding(.bottom, 10)
+                    Toast(message: "Address copied!", isPresented: $showToast)
                 }
             }
             .animation(.easeInOut, value: showToast)
@@ -161,9 +149,6 @@ struct PlaceDetailView: View {
             .sheet(isPresented: $showAddressOptions) {
                 AddressActionSheet(address: viewModel.place.address, onCopy: {
                     showToast = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        showToast = false
-                    }
                 })
             }
 

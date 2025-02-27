@@ -11,6 +11,8 @@ struct CalendarView: View {
     
     @State private var selectedMonth = Date()
     @State private var refreshID = UUID()
+
+    @StateObject private var themeManager = ThemeManager()
     
     var body: some View {
         VStack {
@@ -19,6 +21,7 @@ struct CalendarView: View {
                 Button(action: previousMonth) {
                     Image(systemName: "chevron.left")
                 }
+                .foregroundColor(themeManager.selectedTheme.accentColor)
                 
                 Text(monthYearString(from: selectedMonth))
                     .font(.title2)
@@ -27,6 +30,7 @@ struct CalendarView: View {
                 Button(action: nextMonth) {
                     Image(systemName: "chevron.right")
                 }
+                .foregroundColor(themeManager.selectedTheme.accentColor)
             }
             .padding()
             

@@ -3,9 +3,13 @@ import SwiftUI
 struct CreateTripView: View {
     @StateObject private var viewModel = CreateTripViewModel()
     @StateObject private var themeManager = ThemeManager()
+    @Binding var isPresented: Bool
+    @Binding var showCancelAlert: Bool
     @State private var userDefinedDays: Int = 1
     @State private var startDate: Date?
     @State private var endDate: Date?
+    @State private var showToast: Bool = false
+    @Environment(\.dismiss) private var dismiss
     
     var dateRangeToHighlight: ClosedRange<Date>? {
         guard let start = startDate, let end = endDate else { return nil }
@@ -24,6 +28,9 @@ struct CreateTripView: View {
                                     .font(themeManager.selectedTheme.bodyTextFont)
                                 Text("Trip Name")
                                     .font(themeManager.selectedTheme.boldBodyTextFont)
+                                Text("*")
+                                    .font(themeManager.selectedTheme.boldBodyTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.warningColor)
                             }
                             .padding(.horizontal)
                             TextField("Enter name", text: $viewModel.trip.name)
@@ -53,9 +60,10 @@ struct CreateTripView: View {
                                 Text("Dates")
                                     .font(themeManager.selectedTheme.boldBodyTextFont)
                             }
-                            .padding(.bottom, startDate != nil ? 0 : 5)
+                            .padding(.bottom, 5)
+
                             HStack {
-                                Text("\(startDate?.formatted(date: .long, time: .omitted) ?? "")")
+                                Text("\(startDate?.formatted(date: .long, time: .omitted) ?? " ")")
                                     .font(themeManager.selectedTheme.bodyTextFont)
                                     
                                 Spacer()
@@ -69,10 +77,17 @@ struct CreateTripView: View {
 
                                 Spacer()
 
-                                Text("\(endDate?.formatted(date: .long, time: .omitted) ?? "")")
+                                Text("\(endDate?.formatted(date: .long, time: .omitted) ?? " ")")
                                     .font(themeManager.selectedTheme.bodyTextFont)
                             }
-                            
+                            .padding(.horizontal, 10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray, lineWidth: 1)
+                                    .frame(height: 30)
+                            )
+                            .padding(.bottom, 10)
+
                             CalendarView(
                                 selectedStartDate: $startDate,
                                 selectedEndDate: $endDate,
@@ -82,19 +97,48 @@ struct CreateTripView: View {
                         .padding(.horizontal)
 
                     }
-                    .padding(.bottom, 100)
+                    .padding(.bottom, 150)
                 }
 
-                Button(action: {
-                    viewModel.createTrip()
-                }) {
-                    Text("Create Trip")
+                VStack(spacing: 8) {
+                    if showToast {
+                        Toast(message: "Please enter a name for your trip.", isPresented: $showToast)
+                    }
+                    
+                    Button(action: {
+                        if !viewModel.trip.name.isEmpty {
+                            viewModel.createTrip()
+                            isPresented = false
+                            dismiss()
+                        } else {
+                            withAnimation {
+                                showToast = true
+                            }
+                        }
+                    }) {
+                        Text("Create Trip")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
+                    .shadow(radius: 5, y: 5)
                 }
-                .buttonStyle(PrimaryButtonStyle())
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal)
-                .padding(.bottom, 16)
-                .shadow(radius: 5, y: 5)
+            }
+            .navigationTitle("Create Trip")
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    showCancelConfirmation()
+                }
+            )
+            .alert("Cancel Trip Creation", isPresented: $showCancelAlert) {
+                Button("Continue Editing", role: .cancel) { }
+                Button("Discard Changes", role: .destructive) {
+                    isPresented = false
+                    dismiss()
+                }
+            } message: {
+                Text("Are you sure you want to cancel? Your changes will be lost.")
             }
             .onChange(of: startDate) { oldValue, newValue in
                 if let date = newValue {
@@ -113,6 +157,21 @@ struct CreateTripView: View {
                     }
                 }
             }
+            .accentColor(themeManager.selectedTheme.accentColor)
+        }
+    }
+    
+    private func showCancelConfirmation() {
+        // Only show alert if there are changes
+        if !viewModel.trip.name.isEmpty || 
+           !viewModel.trip.description.isEmpty || 
+           startDate != nil || 
+           endDate != nil {
+            showCancelAlert = true
+        } else {
+            // If no changes, just dismiss
+            isPresented = false
+            dismiss()
         }
     }
 }

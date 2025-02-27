@@ -12,8 +12,8 @@ class PlanTabViewModel: ObservableObject {
                 touristAttractions: [],
                 restaurants: [],
                 lodgings: [],
-                startDate: Date(),
-                endDate: Date()
+                startDate: Calendar.current.date(byAdding: .day, value: 1, to: Date())!,
+                endDate: Calendar.current.date(byAdding: .day, value: 3, to: Date())!
             ),
             Trip(
                 id: "2",
@@ -22,8 +22,8 @@ class PlanTabViewModel: ObservableObject {
                 touristAttractions: [],
                 restaurants: [],
                 lodgings: [],
-                startDate: Date(),
-                endDate: Date()
+                startDate: Calendar.current.date(byAdding: .day, value: 1, to: Date())!,
+                endDate: Calendar.current.date(byAdding: .day, value: 7, to: Date())!
             )
         ]
     }
