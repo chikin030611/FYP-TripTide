@@ -34,7 +34,7 @@ struct ContentView: View {
                 Group {
                     switch selectedIndex {
                     case 0:
-                        UITestView()
+                        TripDetailView(viewModel: TripDetailViewModel(trip: Trip.sampleTrip))
                     case 1:
                         HomeTabView()
                     case 2:

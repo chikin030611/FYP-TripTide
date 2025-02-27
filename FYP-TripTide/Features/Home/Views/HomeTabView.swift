@@ -31,7 +31,7 @@ struct HomeTabView: View {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(themeManager.selectedTheme.secondaryColor)
                                 
-                                TextField("Search places...", text: .constant(""))
+                                TextField("Search places...", text: .constant("")) // TODO: navigate to search tab
                                     .textFieldStyle(.plain)
                                     .autocorrectionDisabled()
                             }
@@ -61,7 +61,7 @@ struct HomeTabView: View {
                                     .padding(.bottom, 10)
 
                                 Button(action: {
-                                    print("Button pressed")
+                                    print("Button pressed") // TODO: navigate to plan tab
                                 }) {
                                     Text("Start Planning")
                                         .font(themeManager.selectedTheme.bodyTextFont)
@@ -74,15 +74,15 @@ struct HomeTabView: View {
                             .padding(.bottom, geometry.size.height * 0.15)
 
                         }
-                            .padding(.top, geometry.size.height * 0.1)
-                            .padding(.horizontal, 15)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height * 0.7
-                        )
-                        .blur(radius: -scrollOffset / 10 )
+                        .padding(.top, geometry.size.height * 0.1)
+                        .padding(.horizontal, 15)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(
+                        width: geometry.size.width,
+                        height: geometry.size.height * 0.7
+                    )
+                    .blur(radius: -scrollOffset / 10 )
                     
                     // Content that scrolls
                     Rectangle()

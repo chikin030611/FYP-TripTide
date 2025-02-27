@@ -192,4 +192,19 @@ struct RemoveTagButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Edit Button Style
+struct EditButtonStyle: ButtonStyle {
+    @StateObject var themeManager: ThemeManager = ThemeManager()
+
+    func makeBody(configuration: Configuration) -> some View {
+        Image(systemName: "gearshape")
+            .frame(width: 30, height: 30)
+            .foregroundColor(themeManager.selectedTheme.primaryColor)
+            .padding(7)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(themeManager.selectedTheme.backgroundColor)
+            )
+    }
+}
 

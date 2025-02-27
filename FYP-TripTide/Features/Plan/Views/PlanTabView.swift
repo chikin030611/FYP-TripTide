@@ -39,6 +39,7 @@ struct PlanTabView: View {
                         .padding(.horizontal, 32)
                     }
                 }
+                .padding(.top, 16)
 
                 Button(action: {
                     isShowingCreateTrip = true
