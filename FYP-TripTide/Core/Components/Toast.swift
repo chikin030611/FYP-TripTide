@@ -7,7 +7,7 @@ struct Toast: View {
     
     var body: some View {
         Text(message)
-            .foregroundColor(.white)
+            .foregroundColor(themeManager.selectedTheme.primaryColor)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(

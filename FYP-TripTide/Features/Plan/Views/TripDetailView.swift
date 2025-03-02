@@ -168,9 +168,11 @@ struct TripDetailView: View {
             // Bottom Bar
             VStack {
                 HStack {
-                    Button(action: {
-                        print("Edit trip")
-                    }) {}
+                    NavigationLink(destination: EditTripView(trip: viewModel.trip)) {
+                        Text("Edit")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.accentColor)
+                    }
                     .buttonStyle(EditButtonStyle())
 
                     Spacer()

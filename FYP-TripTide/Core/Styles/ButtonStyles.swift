@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// Add this protocol at the top of the file
+protocol HeartButtonStyle: ButtonStyle { }
 
 // MARK: - Primary Button Style
 struct PrimaryButtonStyle: ButtonStyle {
@@ -77,34 +79,21 @@ struct QuaternaryButtonStyle: ButtonStyle {
 }
 
 // MARK: - Add Button Style
-struct AddButtonStyle: ButtonStyle {
+struct HeartToggleButtonStyle: ButtonStyle {
+    let isAdded: Bool
+    
     func makeBody(configuration: Configuration) -> some View {
-        Image(systemName: "plus")
+        Image(systemName: isAdded ? "heart.fill" : "heart")
+            .font(.system(size: 24))
             .padding(.bottom, 10)
             .padding(.top, 10)
-            .frame(width: 32, height: 32)
-            .overlay(
+            .frame(width: 48, height: 48)
+            .background(
                 RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color("mnAccentColor"), lineWidth: 1)
+                    .fill(isAdded ? Color("mnAccentColor") : Color.white)
             )
-            .foregroundColor(Color("mnAccentColor"))
+            .foregroundColor(isAdded ? Color.white : Color("mnAccentColor"))
             .opacity(configuration.isPressed ? 0.5 : 1.0)
-    }
-}
-
-// MARK: - Remove Button Style
-struct RemoveButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        Image(systemName: "minus")
-            .padding(.bottom, 10)
-            .padding(.top, 10)
-            .frame(width: 32, height: 32)
-            .overlay(
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color.red, lineWidth: 1)
-            )
-            .foregroundColor(Color.red)
-            .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 

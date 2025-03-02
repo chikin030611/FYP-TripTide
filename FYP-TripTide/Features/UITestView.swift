@@ -50,10 +50,12 @@ struct UITestView: View {
     @State private var text: String = "Hello, world!"
     
     var body: some View {
-        NavigationView {
-            TextEditor(text: $text)
-                .boxedTextEditorStyle(text: $text, placeholder: "Enter trip description")
+        VStack(spacing: 20) {
+            LargeCard(place: place)
+            WideCard(place: place)
+
         }
         .enableInjection()
+
     }
 }
