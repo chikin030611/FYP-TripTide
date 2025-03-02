@@ -1,15 +1,15 @@
 import SwiftUI
 
 struct WideCard: View {
-    
+
     @StateObject var themeManager = ThemeManager()
-    
+
     let place: Place
-    
+
     init(place: Place) {
         self.place = place
     }
-    
+
     var body: some View {
         NavigationLink(destination: PlaceDetailView(place: place)) {
             VStack {
@@ -18,7 +18,7 @@ struct WideCard: View {
                     // Image("home-profile-bg")
                     //     .resizable()
                     //     .frame(width: 300, height: 200)
-                    
+
                     HStack {
                         VStack(alignment: .leading) {
                             Text(place.name)
@@ -29,6 +29,17 @@ struct WideCard: View {
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .frame(alignment: .bottomLeading)
+
+                            ZStack {
+                                Text(place.type.formatTagName())
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.bgTextColor)
+                            }
+                            .padding(.horizontal, 5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(themeManager.selectedTheme.accentColor)
+                            )
                         }
 
                         Spacer()
@@ -40,13 +51,13 @@ struct WideCard: View {
                             .font(themeManager.selectedTheme.bodyTextFont)
                             .foregroundColor(.white)
                     }
-                    .padding(.top, 150)
+                    .padding(.top, 130)
                     .padding(.horizontal, 15)
                     .background(
                         Rectangle()
                             .fill(Color.black.opacity(0.7))
-                            .frame(width: 300, height: 50)
-                            .padding(.top, 150)
+                            .frame(width: 300, height: 70)
+                            .padding(.top, 130)
                     )
                 }
                 .frame(width: 300, height: 200)

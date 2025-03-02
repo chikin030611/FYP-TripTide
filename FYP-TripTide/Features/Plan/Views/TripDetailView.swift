@@ -4,11 +4,11 @@ struct TripDetailView: View {
     @ObservedObject var viewModel: TripDetailViewModel
     @StateObject private var themeManager = ThemeManager()
     @State private var isDescriptionExpanded = false
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
-                VStack() {
+                VStack {
                     ZStack {
                         Image(viewModel.trip.image)
                             .resizable()
@@ -18,12 +18,13 @@ struct TripDetailView: View {
                             .cornerRadius(20)
 
                         LinearGradient(
-                            gradient: Gradient(colors: [Color.black.opacity(0.01), Color.black.opacity(0.6)]),
+                            gradient: Gradient(colors: [
+                                Color.black.opacity(0.01), Color.black.opacity(0.6),
+                            ]),
                             startPoint: .top,
                             endPoint: .bottom
                         )
                         .cornerRadius(20)
-                        
 
                         VStack(alignment: .leading, spacing: 3) {
                             VStack(alignment: .leading, spacing: 12) {
@@ -35,8 +36,10 @@ struct TripDetailView: View {
                                 HStack(alignment: .top) {
                                     Image(systemName: "calendar")
                                         .frame(width: 20, height: 20)
-                                    Text("\(viewModel.trip.startDate.formatted(date: .long, time: .omitted)) - \(viewModel.trip.endDate.formatted(date: .long, time: .omitted))")
-                                        .font(themeManager.selectedTheme.bodyTextFont)
+                                    Text(
+                                        "\(viewModel.trip.startDate.formatted(date: .long, time: .omitted)) - \(viewModel.trip.endDate.formatted(date: .long, time: .omitted))"
+                                    )
+                                    .font(themeManager.selectedTheme.bodyTextFont)
                                 }
                                 .padding(.horizontal, 8)
                                 .background(
@@ -69,7 +72,7 @@ struct TripDetailView: View {
                                 .font(themeManager.selectedTheme.bodyTextFont)
                                 .foregroundColor(themeManager.selectedTheme.primaryColor)
                                 .lineLimit(isDescriptionExpanded ? nil : 3)
-                            
+
                         }
                         if viewModel.trip.description.count > 150 {
                             Button(action: {
@@ -94,7 +97,7 @@ struct TripDetailView: View {
                                 .foregroundColor(themeManager.selectedTheme.primaryColor)
 
                             Spacer()
-                            
+
                             HStack(alignment: .center) {
                                 Image(systemName: "heart.fill")
                                     .frame(width: 20, height: 20)
@@ -121,22 +124,21 @@ struct TripDetailView: View {
                         // Places
                         DisclosureGroup(
                             content: {
-                                ForEach(viewModel.trip.touristAttractions) { attraction in
-                                    Text(attraction.name)
-                                }
+                                CardGroup(cards: viewModel.trip.touristAttractions.map { Card(place: $0) }, style: .wide)
                             },
                             label: {
-                                Text("Tourist Attractions (\(viewModel.trip.touristAttractions.count))")
-                                    .font(themeManager.selectedTheme.titleFont)
-                                    .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                Text(
+                                    "Tourist Attractions (\(viewModel.trip.touristAttractions.count))"
+                                )
+                                .font(themeManager.selectedTheme.titleFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
                             }
                         )
 
                         DisclosureGroup(
                             content: {
-                                ForEach(viewModel.trip.restaurants) { restaurant in
-                                    Text(restaurant.name)
-                                }
+                                CardGroup(cards: viewModel.trip.restaurants.map { Card(place: $0) }, style: .wide)
+
                             },
                             label: {
                                 Text("Restaurants (\(viewModel.trip.restaurants.count))")
@@ -147,9 +149,7 @@ struct TripDetailView: View {
 
                         DisclosureGroup(
                             content: {
-                                ForEach(viewModel.trip.lodgings) { lodging in
-                                    Text(lodging.name)
-                                }
+                                CardGroup(cards: viewModel.trip.lodgings.map { Card(place: $0) }, style: .wide)
                             },
                             label: {
                                 Text("Lodgings (\(viewModel.trip.lodgings.count))")

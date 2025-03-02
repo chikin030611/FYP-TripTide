@@ -205,6 +205,7 @@ struct EditButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 25)
                     .fill(themeManager.selectedTheme.backgroundColor)
             )
+            .opacity(configuration.isPressed ? 0.4 : 1.0)
     }
 }
 
