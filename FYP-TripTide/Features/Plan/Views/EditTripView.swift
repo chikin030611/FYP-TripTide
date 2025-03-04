@@ -10,6 +10,8 @@ struct EditTripView: View {
     @State private var startDate: Date?
     @State private var endDate: Date?
     @State private var hasChanges: Bool = false
+    @State private var showDeleteAlert: Bool = false
+    @State private var showItinerarySheet: Bool = false
     
     // Add these properties to store original values
     private let originalName: String
@@ -164,6 +166,17 @@ struct EditTripView: View {
                         .foregroundColor(themeManager.selectedTheme.accentColor)
                 }
             }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 16) {
+                    Button(action: {
+                        showDeleteAlert = true
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundColor(themeManager.selectedTheme.warningColor)
+                    }
+                }
+            }
         }
         .alert("Discard Changes?", isPresented: $showCancelAlert) {
             Button("Cancel", role: .cancel) { }
@@ -172,6 +185,15 @@ struct EditTripView: View {
             }
         } message: {
             Text("Are you sure you want to discard your changes?")
+        }
+        .alert("Delete Trip", isPresented: $showDeleteAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                viewModel.deleteTrip()
+                dismiss()
+            }
+        } message: {
+            Text("Are you sure you want to delete this trip? This action cannot be undone.")
         }
         .onAppear {
             // Set initial dates

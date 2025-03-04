@@ -2,22 +2,28 @@ import Foundation
 
 class PlanTabViewModel: ObservableObject {
     @Published var trips: [Trip] = []
-
-    init() {
-        self.trips = [
-            Trip.sampleTrip,
-            Trip(
-                id: "2",
-                name: "Trip to Hong Kong",
-                description: "A trip to Tokyo",
-                touristAttractions: [],
-                restaurants: [],
-                lodgings: [],
-                startDate: Calendar.current.date(byAdding: .day, value: 1, to: Date())!,
-                endDate: Calendar.current.date(byAdding: .day, value: 7, to: Date())!
-            )
-        ]
+    @Published var isLoading: Bool = false
+    @Published var error: String?
+    
+    private let tripsAPI = TripsAPIController.shared
+    
+    @MainActor
+    func fetchTrips() {
+        isLoading = true
+        error = nil
+        
+        Task {
+            do {
+                trips = try await tripsAPI.fetchTrips()
+                isLoading = false
+            } catch {
+                if let apiError = error as? APIError {
+                    self.error = apiError.localizedDescription
+                } else {
+                    self.error = error.localizedDescription
+                }
+                isLoading = false
+            }
+        }
     }
-    
-    
 }

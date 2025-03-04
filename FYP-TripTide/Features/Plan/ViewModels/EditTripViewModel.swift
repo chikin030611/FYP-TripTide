@@ -20,4 +20,9 @@ class EditTripViewModel: ObservableObject {
         // Here you would typically call your database service to update the trip
         print("Updating trip: \(trip.name)")
     }
+
+    func deleteTrip() {
+        // Implement your delete logic here
+        // This might involve calling an API or removing from local storage
+    }
 }

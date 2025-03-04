@@ -2,6 +2,7 @@ import Foundation
 
 struct Trip: Identifiable {
     var id: String
+    var userId: String
     var name: String
     var description: String
     var touristAttractions: [Place]
@@ -10,6 +11,8 @@ struct Trip: Identifiable {
     var startDate: Date
     var endDate: Date
     var image: String
+
+    var dailyItineraries: [DailyItinerary]?
     
     static let defaultImages = [
         "trip_default_1",
@@ -28,6 +31,7 @@ struct Trip: Identifiable {
     }
     
     init(id: String = UUID().uuidString,
+        userId: String,
         name: String,
         description: String,
         touristAttractions: [Place] = [],
@@ -37,6 +41,7 @@ struct Trip: Identifiable {
         endDate: Date) {
         
         self.id = id
+        self.userId = userId
         self.name = name
         self.description = description
         self.touristAttractions = touristAttractions
@@ -45,9 +50,12 @@ struct Trip: Identifiable {
         self.startDate = startDate
         self.endDate = endDate
         self.image = Trip.defaultImages.randomElement() ?? Trip.defaultImages[0]
+        self.dailyItineraries = []
     }
 }
 
+
+// Sample Data
 extension Trip {
     static let touristAttractions = [
         Place(
@@ -297,6 +305,7 @@ extension Trip {
     
     static let sampleTrip = Trip(
         id: "1",
+        userId: "1",
         name: "Trip to Hong Kong",
         description: "Experience the dynamic energy of Hong Kong over 3 unforgettable days. Start in Central, where gleaming skyscrapers meet traditional temples. Take the iconic Star Ferry across Victoria Harbour for breathtaking city views, then ride the historic Peak Tram to Victoria Peak for panoramic vistas of the city and surrounding islands. \nExplore the bustling streets of Mong Kok, where neon signs illuminate night markets selling everything from street food to electronics. Don't miss local favorites like dim sum at Tim Ho Wan and egg waffles from street vendors. \nEnd your journey with a visit to Lantau Island to see the majestic Tian Tan Buddha, followed by a peaceful escape to the fishing village of Tai O, where traditional stilt houses offer a glimpse into Hong Kong's past.",
         touristAttractions: Trip.touristAttractions,
@@ -307,3 +316,15 @@ extension Trip {
     )
 }
 
+extension Trip {
+    func printTrip() {
+        print("\n\n\n=======================")
+        print("Trip: \(name)")
+        print("Description: \(description)")
+        print("Start Date: \(startDate)")
+        print("End Date: \(endDate)")
+        print("Tourist Attractions: \(touristAttractions.map { $0.id })")
+        print("Restaurants: \(restaurants.map { $0.id })")
+        print("Lodgings: \(lodgings.map { $0.id })")
+    }
+}

@@ -10,6 +10,7 @@ class CreateTripViewModel: ObservableObject {
         
         self.trip = Trip(
             id: UUID().uuidString,  // Generate a proper UUID
+            userId: "1",
             name: "",
             description: "",
             startDate: startOfToday,

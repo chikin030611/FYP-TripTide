@@ -189,6 +189,17 @@ struct TripDetailView: View {
             .padding(.vertical, 8)
             .background(themeManager.selectedTheme.appBackgroundColor)
             .frame(maxWidth: .infinity)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        viewModel.trip.printTrip()
+                    }) {
+                        Text("Print Trip")
+                    }
+                }
+            }
         }
     }
 }
+
+

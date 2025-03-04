@@ -141,4 +141,6 @@ enum APIError: Error {
     case decodingError
     case networkError
     case unauthorized
+    case invalidResponse
+    case serverError(statusCode: Int)
 } 

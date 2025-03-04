@@ -37,6 +37,7 @@ struct UITestView: View {
     init() {
         trip = Trip(
             id: "1",
+            userId: "1",
             name: "Trip to Tokyo",
             description: "A trip to Tokyo",
             touristAttractions: [place],
