@@ -2,32 +2,37 @@ import Foundation
 
 class CreateTripViewModel: ObservableObject {
     @Published var trip: Trip
+    private let tripsAPI = TripsAPIController.shared
 
     init() {
-        // Initialize with nil dates - they will be set when user selects them
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())
-        
+
         self.trip = Trip(
-            id: UUID().uuidString,  // Generate a proper UUID
+            id: UUID().uuidString,
             userId: "1",
             name: "",
             description: "",
+            touristAttractionsIds: [],
+            restaurantsIds: [],
+            lodgingsIds: [],
             startDate: startOfToday,
             endDate: startOfToday
         )
     }
 
-    func createTrip() {
-        // Convert dates to user's timezone for display
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
+    func createTrip() async {
+        // Ensure dates are set before creating trip
+        guard trip.startDate != nil && trip.endDate != nil else {
+            print("Error: Dates are required")
+            return
+        }
         
-        print("Creating trip: \(trip.name)")
-        print("Description: \(trip.description)")
-        print("Start date (local): \(formatter.string(from: trip.startDate))")
-        print("End date (local): \(formatter.string(from: trip.endDate))")
+        do {
+            let newTrip = try await tripsAPI.createTrip(trip: trip)
+            trip = newTrip
+        } catch {
+            print("Error creating trip: \(error)")
+        }
     }
-
 }

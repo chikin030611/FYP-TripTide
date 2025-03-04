@@ -155,6 +155,55 @@ class TripsAPIController {
         let tripResponse = try decoder.decode(TripResponse.self, from: data)
         return tripResponse.toTrip()
     }
+
+    func createTrip(trip: Trip) async throws -> Trip {
+        guard let url = URL(string: "\(baseURL)/trips") else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let token = await AuthManager.shared.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw APIError.unauthorized
+        }
+        
+        let tripRequest = CreateTripRequest(
+            name: trip.name,
+            description: trip.description,
+            startDate: trip.startDate,
+            endDate: trip.endDate,
+            image: trip.image
+        )
+
+        print("Trip request: \(tripRequest)")
+
+        let encoder = JSONEncoder()
+        request.httpBody = try encoder.encode(tripRequest)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        if httpResponse.statusCode == 401 {
+            throw APIError.unauthorized
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.serverError(statusCode: httpResponse.statusCode)
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+
+        let tripResponse = try decoder.decode(TripResponse.self, from: data)
+        return tripResponse.toTrip()
+    }
 }
 
 

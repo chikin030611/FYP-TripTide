@@ -9,6 +9,8 @@ struct CreateTripView: View {
     @State private var startDate: Date?
     @State private var endDate: Date?
     @State private var showToast: Bool = false
+    @State private var showDateValidationToast: Bool = false
+    @State private var toastMessage: String = ""
     @Environment(\.dismiss) private var dismiss
     
     var dateRangeToHighlight: ClosedRange<Date>? {
@@ -59,6 +61,9 @@ struct CreateTripView: View {
                                     .font(themeManager.selectedTheme.bodyTextFont)
                                 Text("Dates")
                                     .font(themeManager.selectedTheme.boldBodyTextFont)
+                                Text("*")
+                                    .font(themeManager.selectedTheme.boldBodyTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.warningColor)
                             }
                             .padding(.bottom, 5)
 
@@ -102,17 +107,15 @@ struct CreateTripView: View {
 
                 VStack(spacing: 8) {
                     if showToast {
-                        Toast(message: "Please enter a name for your trip.", isPresented: $showToast)
+                        Toast(message: toastMessage, isPresented: $showToast)
                     }
                     
                     Button(action: {
-                        if !viewModel.trip.name.isEmpty {
-                            viewModel.createTrip()
-                            isPresented = false
-                            dismiss()
-                        } else {
-                            withAnimation {
-                                showToast = true
+                        if validateForm() {
+                            Task {
+                                await viewModel.createTrip()
+                                isPresented = false
+                                dismiss()
                             }
                         }
                     }) {
@@ -173,5 +176,28 @@ struct CreateTripView: View {
             isPresented = false
             dismiss()
         }
+    }
+    
+    private func validateForm() -> Bool {
+        if viewModel.trip.name.isEmpty {
+            toastMessage = "Please enter a name for your trip."
+            showToast = true
+            return false
+        }
+        
+        if startDate == nil || endDate == nil {
+            toastMessage = "Please select both start and end dates."
+            showToast = true
+            return false
+        }
+        
+        // Optional: Add validation for date range
+        if let start = startDate, let end = endDate, start > end {
+            toastMessage = "End date must be after start date."
+            showToast = true
+            return false
+        }
+        
+        return true
     }
 }

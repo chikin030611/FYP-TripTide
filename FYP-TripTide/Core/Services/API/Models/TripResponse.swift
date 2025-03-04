@@ -48,3 +48,19 @@ struct UpdateTripRequest: Codable {
         self.endDate = Int64(endDate.timeIntervalSince1970 * 1000)
     }
 } 
+
+struct CreateTripRequest: Codable {
+    let name: String
+    let description: String
+    let startDate: Int64
+    let endDate: Int64
+    let image: String
+
+    init(name: String, description: String, startDate: Date, endDate: Date, image: String) {
+        self.name = name
+        self.description = description
+        self.startDate = Int64(startDate.timeIntervalSince1970 * 1000)
+        self.endDate = Int64(endDate.timeIntervalSince1970 * 1000)
+        self.image = image
+    }
+}
