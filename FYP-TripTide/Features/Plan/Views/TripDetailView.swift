@@ -121,42 +121,67 @@ struct TripDetailView: View {
                             .background(themeManager.selectedTheme.primaryColor)
                             .frame(height: 1)
 
-                        // Places
-                        DisclosureGroup(
-                            content: {
-                                CardGroup(cards: viewModel.trip.touristAttractions.map { Card(place: $0) }, style: .wide)
-                            },
-                            label: {
-                                Text(
-                                    "Tourist Attractions (\(viewModel.trip.touristAttractions.count))"
-                                )
-                                .font(themeManager.selectedTheme.titleFont)
-                                .foregroundColor(themeManager.selectedTheme.primaryColor)
-                            }
-                        )
+                        if viewModel.isLoading {
+                            ProgressView("Loading places...")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding()
+                        } else if let error = viewModel.error {
+                            Text("Error: \(error)")
+                                .foregroundColor(themeManager.selectedTheme.warningColor)
+                                .padding()
+                        } else {
+                            // Places sections
+                            DisclosureGroup(
+                                content: {
+                                    if viewModel.touristAttractionsCards.isEmpty {
+                                        Text("No tourist attractions saved")
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                            .padding()
+                                    } else {
+                                        CardGroup(cards: viewModel.touristAttractionsCards, style: .wide)
+                                    }
+                                },
+                                label: {
+                                    Text("Tourist Attractions (\(viewModel.touristAttractionsCards.count))")
+                                        .font(themeManager.selectedTheme.titleFont)
+                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                }
+                            )
 
-                        DisclosureGroup(
-                            content: {
-                                CardGroup(cards: viewModel.trip.restaurants.map { Card(place: $0) }, style: .wide)
+                            DisclosureGroup(
+                                content: {
+                                    if viewModel.restaurantsCards.isEmpty {
+                                        Text("No restaurants saved")
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                            .padding()
+                                    } else {
+                                        CardGroup(cards: viewModel.restaurantsCards, style: .wide)
+                                    }
+                                },
+                                label: {
+                                    Text("Restaurants (\(viewModel.restaurantsCards.count))")
+                                        .font(themeManager.selectedTheme.titleFont)
+                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                }
+                            )
 
-                            },
-                            label: {
-                                Text("Restaurants (\(viewModel.trip.restaurants.count))")
-                                    .font(themeManager.selectedTheme.titleFont)
-                                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                            }
-                        )
-
-                        DisclosureGroup(
-                            content: {
-                                CardGroup(cards: viewModel.trip.lodgings.map { Card(place: $0) }, style: .wide)
-                            },
-                            label: {
-                                Text("Lodgings (\(viewModel.trip.lodgings.count))")
-                                    .font(themeManager.selectedTheme.titleFont)
-                                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                            }
-                        )
+                            DisclosureGroup(
+                                content: {
+                                    if viewModel.lodgingsCards.isEmpty {
+                                        Text("No lodgings saved")
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                            .padding()
+                                    } else {
+                                        CardGroup(cards: viewModel.lodgingsCards, style: .wide)
+                                    }
+                                },
+                                label: {
+                                    Text("Lodgings (\(viewModel.lodgingsCards.count))")
+                                        .font(themeManager.selectedTheme.titleFont)
+                                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                }
+                            )
+                        }
                     }
                     .padding()
 
@@ -198,6 +223,9 @@ struct TripDetailView: View {
                     }
                 }
             }
+        }
+        .task {
+            await viewModel.fetchPlaces()
         }
     }
 }

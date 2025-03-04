@@ -8,7 +8,7 @@ class PlacesAPIController {
     private let tagsCacheDuration: TimeInterval = 300 // 5 minutes
     private var lastTagsFetchTime: [String: Date] = [:]
     
-    func fetchPlaces(type: String, limit: Int) async throws -> [PlaceBasicData] {
+    func fetchPlacesByType(type: String, limit: Int) async throws -> [PlaceBasicData] {
         guard let url = URL(string: "\(APIConfig.baseURL)/places?type=\(type)&limit=\(limit)") else {
             throw APIError.invalidURL
         }
@@ -16,8 +16,17 @@ class PlacesAPIController {
         let (data, _) = try await URLSession.shared.data(from: url)
         return try JSONDecoder().decode([PlaceBasicData].self, from: data)
     }
-    
-    func fetchPlaceDetail(id: String) async throws -> PlaceDetailResponse {
+
+    func fetchPlaceBasicById(id: String) async throws -> PlaceBasicData {
+        guard let url = URL(string: "\(APIConfig.baseURL)/places/\(id)/basic") else {
+            throw APIError.invalidURL
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(PlaceBasicData.self, from: data)
+    }
+
+    func fetchPlaceDetailById(id: String) async throws -> PlaceDetailResponse {
         // Check cache first
         if let cached = await PlaceCache.shared.get(id) {
             return cached

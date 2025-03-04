@@ -23,17 +23,17 @@ class PlaceDetailViewModel: ObservableObject {
         
         // Fetch the actual data
         Task {
-            await fetchPlaceDetail(id: placeId)
+            await fetchPlaceDetailById(id: placeId)
         }
     }
     
     @MainActor
-    private func fetchPlaceDetail(id: String) async {
+    private func fetchPlaceDetailById(id: String) async {
         isLoading = true
         defer { isLoading = false }
         
         do {
-            let detail = try await PlacesAPIController.shared.fetchPlaceDetail(id: id)
+            let detail = try await PlacesAPIController.shared.fetchPlaceDetailById(id: id)
             
             // Convert API response to Place model
             self.place = Place(

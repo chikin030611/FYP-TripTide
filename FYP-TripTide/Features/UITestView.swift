@@ -40,9 +40,9 @@ struct UITestView: View {
             userId: "1",
             name: "Trip to Tokyo",
             description: "A trip to Tokyo",
-            touristAttractions: [place],
-            restaurants: [],
-            lodgings: [],
+            touristAttractionsIds: [place.id],
+            restaurantsIds: [],
+            lodgingsIds: [],
             startDate: Date(),
             endDate: Date()
         )

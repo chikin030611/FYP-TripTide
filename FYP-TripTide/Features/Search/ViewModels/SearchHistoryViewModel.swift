@@ -39,7 +39,7 @@ class SearchHistoryViewModel: ObservableObject {
     
     private func getPlace(by id: String) async -> Place? {
         do {
-            let placeDetail = try await PlacesAPIController.shared.fetchPlaceDetail(id: id)
+            let placeDetail = try await PlacesAPIController.shared.fetchPlaceDetailById(id: id)
             return placeDetail.toPlace()
         } catch {
             print("Error fetching place details: \(error)")

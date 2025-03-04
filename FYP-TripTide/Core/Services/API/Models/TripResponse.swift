@@ -1,3 +1,5 @@
+import Foundation
+
 struct TripResponse: Codable {
     let id: String
     let name: String
@@ -17,9 +19,9 @@ struct TripResponse: Codable {
             userId: String(user.id),
             name: name,
             description: description,
-            touristAttractions: [], // These will need to be fetched separately
-            restaurants: [],
-            lodgings: [],
+            touristAttractionsIds: touristAttractionIds,
+            restaurantsIds: restaurantIds,
+            lodgingsIds: lodgingIds,
             startDate: startDate,
             endDate: endDate
         )
