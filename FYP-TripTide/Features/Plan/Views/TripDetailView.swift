@@ -10,7 +10,7 @@ struct TripDetailView: View {
             ScrollView {
                 VStack {
                     ZStack {
-                        Image(viewModel.trip.image)
+                        Image(viewModel.trip.image ?? "trip_default_1")
                             .resizable()
                             .frame(height: 400)
                             .clipped()

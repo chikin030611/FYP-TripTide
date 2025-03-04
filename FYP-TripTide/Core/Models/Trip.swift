@@ -38,7 +38,8 @@ struct Trip: Identifiable {
         restaurantsIds: [String] = [],
         lodgingsIds: [String] = [],
         startDate: Date,
-        endDate: Date) {
+        endDate: Date,
+        image: String? = nil) {
         
         self.id = id
         self.userId = userId
@@ -49,7 +50,7 @@ struct Trip: Identifiable {
         self.lodgingsIds = lodgingsIds
         self.startDate = startDate
         self.endDate = endDate
-        self.image = Trip.defaultImages.randomElement() ?? Trip.defaultImages[0]
+        self.image = image ?? Trip.defaultImages.randomElement() ?? Trip.defaultImages[0]
         self.dailyItineraries = []
     }
 }
@@ -326,5 +327,6 @@ extension Trip {
         print("Tourist Attractions: \(touristAttractionsIds)")
         print("Restaurants: \(restaurantsIds)")
         print("Lodgings: \(lodgingsIds)")
+        print("Image: \(image)")
     }
 }
