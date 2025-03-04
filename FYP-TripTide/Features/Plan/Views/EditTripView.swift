@@ -133,8 +133,15 @@ struct EditTripView: View {
                 
                 Button(action: {
                     if !viewModel.trip.name.isEmpty {
-                        viewModel.updateTrip()
-                        dismiss()
+                        Task {
+                            do {
+                                try await viewModel.updateTrip()
+                                dismiss()
+                            } catch {
+                                // Error is already handled in the view model
+                                print("Failed to update trip: \(error)")
+                            }
+                        }
                     } else {
                         withAnimation {
                             showToast = true

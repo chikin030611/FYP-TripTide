@@ -2,7 +2,11 @@ import Foundation
 
 class EditTripViewModel: ObservableObject {
     @Published var trip: Trip
+    @Published var isLoading: Bool = false
+    @Published var error: String?
+    
     private let originalTrip: Trip
+    private let tripsAPI = TripsAPIController.shared
 
     init(trip: Trip) {
         self.trip = trip
@@ -16,13 +20,43 @@ class EditTripViewModel: ObservableObject {
                trip.endDate != originalTrip.endDate
     }
     
-    func updateTrip() {
-        // Here you would typically call your database service to update the trip
-        print("Updating trip: \(trip.name)")
+    @MainActor
+    func updateTrip() async throws {
+        isLoading = true
+        error = nil
+        
+        do {
+            try await tripsAPI.updateTrip(trip)
+            isLoading = false
+        } catch {
+            isLoading = false
+            if let apiError = error as? APIError {
+                self.error = apiError.localizedDescription
+                throw apiError
+            } else {
+                self.error = error.localizedDescription
+                throw error
+            }
+        }
     }
 
+    @MainActor
     func deleteTrip() {
-        // Implement your delete logic here
-        // This might involve calling an API or removing from local storage
+        isLoading = true
+        error = nil
+        
+        Task {
+            do {
+                try await tripsAPI.deleteTrip(id: trip.id)
+                isLoading = false
+            } catch {
+                if let apiError = error as? APIError {
+                    self.error = apiError.localizedDescription
+                } else {
+                    self.error = error.localizedDescription
+                }
+                isLoading = false
+            }
+        }
     }
 }

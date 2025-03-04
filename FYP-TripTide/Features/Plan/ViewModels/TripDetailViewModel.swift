@@ -9,6 +9,7 @@ class TripDetailViewModel: ObservableObject {
     @Published var error: String?
     
     private let placesAPI = PlacesAPIController.shared
+    private let tripsAPI = TripsAPIController.shared
 
     init(trip: Trip) {
         self.trip = trip
@@ -19,16 +20,19 @@ class TripDetailViewModel: ObservableObject {
         isLoading = true
         error = nil
         
-        // Create async tasks for each type of place
-        async let touristAttractions = fetchPlacesById(ids: trip.touristAttractionsIds)
-        async let restaurants = fetchPlacesById(ids: trip.restaurantsIds)
-        async let lodgings = fetchPlacesById(ids: trip.lodgingsIds)
-        
         do {
-            // Wait for all fetches to complete
+            // First refresh the trip data
+            if let updatedTrip = try await tripsAPI.fetchTrip(id: trip.id) {
+                self.trip = updatedTrip
+            }
+            
+            // Then fetch all places
+            async let touristAttractions = fetchPlacesById(ids: trip.touristAttractionsIds)
+            async let restaurants = fetchPlacesById(ids: trip.restaurantsIds)
+            async let lodgings = fetchPlacesById(ids: trip.lodgingsIds)
+            
             let (fetchedAttractions, fetchedRestaurants, fetchedLodgings) = try await (touristAttractions, restaurants, lodgings)
             
-            // Convert PlaceBasicData to Cards
             touristAttractionsCards = fetchedAttractions.map { Card(place: $0.toPlace()) }
             restaurantsCards = fetchedRestaurants.map { Card(place: $0.toPlace()) }
             lodgingsCards = fetchedLodgings.map { Card(place: $0.toPlace()) }

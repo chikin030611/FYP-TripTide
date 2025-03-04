@@ -33,3 +33,17 @@ struct UserResponse: Codable {
     let username: String
     let email: String
 }
+
+struct UpdateTripRequest: Codable {
+    let name: String
+    let description: String
+    let startDate: Int64
+    let endDate: Int64
+    
+    init(name: String, description: String, startDate: Date, endDate: Date) {
+        self.name = name
+        self.description = description
+        self.startDate = Int64(startDate.timeIntervalSince1970 * 1000)
+        self.endDate = Int64(endDate.timeIntervalSince1970 * 1000)
+    }
+} 

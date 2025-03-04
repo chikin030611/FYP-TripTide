@@ -193,7 +193,14 @@ struct TripDetailView: View {
             // Bottom Bar
             VStack {
                 HStack {
-                    NavigationLink(destination: EditTripView(trip: viewModel.trip)) {
+                    NavigationLink {
+                        EditTripView(trip: viewModel.trip)
+                            .onDisappear {
+                                Task {
+                                    await viewModel.fetchPlaces()
+                                }
+                            }
+                    } label: {
                         Text("Edit")
                             .font(themeManager.selectedTheme.bodyTextFont)
                             .foregroundColor(themeManager.selectedTheme.accentColor)
