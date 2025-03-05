@@ -49,9 +49,7 @@ struct EditTripView: View {
 
     private func handleDelete() {
         Task {
-            print("🔄 Starting delete process...")
             await viewModel.deleteTrip()
-            print("✅ Trip deleted successfully")
             presentationMode.wrappedValue.dismiss()
             onDelete?()
         }
@@ -129,9 +127,15 @@ struct EditTripView: View {
                         .padding(.bottom, 10)
 
                         CalendarView(
-                            selectedStartDate: $startDate,
-                            selectedEndDate: $endDate,
-                            highlightedRange: dateRangeToHighlight
+                            selectedStartDate: Binding(
+                                get: { viewModel.startDate },
+                                set: { viewModel.updateStartDate($0) }
+                            ),
+                            selectedEndDate: Binding(
+                                get: { viewModel.endDate },
+                                set: { viewModel.updateEndDate($0) }
+                            ),
+                            highlightedRange: viewModel.dateRangeToHighlight
                         )
                     }
                     .padding(.horizontal)
@@ -141,24 +145,19 @@ struct EditTripView: View {
             }
 
             VStack(spacing: 8) {
-                if showToast {
-                    Toast(message: "Please enter a name for your trip.", isPresented: $showToast)
+                if viewModel.showToast {
+                    Toast(message: viewModel.toastMessage, isPresented: $viewModel.showToast)
                 }
                 
                 Button(action: {
-                    if !viewModel.trip.name.isEmpty {
+                    if viewModel.validateForm() {
                         Task {
                             do {
                                 try await viewModel.updateTrip()
                                 presentationMode.wrappedValue.dismiss()
                             } catch {
-                                // Error is already handled in the view model
                                 print("Failed to update trip: \(error)")
                             }
-                        }
-                    } else {
-                        withAnimation {
-                            showToast = true
                         }
                     }
                 }) {
@@ -177,7 +176,7 @@ struct EditTripView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
-                    if hasUnsavedChanges() {
+                    if viewModel.hasChanges() {
                         showCancelAlert = true
                     } else {
                         presentationMode.wrappedValue.dismiss()

@@ -6,19 +6,8 @@ struct CreateTripView: View {
     @StateObject private var themeManager = ThemeManager()
     @Binding var isPresented: Bool
     @Binding var showCancelAlert: Bool
-    @State private var userDefinedDays: Int = 1
-    @State private var startDate: Date?
-    @State private var endDate: Date?
-    @State private var showToast: Bool = false
-    @State private var showDateValidationToast: Bool = false
-    @State private var toastMessage: String = ""
     @Environment(\.dismiss) private var dismiss
     
-    var dateRangeToHighlight: ClosedRange<Date>? {
-        guard let start = startDate, let end = endDate else { return nil }
-        return start <= end ? start...end : end...start
-    }
-
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottom) {
@@ -69,12 +58,12 @@ struct CreateTripView: View {
                             .padding(.bottom, 5)
 
                             HStack {
-                                Text("\(startDate?.formatted(date: .long, time: .omitted) ?? " ")")
+                                Text("\(viewModel.startDate?.formatted(date: .long, time: .omitted) ?? " ")")
                                     .font(themeManager.selectedTheme.bodyTextFont)
                                     
                                 Spacer()
 
-                                if endDate != nil {
+                                if viewModel.endDate != nil {
                                     Image(systemName: "arrow.right")
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                 } else {
@@ -83,7 +72,7 @@ struct CreateTripView: View {
 
                                 Spacer()
 
-                                Text("\(endDate?.formatted(date: .long, time: .omitted) ?? " ")")
+                                Text("\(viewModel.endDate?.formatted(date: .long, time: .omitted) ?? " ")")
                                     .font(themeManager.selectedTheme.bodyTextFont)
                             }
                             .padding(.horizontal, 10)
@@ -95,9 +84,15 @@ struct CreateTripView: View {
                             .padding(.bottom, 10)
 
                             CalendarView(
-                                selectedStartDate: $startDate,
-                                selectedEndDate: $endDate,
-                                highlightedRange: dateRangeToHighlight
+                                selectedStartDate: Binding(
+                                    get: { viewModel.startDate },
+                                    set: { viewModel.updateStartDate($0) }
+                                ),
+                                selectedEndDate: Binding(
+                                    get: { viewModel.endDate },
+                                    set: { viewModel.updateEndDate($0) }
+                                ),
+                                highlightedRange: viewModel.dateRangeToHighlight
                             )
                         }
                         .padding(.horizontal)
@@ -107,12 +102,12 @@ struct CreateTripView: View {
                 }
 
                 VStack(spacing: 8) {
-                    if showToast {
-                        Toast(message: toastMessage, isPresented: $showToast)
+                    if viewModel.showToast {
+                        Toast(message: viewModel.toastMessage, isPresented: $viewModel.showToast)
                     }
                     
                     Button(action: {
-                        if validateForm() {
+                        if viewModel.validateForm() {
                             Task {
                                 await viewModel.createTrip()
                                 if viewModel.tripCreated {
@@ -147,61 +142,16 @@ struct CreateTripView: View {
             } message: {
                 Text("Are you sure you want to cancel? Your changes will be lost.")
             }
-            .onChange(of: startDate) { oldValue, newValue in
-                if let date = newValue {
-                    // Standardize to start of day in user's timezone
-                    let calendar = Calendar.current
-                    let startOfDay = calendar.startOfDay(for: date)
-                    viewModel.trip.startDate = startOfDay
-                }
-            }
-            .onChange(of: endDate) { oldValue, newValue in
-                if let date = newValue {
-                    // Standardize to end of day in user's timezone
-                    let calendar = Calendar.current
-                    if let endOfDay = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: date) {
-                        viewModel.trip.endDate = endOfDay
-                    }
-                }
-            }
             .accentColor(themeManager.selectedTheme.accentColor)
         }
     }
     
     private func showCancelConfirmation() {
-        // Only show alert if there are changes
-        if !viewModel.trip.name.isEmpty || 
-           !viewModel.trip.description.isEmpty || 
-           startDate != nil || 
-           endDate != nil {
+        if viewModel.hasChanges() {
             showCancelAlert = true
         } else {
-            // If no changes, just dismiss
             isPresented = false
             dismiss()
         }
-    }
-    
-    private func validateForm() -> Bool {
-        if viewModel.trip.name.isEmpty {
-            toastMessage = "Please enter a name for your trip."
-            showToast = true
-            return false
-        }
-        
-        if startDate == nil || endDate == nil {
-            toastMessage = "Please select both start and end dates."
-            showToast = true
-            return false
-        }
-        
-        // Optional: Add validation for date range
-        if let start = startDate, let end = endDate, start > end {
-            toastMessage = "End date must be after start date."
-            showToast = true
-            return false
-        }
-        
-        return true
     }
 }
