@@ -23,7 +23,7 @@ struct Trip: Identifiable {
     ]
 
     var numOfDays: Int {
-        Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
+        (Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0) + 1
     }
     
     var savedCount: Int {
