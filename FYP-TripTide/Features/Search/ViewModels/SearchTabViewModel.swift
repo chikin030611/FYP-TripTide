@@ -50,6 +50,7 @@ class SearchTabViewModel: ObservableObject {
             self.restaurantCards = restaurantCards.map { Card(place: $0) }
             
             let lodgings = try await PlacesAPIController.shared.fetchPlacesByType(type: "lodging", limit: 5)
+            print("Lodgings: \(lodgings)")
             let lodgingCards = lodgings.map { $0.toPlace() }
             self.lodgingCards = lodgingCards.map { Card(place: $0) }
             
