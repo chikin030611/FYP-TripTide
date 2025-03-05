@@ -6,9 +6,10 @@ struct PlanTabView: View {
     @State private var isShowingCreateTrip = false
     @State private var isShowingCancelAlert = false
     @State private var interstitialSheetPresentation = false
+    @State private var navigationPath = NavigationPath()
 
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $navigationPath) {
             ZStack(alignment: .bottom) {
                 if viewModel.isLoading {
                     ProgressView("Loading trips...")
@@ -40,8 +41,8 @@ struct PlanTabView: View {
                         } else {
                             VStack(spacing: 16) {
                                 ForEach(viewModel.trips) { trip in
-                                    NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip))) {
-                                        TripCard(trip: trip)
+                                    NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip), navigationPath: $navigationPath)) {
+                                        TripCard(trip: trip, navigationPath: $navigationPath)
                                     }
                                     .padding(.bottom, 15)
                                 }
@@ -76,6 +77,13 @@ struct PlanTabView: View {
             }
             .onAppear {
                 if viewModel.trips.isEmpty {
+                    viewModel.fetchTrips()
+                }
+            }
+            .onChange(of: navigationPath) { oldValue, newValue in
+                if newValue.count == 0 {
+                    // We've returned to root, refresh the trips
+                    print("🔄 Returned to root, refreshing trips")
                     viewModel.fetchTrips()
                 }
             }

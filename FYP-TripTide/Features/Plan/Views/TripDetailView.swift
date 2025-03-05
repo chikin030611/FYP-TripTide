@@ -4,6 +4,9 @@ struct TripDetailView: View {
     @ObservedObject var viewModel: TripDetailViewModel
     @StateObject private var themeManager = ThemeManager()
     @State private var isDescriptionExpanded = false
+    @Binding var navigationPath: NavigationPath
+    @Environment(\.presentationMode) private var presentationMode
+    @State private var showingEditSheet = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -193,13 +196,8 @@ struct TripDetailView: View {
             // Bottom Bar
             VStack {
                 HStack {
-                    NavigationLink {
-                        EditTripView(trip: viewModel.trip)
-                            .onDisappear {
-                                Task {
-                                    await viewModel.fetchPlaces()
-                                }
-                            }
+                    Button {
+                        showingEditSheet = true
                     } label: {
                         Text("Edit")
                             .font(themeManager.selectedTheme.bodyTextFont)
@@ -233,6 +231,22 @@ struct TripDetailView: View {
         }
         .task {
             await viewModel.fetchPlaces()
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            NavigationStack {
+                EditTripView(
+                    trip: viewModel.trip,
+                    navigationPath: $navigationPath,
+                    onDelete: {
+                        print("🔄 Handling delete in TripDetailView")
+                        showingEditSheet = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            navigationPath = NavigationPath()
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                )
+            }
         }
     }
 }

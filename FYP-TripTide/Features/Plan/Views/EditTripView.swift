@@ -3,7 +3,8 @@ import SwiftUI
 struct EditTripView: View {
     @StateObject private var viewModel: EditTripViewModel
     @StateObject private var themeManager = ThemeManager()
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
+    @Binding var navigationPath: NavigationPath
     @State private var showCancelAlert: Bool = false
     @State private var showToast: Bool = false
     @State private var userDefinedDays: Int = 1
@@ -19,9 +20,13 @@ struct EditTripView: View {
     private let originalStartDate: Date?
     private let originalEndDate: Date?
     
+    var onDelete: (() -> Void)?
+    
     // Initialize with just the trip
-    init(trip: Trip) {
+    init(trip: Trip, navigationPath: Binding<NavigationPath>, onDelete: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: EditTripViewModel(trip: trip))
+        _navigationPath = navigationPath
+        self.onDelete = onDelete
         // Store original values
         self.originalName = trip.name
         self.originalDescription = trip.description
@@ -34,13 +39,22 @@ struct EditTripView: View {
         return start <= end ? start...end : end...start
     }
 
-    // Add this function to check for actual changes
     private func hasUnsavedChanges() -> Bool {
         if viewModel.trip.name != originalName { return true }
         if viewModel.trip.description != originalDescription { return true }
         if startDate != originalStartDate { return true }
         if endDate != originalEndDate { return true }
         return false
+    }
+
+    private func handleDelete() {
+        Task {
+            print("🔄 Starting delete process...")
+            await viewModel.deleteTrip()
+            print("✅ Trip deleted successfully")
+            presentationMode.wrappedValue.dismiss()
+            onDelete?()
+        }
     }
 
     var body: some View {
@@ -136,7 +150,7 @@ struct EditTripView: View {
                         Task {
                             do {
                                 try await viewModel.updateTrip()
-                                dismiss()
+                                presentationMode.wrappedValue.dismiss()
                             } catch {
                                 // Error is already handled in the view model
                                 print("Failed to update trip: \(error)")
@@ -166,7 +180,7 @@ struct EditTripView: View {
                     if hasUnsavedChanges() {
                         showCancelAlert = true
                     } else {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     }
                 }) {
                     Image(systemName: "chevron.left")
@@ -188,7 +202,7 @@ struct EditTripView: View {
         .alert("Discard Changes?", isPresented: $showCancelAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Discard", role: .destructive) {
-                dismiss()
+                presentationMode.wrappedValue.dismiss()
             }
         } message: {
             Text("Are you sure you want to discard your changes?")
@@ -196,8 +210,7 @@ struct EditTripView: View {
         .alert("Delete Trip", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                viewModel.deleteTrip()
-                dismiss()
+                handleDelete()
             }
         } message: {
             Text("Are you sure you want to delete this trip? This action cannot be undone.")

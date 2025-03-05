@@ -22,13 +22,15 @@ struct TripCard: View {
     }
     
     let trip: Trip
+    @Binding var navigationPath: NavigationPath
     
-    init(trip: Trip) {
+    init(trip: Trip, navigationPath: Binding<NavigationPath>) {
         self.trip = trip
+        self._navigationPath = navigationPath
     }
     
     var body: some View {
-        NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip))) {
+        NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip), navigationPath: $navigationPath)) {
             VStack {
                 ZStack {
                     // AsyncImageView(imageUrl: trip.image, width: cardWidth, height: cardHeight)
