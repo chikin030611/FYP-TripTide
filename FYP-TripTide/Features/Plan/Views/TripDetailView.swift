@@ -7,6 +7,7 @@ struct TripDetailView: View {
     @Binding var navigationPath: NavigationPath
     @Environment(\.presentationMode) private var presentationMode
     @State private var showingEditSheet = false
+    @State private var shouldRefresh = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -237,6 +238,13 @@ struct TripDetailView: View {
                 EditTripView(
                     trip: viewModel.trip,
                     navigationPath: $navigationPath,
+                    onUpdate: { updatedTrip in
+                        // Update the trip and refresh the view
+                        viewModel.trip = updatedTrip
+                        Task {
+                            await viewModel.fetchPlaces()
+                        }
+                    },
                     onDelete: {
                         print("🔄 Handling delete in TripDetailView")
                         showingEditSheet = false

@@ -20,12 +20,14 @@ struct EditTripView: View {
     private let originalStartDate: Date?
     private let originalEndDate: Date?
     
+    var onUpdate: ((Trip) -> Void)?
     var onDelete: (() -> Void)?
     
     // Initialize with just the trip
-    init(trip: Trip, navigationPath: Binding<NavigationPath>, onDelete: (() -> Void)? = nil) {
+    init(trip: Trip, navigationPath: Binding<NavigationPath>, onUpdate: ((Trip) -> Void)? = nil, onDelete: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: EditTripViewModel(trip: trip))
         _navigationPath = navigationPath
+        self.onUpdate = onUpdate
         self.onDelete = onDelete
         // Store original values
         self.originalName = trip.name
@@ -128,14 +130,20 @@ struct EditTripView: View {
 
                         CalendarView(
                             selectedStartDate: Binding(
-                                get: { viewModel.startDate },
-                                set: { viewModel.updateStartDate($0) }
+                                get: { startDate },
+                                set: { date in
+                                    startDate = date
+                                    viewModel.updateStartDate(date)
+                                }
                             ),
                             selectedEndDate: Binding(
-                                get: { viewModel.endDate },
-                                set: { viewModel.updateEndDate($0) }
+                                get: { endDate },
+                                set: { date in
+                                    endDate = date
+                                    viewModel.updateEndDate(date)
+                                }
                             ),
-                            highlightedRange: viewModel.dateRangeToHighlight
+                            highlightedRange: dateRangeToHighlight
                         )
                     }
                     .padding(.horizontal)
@@ -154,6 +162,7 @@ struct EditTripView: View {
                         Task {
                             do {
                                 try await viewModel.updateTrip()
+                                onUpdate?(viewModel.trip)
                                 presentationMode.wrappedValue.dismiss()
                             } catch {
                                 print("Failed to update trip: \(error)")
@@ -215,7 +224,7 @@ struct EditTripView: View {
             Text("Are you sure you want to delete this trip? This action cannot be undone.")
         }
         .onAppear {
-            // Set initial dates
+            // Initialize the local state with the view model's values
             startDate = viewModel.trip.startDate
             endDate = viewModel.trip.endDate
             // Add interceptor for the back button
