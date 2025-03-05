@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CreateTripView: View {
     @StateObject private var viewModel = CreateTripViewModel()
+    @EnvironmentObject private var planTabViewModel: PlanTabViewModel
     @StateObject private var themeManager = ThemeManager()
     @Binding var isPresented: Bool
     @Binding var showCancelAlert: Bool
@@ -114,8 +115,11 @@ struct CreateTripView: View {
                         if validateForm() {
                             Task {
                                 await viewModel.createTrip()
-                                isPresented = false
-                                dismiss()
+                                if viewModel.tripCreated {
+                                    planTabViewModel.fetchTrips()
+                                    isPresented = false
+                                    dismiss()
+                                }
                             }
                         }
                     }) {

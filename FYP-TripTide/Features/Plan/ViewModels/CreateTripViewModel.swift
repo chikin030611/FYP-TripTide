@@ -2,6 +2,7 @@ import Foundation
 
 class CreateTripViewModel: ObservableObject {
     @Published var trip: Trip
+    @Published var tripCreated = false
     private let tripsAPI = TripsAPIController.shared
 
     init() {
@@ -31,8 +32,10 @@ class CreateTripViewModel: ObservableObject {
         do {
             let newTrip = try await tripsAPI.createTrip(trip: trip)
             trip = newTrip
+            tripCreated = true
         } catch {
             print("Error creating trip: \(error)")
+            tripCreated = false
         }
     }
 }

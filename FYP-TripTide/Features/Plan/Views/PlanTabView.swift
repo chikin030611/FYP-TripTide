@@ -66,9 +66,14 @@ struct PlanTabView: View {
                 .shadow(radius: 5, y: 5)
             }
             .navigationTitle("Plan")
-            .sheet(isPresented: $interstitialSheetPresentation) {
+            .sheet(isPresented: $interstitialSheetPresentation, onDismiss: {
+                if viewModel.trips.isEmpty {
+                    viewModel.fetchTrips()
+                }
+            }) {
                 CreateTripView(isPresented: $isShowingCreateTrip, showCancelAlert: $isShowingCancelAlert)
                     .interactiveDismissDisabled(true)
+                    .environmentObject(viewModel)
             }
             .onChange(of: isShowingCreateTrip) { oldValue, newValue in
                 if newValue {
