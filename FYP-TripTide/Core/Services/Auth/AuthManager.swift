@@ -74,7 +74,7 @@ class AuthManager: ObservableObject {
             let response = try await AuthService.shared.validateToken(token: token)
             
             // Check if token is expired
-            if let exp = try? getTokenExpiration(from: token) {
+            if let exp = getTokenExpiration(from: token) {
                 let isExpired = exp < Date()
                 if isExpired {
                     try await refreshTokenIfNeeded()

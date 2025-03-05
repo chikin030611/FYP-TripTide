@@ -20,17 +20,7 @@ class HomeViewModel: ObservableObject {
     }
     
     func checkAuthAndFetchRecommendations() async {
-        do {
-            // Then fetch recommendations
-            await fetchRecommendations()
-        } catch {
-            if case APIError.unauthorized = error {
-                // Handle unauthorized error (e.g., redirect to login)
-                isUserLoggedIn = false
-            }
-            self.error = error
-            print("Error in auth check: \(error)")
-        }
+        await fetchRecommendations()
     }
     
     func fetchRecommendations() async {

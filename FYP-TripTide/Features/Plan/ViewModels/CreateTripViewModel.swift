@@ -76,12 +76,6 @@ class CreateTripViewModel: ObservableObject {
     }
 
     func createTrip() async {
-        // Ensure dates are set before creating trip
-        guard trip.startDate != nil && trip.endDate != nil else {
-            print("Error: Dates are required")
-            return
-        }
-        
         do {
             let newTrip = try await tripsAPI.createTrip(trip: trip)
             trip = newTrip
