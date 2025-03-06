@@ -4,6 +4,8 @@ struct HomeTabView: View {
     @StateObject private var viewModel = HomeViewModel()
     @StateObject var themeManager = ThemeManager()
     @StateObject var authManager = AuthManager.shared
+    @EnvironmentObject var tabController: TabController
+
     @State private var isCheckingAuth = true
     @State private var scrollOffset: CGFloat = 0
 
@@ -31,16 +33,19 @@ struct HomeTabView: View {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(themeManager.selectedTheme.secondaryColor)
                                 
-                                TextField("Search places...", text: .constant("")) // TODO: navigate to search tab
-                                    .textFieldStyle(.plain)
-                                    .autocorrectionDisabled()
+                                Text("Search places...")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
                             }
-                                .padding()
-                                .frame(height: 40)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 30)
-                                        .fill(themeManager.selectedTheme.backgroundColor)
-                                )
+                            .padding()
+                            .frame(width: geometry.size.width * 0.95, height: 40, alignment: .leading)
+                            .background(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .fill(themeManager.selectedTheme.backgroundColor)
+                            )
+                            .onTapGesture {
+                                tabController.switchToTab(2)
+                            }
 
                             Spacer()
 
@@ -61,7 +66,7 @@ struct HomeTabView: View {
                                     .padding(.bottom, 10)
 
                                 Button(action: {
-                                    print("Button pressed") // TODO: navigate to plan tab
+                                    tabController.switchToTab(3)
                                 }) {
                                     Text("Start Planning")
                                         .font(themeManager.selectedTheme.bodyTextFont)
