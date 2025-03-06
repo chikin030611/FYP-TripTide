@@ -16,7 +16,8 @@ struct ContentView: View {
     
     // Add StateObjects for tab view models to preserve their state
     @StateObject private var searchTabViewModel = SearchTabViewModel()
-
+    @StateObject private var tabController = TabController()
+    
     private var items: [BottomBarItem] {
         [
             BottomBarItem(icon: "paintbrush.fill", title: "UI Test", color: themeManager.selectedTheme.accentColor),
@@ -46,7 +47,12 @@ struct ContentView: View {
                     case 5:
                         UserTabView()
                     default:
-                        UITestView()
+                        // Show current view instead of UITestView
+                        if selectedIndex < 0 {
+                            EmptyView()
+                        } else {
+                            UITestView()
+                        }
                     }
                 }
             
@@ -62,6 +68,10 @@ struct ContentView: View {
         }
         .accentColor(themeManager.selectedTheme.accentColor)
         .environmentObject(themeManager)
+        .environmentObject(tabController)
+        .onChange(of: tabController.selectedTab) { oldValue, newValue in
+            selectedIndex = newValue
+        }
         .enableInjection()
     }
 }

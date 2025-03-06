@@ -84,12 +84,13 @@ class PlacesAPIController {
     }
     
     func fetchTags(type: String) async throws -> [Tag] {
-        // Check cache first
+        // Check cache first with proper type casting
         let cacheKey = "\(type)_tags" as NSString
         if let lastFetch = lastTagsFetchTime[type],
            Date().timeIntervalSince(lastFetch) < tagsCacheDuration,
-           let cachedTags = tagsCache.object(forKey: cacheKey) as? [Tag] {
-            return cachedTags
+           let cachedTags = tagsCache.object(forKey: cacheKey) as? NSArray,
+           let tags = cachedTags as? [Tag] {  // Safe casting
+            return tags
         }
         
         guard let url = URL(string: "\(APIConfig.baseURL)/places/tags?type=\(type)") else {
@@ -99,8 +100,8 @@ class PlacesAPIController {
         let (data, _) = try await URLSession.shared.data(from: url)
         let tags = try JSONDecoder().decode([Tag].self, from: data)
         
-        // Update cache
-        tagsCache.setObject(tags as NSArray, forKey: cacheKey)
+        // Update cache with proper type conversion
+        tagsCache.setObject(NSArray(array: tags), forKey: cacheKey)
         lastTagsFetchTime[type] = Date()
         
         return tags
@@ -133,11 +134,6 @@ class PlacesAPIController {
         
         if httpResponse.statusCode == 401 {
             throw APIError.unauthorized
-        }
-        
-        // Print the response for debugging
-        if let jsonString = String(data: data, encoding: .utf8) {
-            print("API Response: \(jsonString)")
         }
         
         // Decode the array directly

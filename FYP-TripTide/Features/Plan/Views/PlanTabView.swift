@@ -11,7 +11,9 @@ struct PlanTabView: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             ZStack(alignment: .bottom) {
-                if viewModel.isLoading {
+                if !viewModel.isAuthenticated {
+                    UnauthenticatedView()
+                } else if viewModel.isLoading {
                     ProgressView("Loading trips...")
                 } else if let error = viewModel.error {
                     VStack {
@@ -54,16 +56,18 @@ struct PlanTabView: View {
                     .padding(.top, 16)
                 }
 
-                Button(action: {
-                    isShowingCreateTrip = true
-                }) {
-                    Text("Create a new trip")
-                        .padding()
+                if viewModel.isAuthenticated {
+                    Button(action: {
+                        isShowingCreateTrip = true
+                    }) {
+                        Text("Create a new trip")
+                            .padding()
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 16)
+                    .shadow(radius: 5, y: 5)
                 }
-                .buttonStyle(PrimaryButtonStyle())
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 16)
-                .shadow(radius: 5, y: 5)
             }
             .navigationTitle("Plan")
             .sheet(isPresented: $interstitialSheetPresentation, onDismiss: {
@@ -81,7 +85,7 @@ struct PlanTabView: View {
                 }
             }
             .onAppear {
-                if viewModel.trips.isEmpty {
+                if viewModel.isAuthenticated {
                     viewModel.fetchTrips()
                 }
             }
@@ -93,5 +97,34 @@ struct PlanTabView: View {
                 }
             }
         }
+    }
+}
+
+private struct UnauthenticatedView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var tabController: TabController
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image("unauth_plan")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 200)
+            Text("Looks like you're not logged in :(")
+                .font(themeManager.selectedTheme.titleFont)
+                .foregroundColor(themeManager.selectedTheme.primaryColor)
+            Text("Get started by creating an account.")
+                .font(themeManager.selectedTheme.bodyTextFont)
+                .foregroundColor(themeManager.selectedTheme.secondaryColor)
+
+            Button(action: {
+                tabController.switchToTab(5)
+            }) {
+                Text("Get Started")
+                    .padding()
+            }
+            .buttonStyle(PrimaryButtonStyle())
+        }
+        .padding()
     }
 }
