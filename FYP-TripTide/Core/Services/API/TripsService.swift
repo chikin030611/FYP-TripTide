@@ -1,6 +1,6 @@
 import Foundation
 
-class TripsAPIController {
+class TripsService {
     private let baseURL = APIConfig.baseURL
     
     func fetchTrips() async throws -> [Trip] {
