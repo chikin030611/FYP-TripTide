@@ -10,7 +10,6 @@ class EditTripViewModel: ObservableObject {
     @Published var toastMessage: String = ""
     
     private let originalTrip: Trip
-    private let tripsAPI = TripsAPIController.shared
 
     init(trip: Trip) {
         self.trip = trip

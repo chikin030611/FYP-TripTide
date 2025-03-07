@@ -3,9 +3,6 @@ import Foundation
 class TripsAPIController {
     private let baseURL = APIConfig.baseURL
     
-    static let shared = TripsAPIController()
-    private init() {}
-    
     func fetchTrips() async throws -> [Trip] {
         guard let url = URL(string: "\(baseURL)/trips") else {
             throw APIError.invalidURL

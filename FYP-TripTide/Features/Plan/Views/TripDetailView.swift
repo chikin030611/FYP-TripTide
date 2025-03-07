@@ -9,6 +9,8 @@ struct TripDetailView: View {
     @State private var showingEditSheet = false
     @State private var shouldRefresh = false
 
+
+    // TODO: fix the text on image padding -- different for trips that have no places and trips that have places
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {

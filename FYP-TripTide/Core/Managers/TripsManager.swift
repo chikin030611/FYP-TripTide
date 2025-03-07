@@ -6,7 +6,7 @@ class TripsManager: ObservableObject {
     @Published var error: String?
     
     static let shared = TripsManager()
-    private let tripsAPI = TripsAPIController.shared
+    private let tripsAPI = TripsAPIController()
     
     private init() {}
     

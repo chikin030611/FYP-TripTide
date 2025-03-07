@@ -8,8 +8,6 @@ class CreateTripViewModel: ObservableObject {
     @Published var toastMessage: String = ""
     @Published var showToast: Bool = false
     
-    private let tripsAPI = TripsAPIController.shared
-
     init() {
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())

@@ -9,8 +9,7 @@ class TripDetailViewModel: ObservableObject {
     @Published var error: String?
     
     private let placesAPI = PlacesAPIController.shared
-    private let tripsAPI = TripsAPIController.shared
-
+    private let tripsManager = TripsManager.shared
     init(trip: Trip) {
         self.trip = trip
     }
@@ -22,7 +21,7 @@ class TripDetailViewModel: ObservableObject {
         
         do {
             // First refresh the trip data
-            if let updatedTrip = try await tripsAPI.fetchTrip(id: trip.id) {
+            if let updatedTrip = try await tripsManager.fetchTrip(id: trip.id) {
                 self.trip = updatedTrip
             }
             
@@ -70,7 +69,7 @@ class TripDetailViewModel: ObservableObject {
     @MainActor
     func fetchTrip() async throws {
         do {
-            if let updatedTrip = try await TripsManager.shared.fetchTrip(id: trip.id) {
+            if let updatedTrip = try await tripsManager.fetchTrip(id: trip.id) {
                 self.trip = updatedTrip
             }
         } catch {
