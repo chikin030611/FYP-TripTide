@@ -115,4 +115,24 @@ class TripsManager: ObservableObject {
             }
         } 
     }
+    
+    @MainActor
+    func addPlaceToTrip(tripId: String, placeId: String, placeType: String) async throws {
+        isLoading = true
+        error = nil
+        
+        do {
+            try await tripsAPI.addPlaceToTrip(tripId: tripId, placeId: placeId, placeType: placeType)
+        } catch {
+            if let apiError = error as? APIError {
+                self.error = apiError.localizedDescription
+                throw apiError
+            } else {
+                self.error = error.localizedDescription
+                throw error
+            }
+        }
+        
+        isLoading = false
+    }
 } 
