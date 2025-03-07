@@ -77,7 +77,7 @@ class CreateTripViewModel: ObservableObject {
 
     func createTrip() async {
         do {
-            let newTrip = try await tripsAPI.createTrip(trip: trip)
+            let newTrip = try await TripsManager.shared.createTrip(trip)
             trip = newTrip
             tripCreated = true
         } catch {

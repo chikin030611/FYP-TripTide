@@ -102,7 +102,7 @@ struct PlanTabView: View {
 
 private struct UnauthenticatedView: View {
     @EnvironmentObject var themeManager: ThemeManager
-    @EnvironmentObject var tabController: TabController
+    @EnvironmentObject var tabManager: TabManager
     
     var body: some View {
         VStack(spacing: 16) {
@@ -118,7 +118,7 @@ private struct UnauthenticatedView: View {
                 .foregroundColor(themeManager.selectedTheme.secondaryColor)
 
             Button(action: {
-                tabController.switchToTab(5)
+                tabManager.switchToTab(5)
             }) {
                 Text("Get Started")
                     .padding()

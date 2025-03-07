@@ -6,7 +6,7 @@ class PlanTabViewModel: ObservableObject {
     @Published var error: String?
     @Published var isAuthenticated: Bool
     
-    private let tripsAPI = TripsAPIController.shared
+    private let tripsManager = TripsManager.shared
     private let authManager = AuthManager.shared
     
     @MainActor
@@ -16,21 +16,11 @@ class PlanTabViewModel: ObservableObject {
 
     @MainActor
     func fetchTrips() {
-        isLoading = true
-        error = nil
-        
         Task {
-            do {
-                trips = try await tripsAPI.fetchTrips()
-                isLoading = false
-            } catch {
-                if let apiError = error as? APIError {
-                    self.error = apiError.localizedDescription
-                } else {
-                    self.error = error.localizedDescription
-                }
-                isLoading = false
-            }
+            await tripsManager.fetchTrips()
+            self.trips = tripsManager.trips
+            self.isLoading = tripsManager.isLoading
+            self.error = tripsManager.error
         }
     }
 }

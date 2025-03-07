@@ -4,7 +4,7 @@ struct HomeTabView: View {
     @StateObject private var viewModel = HomeViewModel()
     @StateObject var themeManager = ThemeManager()
     @StateObject var authManager = AuthManager.shared
-    @EnvironmentObject var tabController: TabController
+    @EnvironmentObject var tabManager: TabManager
 
     @State private var isCheckingAuth = true
     @State private var scrollOffset: CGFloat = 0
@@ -44,7 +44,7 @@ struct HomeTabView: View {
                                     .fill(themeManager.selectedTheme.backgroundColor)
                             )
                             .onTapGesture {
-                                tabController.switchToTab(2)
+                                tabManager.switchToTab(2)
                             }
 
                             Spacer()
@@ -66,7 +66,7 @@ struct HomeTabView: View {
                                     .padding(.bottom, 10)
 
                                 Button(action: {
-                                    tabController.switchToTab(3)
+                                    tabManager.switchToTab(3)
                                 }) {
                                     Text("Start Planning")
                                         .font(themeManager.selectedTheme.bodyTextFont)

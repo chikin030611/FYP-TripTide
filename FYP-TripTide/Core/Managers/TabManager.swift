@@ -1,6 +1,6 @@
 import SwiftUI
 
-class TabController: ObservableObject {
+class TabManager: ObservableObject {
     @Published var selectedTab: Int = 0
     
     func switchToTab(_ tab: Int) {

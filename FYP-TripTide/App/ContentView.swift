@@ -16,7 +16,7 @@ struct ContentView: View {
     
     // Add StateObjects for tab view models to preserve their state
     @StateObject private var searchTabViewModel = SearchTabViewModel()
-    @StateObject private var tabController = TabController()
+    @StateObject private var tabManager = TabManager()
     
     private var items: [BottomBarItem] {
         [
@@ -68,8 +68,8 @@ struct ContentView: View {
         }
         .accentColor(themeManager.selectedTheme.accentColor)
         .environmentObject(themeManager)
-        .environmentObject(tabController)
-        .onChange(of: tabController.selectedTab) { oldValue, newValue in
+        .environmentObject(tabManager)
+        .onChange(of: tabManager.selectedTab) { oldValue, newValue in
             selectedIndex = newValue
         }
         .enableInjection()

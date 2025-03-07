@@ -76,39 +76,22 @@ class EditTripViewModel: ObservableObject {
     
     @MainActor
     func updateTrip() async throws {
-        isLoading = true
-        error = nil
+        guard validateForm() else { return }
         
         do {
-            try await tripsAPI.updateTrip(trip)
-            isLoading = false
+            try await TripsManager.shared.updateTrip(trip)
         } catch {
-            isLoading = false
-            if let apiError = error as? APIError {
-                self.error = apiError.localizedDescription
-                throw apiError
-            } else {
-                self.error = error.localizedDescription
-                throw error
-            }
+            self.error = error.localizedDescription
+            throw error
         }
     }
 
     @MainActor
     func deleteTrip() async {
-        isLoading = true
-        error = nil
-        
         do {
-            try await tripsAPI.deleteTrip(id: trip.id)
-            isLoading = false
+            try await TripsManager.shared.deleteTrip(id: trip.id)
         } catch {
-            if let apiError = error as? APIError {
-                self.error = apiError.localizedDescription
-            } else {
-                self.error = error.localizedDescription
-            }
-            isLoading = false
+            self.error = error.localizedDescription
         }
     }
 }

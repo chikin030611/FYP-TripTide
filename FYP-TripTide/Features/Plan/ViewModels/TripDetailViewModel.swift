@@ -67,8 +67,15 @@ class TripDetailViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     func fetchTrip() async throws {
-        // Attempt to fetch the trip by ID to verify it still exists
-        let _ = try await TripsAPIController.shared.fetchTrip(id: trip.id)
+        do {
+            if let updatedTrip = try await TripsManager.shared.fetchTrip(id: trip.id) {
+                self.trip = updatedTrip
+            }
+        } catch {
+            self.error = error.localizedDescription
+            throw error
+        }
     }
 }
