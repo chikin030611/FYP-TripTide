@@ -38,6 +38,7 @@ class TripsManager: ObservableObject {
             trips.append(newTrip)
             return newTrip
         } catch {   
+            isLoading = false
             if let apiError = error as? APIError {
                 self.error = apiError.localizedDescription
                 throw apiError
@@ -46,7 +47,6 @@ class TripsManager: ObservableObject {
                 throw error
             }
         }
-        isLoading = false
     }
     
     @MainActor
@@ -105,6 +105,7 @@ class TripsManager: ObservableObject {
             }
             return trip
         } catch {
+            isLoading = false
             if let apiError = error as? APIError {
                 self.error = apiError.localizedDescription
                 throw apiError
@@ -113,6 +114,5 @@ class TripsManager: ObservableObject {
                 throw error
             }
         } 
-        isLoading = false
     }
 } 

@@ -88,7 +88,7 @@ class PlacesService {
         let cacheKey = "\(type)_tags" as NSString
         if let lastFetch = lastTagsFetchTime[type],
            Date().timeIntervalSince(lastFetch) < tagsCacheDuration,
-           let cachedTags = tagsCache.object(forKey: cacheKey) as? NSArray,
+           let cachedTags = tagsCache.object(forKey: cacheKey),
            let tags = cachedTags as? [Tag] {  // Safe casting
             return tags
         }
