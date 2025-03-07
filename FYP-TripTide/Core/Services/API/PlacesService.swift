@@ -1,7 +1,7 @@
 import Foundation
 
-class PlacesAPIController {
-    static let shared = PlacesAPIController()
+class PlacesService {
+    static let shared = PlacesService()
     
     private let tagsCache = NSCache<NSString, NSArray>()
     private let tagsCacheKey = "tags" as NSString

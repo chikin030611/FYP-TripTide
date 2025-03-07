@@ -8,7 +8,7 @@ class TripDetailViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var error: String?
     
-    private let placesAPI = PlacesAPIController.shared
+    private let placesService = PlacesService.shared
     private let tripsManager = TripsManager.shared
     init(trip: Trip) {
         self.trip = trip
@@ -52,7 +52,7 @@ class TripDetailViewModel: ObservableObject {
             // Create a task for each place ID
             for id in ids {
                 group.addTask {
-                    try await self.placesAPI.fetchPlaceBasicById(id: id)
+                    try await self.placesService.fetchPlaceBasicById(id: id)
                 }
             }
             

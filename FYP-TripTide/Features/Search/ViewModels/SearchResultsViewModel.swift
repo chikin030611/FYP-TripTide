@@ -31,7 +31,7 @@ class SearchResultsViewModel: ObservableObject {
         currentPage = 0
         
         do {
-            let results = try await PlacesAPIController.shared.searchPlaces(
+            let results = try await PlacesService.shared.searchPlaces(
                 name: searchText,
                 tags: tags,
                 page: currentPage
@@ -59,7 +59,7 @@ class SearchResultsViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            let places = try await PlacesAPIController.shared.searchPlaces(name: searchText, tags: tags, page: currentPage)
+            let places = try await PlacesService.shared.searchPlaces(name: searchText, tags: tags, page: currentPage)
             
             // If we're on page 0, replace results. Otherwise, append.
             if currentPage == 0 {

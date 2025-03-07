@@ -61,7 +61,7 @@ class AuthManager: ObservableObject {
         
         // Clear all caches
         PreferencesService.shared.clearCache()
-        PlacesAPIController.shared.clearCache()
+        PlacesService.shared.clearCache()
     }
     
     func validateToken() async {

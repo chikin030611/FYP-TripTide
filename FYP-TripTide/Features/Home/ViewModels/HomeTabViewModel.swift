@@ -10,7 +10,7 @@ class HomeViewModel: ObservableObject {
     @Published var cards: [Card] = []
     @Published var recommendations: [Card] = []
     
-    private let placesAPIController = PlacesAPIController.shared
+    private let placesService = PlacesService.shared
     private let authManager = AuthManager.shared
     
     init() {
@@ -27,7 +27,7 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         
         do {
-            let recommendedPlaces = try await placesAPIController.fetchRecommendations()
+            let recommendedPlaces = try await placesService.fetchRecommendations()
             self.places = recommendedPlaces.map { placeData in
                 placeData.toPlace()
             }

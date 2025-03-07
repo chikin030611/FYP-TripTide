@@ -33,12 +33,12 @@ class PlaceDetailViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            let detail = try await PlacesAPIController.shared.fetchPlaceDetailById(id: id)
+            let detail = try await PlacesService.shared.fetchPlaceDetailById(id: id)
             
             // Convert API response to Place model
             self.place = Place(
                 id: detail.id,
-                images: detail.photos.map { PlacesAPIController.shared.appendAPIKey(to: $0) },
+                images: detail.photos.map { PlacesService.shared.appendAPIKey(to: $0) },
                 name: detail.name,
                 type: detail.type,
                 rating: Float(detail.rating),

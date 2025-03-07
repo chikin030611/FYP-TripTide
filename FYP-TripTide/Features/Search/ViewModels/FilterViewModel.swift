@@ -10,9 +10,9 @@ class FilterViewModel: ObservableObject {
     
     func loadTags() async {
         do {
-            async let attractions = PlacesAPIController.shared.fetchTags(type: "tourist_attraction")
-            async let restaurants = PlacesAPIController.shared.fetchTags(type: "restaurant")
-            async let lodging = PlacesAPIController.shared.fetchTags(type: "lodging")
+            async let attractions = PlacesService.shared.fetchTags(type: "tourist_attraction")
+            async let restaurants = PlacesService.shared.fetchTags(type: "restaurant")
+            async let lodging = PlacesService.shared.fetchTags(type: "lodging")
             
             let (attractionTags, restaurantTags, lodgingTags) = await (try attractions, try restaurants, try lodging)
             
