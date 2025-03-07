@@ -4,6 +4,7 @@ struct LargeCard: View {
     let place: Place
     @State private var isAdded: Bool = false
     @State private var isAnimating: Bool = false
+    @State private var showAddToTripSheet = false
     @StateObject var themeManager = ThemeManager()
 
     init(place: Place) {
@@ -40,22 +41,23 @@ struct LargeCard: View {
                 .frame(width: 220, alignment: .leading)
 
                 Button(action: {
-                    isAdded.toggle()
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                        isAnimating = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            isAnimating = false
-                        }
-                    }
+                    showAddToTripSheet = true
                 }) {
-                    Text(isAdded ? "Remove" : "Add")
+                    Text("Add")
                 }
                 .buttonStyle(HeartToggleButtonStyle(isAdded: isAdded))
                 .padding(12)
                 .scaleEffect(isAnimating ? 1.2 : 1.0)
             }
+        }
+        .sheet(isPresented: $showAddToTripSheet) {
+            AddToTripSheet(
+                place: place,
+                onAddPlaceToTrip: { place, trip in
+                    print("Added \(place.name) to \(trip.name)")
+                    isAdded = true
+                }
+            )
         }
     }
 }

@@ -83,6 +83,12 @@ struct WideCard: View {
                 }) {
                     Text(isAdded ? "Remove" : "Add")
                 }
+                .sheet(isPresented: $isAdded) {
+                    AddToTripSheet(place: place, onAddPlaceToTrip: { place, trip in
+                        print("Added \(place.name) to \(trip.name)")
+                        isAdded = true
+                    })
+                }
                 .buttonStyle(HeartToggleButtonStyle(isAdded: isAdded))
                 .padding(12)
                 .scaleEffect(isAnimating ? 1.2 : 1.0)
