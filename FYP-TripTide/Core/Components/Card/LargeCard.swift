@@ -41,9 +41,19 @@ struct LargeCard: View {
                 .frame(width: 220, alignment: .leading)
 
                 Button(action: {
+                    // Start the scale animation
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        isAnimating = true
+                    }
+                    // Reset the scale after a delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            isAnimating = false
+                        }
+                    }
                     showAddToTripSheet = true
                 }) {
-                    Text("Add")
+                    Text(isAdded ? "Remove" : "Add")
                 }
                 .buttonStyle(HeartToggleButtonStyle(isAdded: isAdded))
                 .padding(12)
@@ -54,7 +64,7 @@ struct LargeCard: View {
             AddToTripSheet(
                 place: place,
                 onAddPlaceToTrip: { place, trip in
-                    isAdded = true
+                    isAdded = true  // Update the button state when a place is added
                 }
             )
         }

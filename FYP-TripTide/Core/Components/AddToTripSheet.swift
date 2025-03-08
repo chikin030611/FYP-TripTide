@@ -14,22 +14,9 @@ private struct TripListView: View {
                 ForEach(trips) { trip in
                     AddToTripCard(trip: trip, place: place) { selectedTrip, wasAdded in
                         if wasAdded {
-                            Task {
-                                do {
-                                    try await TripsManager.shared.addPlaceToTrip(
-                                        tripId: selectedTrip.id,
-                                        placeId: place.id,
-                                        placeType: place.type
-                                    )
-                                    onAddPlaceToTrip?(place, selectedTrip)
-                                    onDismiss()
-                                } catch {
-                                    onError(error.localizedDescription)
-                                }
-                            }
-                        } else {
-                            onDismiss()
+                            onAddPlaceToTrip?(place, selectedTrip)
                         }
+                        onDismiss()
                     }
                     .padding(.horizontal, 3)
                 }

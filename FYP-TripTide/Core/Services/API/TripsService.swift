@@ -202,44 +202,6 @@ class TripsService {
         return tripResponse.toTrip()
     }
 
-    func addPlaceToTrip(tripId: String, placeId: String, placeType: String) async throws {
-        guard let url = URL(string: "\(baseURL)/trips/\(tripId)/places") else {
-            throw APIError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        if let token = await AuthManager.shared.token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        } else {
-            throw APIError.unauthorized
-        }
-        
-        let body = [
-            "placeId": placeId,
-            "placeType": placeType
-        ]
-        
-        let encoder = JSONEncoder()
-        request.httpBody = try encoder.encode(body)
-        
-        let (_, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.invalidResponse
-        }
-        
-        if httpResponse.statusCode == 401 {
-            throw APIError.unauthorized
-        }
-        
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw APIError.serverError(statusCode: httpResponse.statusCode)
-        }
-    }
-
     func checkPlaceInTrip(tripId: String, placeId: String) async throws -> Bool {
         guard let url = URL(string: "\(baseURL)/trips/\(tripId)/places/\(placeId)/check") else {
             throw APIError.invalidURL
@@ -272,6 +234,80 @@ class TripsService {
         return try decoder.decode(Bool.self, from: data)
     }
 
+    func addPlaceToTrip(tripId: String, placeId: String, placeType: String) async throws {
+        print("⭐️ Starting addPlaceToTrip - tripId: \(tripId), placeId: \(placeId), placeType: \(placeType)")
+        
+        guard let url = URL(string: "\(baseURL)/trips/\(tripId)/places") else {
+            print("❌ Invalid URL error")
+            throw APIError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let token = await AuthManager.shared.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("❌ No authorization token found")
+            throw APIError.unauthorized
+        }
+        
+        let body = [
+            "placeId": placeId,
+            "placeType": placeType
+        ]
+        
+        let encoder = JSONEncoder()
+        request.httpBody = try encoder.encode(body)
+        
+        // Print request details
+        print("📤 Request URL: \(url)")
+        print("📤 Request Headers: \(request.allHTTPHeaderFields ?? [:])")
+        if let bodyData = request.httpBody, let bodyString = String(data: bodyData, encoding: .utf8) {
+            print("📤 Request Body: \(bodyString)")
+        }
+        
+        let (data, response) = try await URLSession.shared.upload(
+            for: request,
+            from: request.httpBody ?? Data()
+        )
+        
+        // Print response details
+        if let responseString = String(data: data, encoding: .utf8) {
+            print("📥 Response Data: \(responseString)")
+        }
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            print("❌ Invalid response type")
+            throw APIError.invalidResponse
+        }
+        
+        print("📥 Response Status Code: \(httpResponse.statusCode)")
+        
+        if httpResponse.statusCode == 401 {
+            print("❌ Unauthorized error")
+            throw APIError.unauthorized
+        }
+        
+        // Check for 400 Bad Request specifically for "Place already in trip"
+        if httpResponse.statusCode == 400 {
+            // Try to decode the error response
+            if let errorResponse = try? JSONDecoder().decode(APIErrorResponse.self, from: data),
+               errorResponse.message == "Place already in trip" {
+                print("⚠️ Place is already in trip")
+                throw APIError.placeAlreadyInTrip
+            }
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            print("❌ Server error with status code: \(httpResponse.statusCode)")
+            throw APIError.serverError(statusCode: httpResponse.statusCode)
+        }
+        
+        print("✅ Successfully added place to trip")
+    }
+
     func removePlaceFromTrip(tripId: String, placeId: String) async throws {
         guard let url = URL(string: "\(baseURL)/trips/\(tripId)/places/\(placeId)") else {
             throw APIError.invalidURL
@@ -302,6 +338,13 @@ class TripsService {
             throw APIError.serverError(statusCode: httpResponse.statusCode)
         }
     }
+}
+
+// Add this struct to decode the error response
+private struct APIErrorResponse: Codable {
+    let status: Int
+    let message: String
+    let error: String
 }
 
 

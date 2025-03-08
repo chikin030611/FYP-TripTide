@@ -113,7 +113,7 @@ struct AddToTripCard: View {
                         .padding(12)
                 } else {
                     Button(action: {
-                        handlePlaceToggle()
+                        // handlePlaceToggle()
                     }) {
                         Text(isInTrip ? "Remove" : "Add")
                     }
@@ -125,9 +125,9 @@ struct AddToTripCard: View {
             .cornerRadius(10)
         }
         .shadow(color: Color.black.opacity(0.5), radius: 10, x: 0, y: 10)
-        // .onTapGesture {
-        //     onSelect(trip)
-        // }
+        .onTapGesture {
+            handlePlaceToggle()
+        }
         .alert("Error", isPresented: Binding(
             get: { error != nil },
             set: { if !$0 { error = nil } }

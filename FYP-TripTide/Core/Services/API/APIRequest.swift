@@ -31,4 +31,24 @@ enum APIError: Error {
     case unauthorized
     case invalidResponse
     case serverError(statusCode: Int)
-} 
+    case placeAlreadyInTrip
+    
+    var localizedDescription: String {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .invalidResponse:
+            return "Invalid response from server"
+        case .unauthorized:
+            return "Unauthorized access"
+        case .serverError(let statusCode):
+            return "Server error: \(statusCode)"
+        case .decodingError:
+            return "Decoding error"
+        case .networkError:
+            return "Network error"
+        case .placeAlreadyInTrip:
+            return "This place is already in your trip"
+        }
+    }
+}

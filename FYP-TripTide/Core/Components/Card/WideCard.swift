@@ -4,7 +4,8 @@ struct WideCard: View {
 
     @StateObject var themeManager = ThemeManager()
     @State private var isAdded: Bool = false
-    @State private var isAnimating: Bool = false  // New state for temporary animation
+    @State private var isAnimating: Bool = false
+    @State private var showAddToTripSheet = false
 
     let place: Place
 
@@ -69,7 +70,6 @@ struct WideCard: View {
                 .shadow(color: Color.black.opacity(0.5), radius: 10, x: 0, y: 10)
 
                 Button(action: {
-                    isAdded.toggle()
                     // Start the scale animation
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                         isAnimating = true
@@ -80,18 +80,22 @@ struct WideCard: View {
                             isAnimating = false
                         }
                     }
+                    showAddToTripSheet = true
                 }) {
                     Text(isAdded ? "Remove" : "Add")
-                }
-                .sheet(isPresented: $isAdded) {
-                    AddToTripSheet(place: place, onAddPlaceToTrip: { place, trip in
-                        isAdded = true
-                    })
                 }
                 .buttonStyle(HeartToggleButtonStyle(isAdded: isAdded))
                 .padding(12)
                 .scaleEffect(isAnimating ? 1.2 : 1.0)
             }
+        }
+        .sheet(isPresented: $showAddToTripSheet) {
+            AddToTripSheet(
+                place: place,
+                onAddPlaceToTrip: { place, trip in
+                    isAdded = true  // Update the button state when a place is added
+                }
+            )
         }
     }
 }
