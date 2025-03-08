@@ -40,12 +40,32 @@ struct AddToTripCard: View {
     var body: some View {
         VStack {
             ZStack {
-                // AsyncImageView(imageUrl: trip.image, width: cardWidth, height: cardHeight)
                 Image(trip.image)
                     .resizable()
                     .scaledToFill()
                     .frame(width: cardWidth, height: cardHeight)
                     .cornerRadius(10)
+
+                if isInTrip {
+                    HStack {
+                        HStack(alignment: .center) {
+                            Text("Saved")
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.bgTextColor)
+                        }
+                        .padding(.horizontal, 8)
+                        .background(
+                            Rectangle()
+                                .cornerRadius(10)
+                                .foregroundColor(themeManager.selectedTheme.accentColor)
+                                .frame(height: 25)
+                        )
+                        Spacer()
+                    }
+                    .padding(.bottom, 150)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                }
 
                 HStack {
                     VStack(alignment: .leading) {
@@ -106,25 +126,16 @@ struct AddToTripCard: View {
                         .frame(width: cardWidth, height: overlayHeight)
                         .padding(.top, titlePadding)
                 )
-
-                // Add a loading/status indicator
-                if isChecking {
-                    ProgressView()
-                        .padding(12)
-                } else {
-                    Button(action: {
-                        // handlePlaceToggle()
-                    }) {
-                        Text(isInTrip ? "Remove" : "Add")
-                    }
-                    .buttonStyle(HeartToggleButtonStyle(isAdded: isInTrip))
-                    .padding(12)
-                }
             }
             .frame(width: cardWidth, height: cardHeight)
             .cornerRadius(10)
         }
-        .shadow(color: Color.black.opacity(0.5), radius: 10, x: 0, y: 10)
+        .shadow(color: isInTrip ? themeManager.selectedTheme.accentColor.opacity(0.5) : Color.black.opacity(0.5), radius: 10, x: 0, y: 10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isInTrip ? themeManager.selectedTheme.accentColor : Color.clear, lineWidth: 2)
+                .blur(radius: isInTrip ? 3 : 0)
+        )
         .onTapGesture {
             handlePlaceToggle()
         }
