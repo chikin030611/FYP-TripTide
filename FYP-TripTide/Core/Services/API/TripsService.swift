@@ -239,6 +239,69 @@ class TripsService {
             throw APIError.serverError(statusCode: httpResponse.statusCode)
         }
     }
+
+    func checkPlaceInTrip(tripId: String, placeId: String) async throws -> Bool {
+        guard let url = URL(string: "\(baseURL)/trips/\(tripId)/places/\(placeId)/check") else {
+            throw APIError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let token = await AuthManager.shared.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw APIError.unauthorized
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        if httpResponse.statusCode == 401 {
+            throw APIError.unauthorized
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.serverError(statusCode: httpResponse.statusCode)
+        }
+        
+        let decoder = JSONDecoder()
+        return try decoder.decode(Bool.self, from: data)
+    }
+
+    func removePlaceFromTrip(tripId: String, placeId: String) async throws {
+        guard let url = URL(string: "\(baseURL)/trips/\(tripId)/places/\(placeId)") else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        
+        if let token = await AuthManager.shared.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw APIError.unauthorized
+        }
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        print("successfully removed place from trip")
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        if httpResponse.statusCode == 401 {
+            throw APIError.unauthorized
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.serverError(statusCode: httpResponse.statusCode)
+        }
+    }
 }
 
 

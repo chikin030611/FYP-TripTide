@@ -54,9 +54,9 @@ struct UITestView: View {
         VStack(spacing: 20) {
             LargeCard(place: place)
             WideCard(place: place)
-            AddToTripCard(trip: trip, onSelect: { selectedTrip in
-                print("Selected trip: \(selectedTrip.name)")
-            })
+            // AddToTripCard(trip: trip, place: place, onSelect: { selectedTrip in
+            //     print("Selected trip: \(selectedTrip.name)")
+            // })
         }
         .enableInjection()
 

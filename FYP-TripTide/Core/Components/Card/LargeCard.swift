@@ -54,7 +54,6 @@ struct LargeCard: View {
             AddToTripSheet(
                 place: place,
                 onAddPlaceToTrip: { place, trip in
-                    print("Added \(place.name) to \(trip.name)")
                     isAdded = true
                 }
             )

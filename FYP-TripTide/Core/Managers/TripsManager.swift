@@ -135,4 +135,40 @@ class TripsManager: ObservableObject {
         
         isLoading = false
     }
+    
+    @MainActor
+    func checkPlaceInTrip(tripId: String, placeId: String) async throws -> Bool {
+        do {
+            return try await tripsAPI.checkPlaceInTrip(tripId: tripId, placeId: placeId)
+        } catch {
+            if let apiError = error as? APIError {
+                self.error = apiError.localizedDescription
+                throw apiError
+            } else {
+                self.error = error.localizedDescription
+                throw error
+            }
+        }
+    }
+    
+    @MainActor
+    func removePlaceFromTrip(tripId: String, placeId: String) async throws {
+        isLoading = true
+        error = nil
+        
+        do {
+            print("Removing place from trip: \(tripId) and place: \(placeId)")
+            try await tripsAPI.removePlaceFromTrip(tripId: tripId, placeId: placeId)
+        } catch {
+            if let apiError = error as? APIError {
+                self.error = apiError.localizedDescription
+                throw apiError
+            } else {
+                self.error = error.localizedDescription
+                throw error
+            }
+        }
+        
+        isLoading = false
+    }
 } 

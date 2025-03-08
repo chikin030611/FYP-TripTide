@@ -140,12 +140,3 @@ class PlacesService {
         return try JSONDecoder().decode([PlaceBasicData].self, from: data)
     }
 }
-
-enum APIError: Error {
-    case invalidURL
-    case decodingError
-    case networkError
-    case unauthorized
-    case invalidResponse
-    case serverError(statusCode: Int)
-} 

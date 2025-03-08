@@ -23,3 +23,12 @@ enum HTTPMethod: String {
     case put = "PUT"
     case delete = "DELETE"
 } 
+
+enum APIError: Error {
+    case invalidURL
+    case decodingError
+    case networkError
+    case unauthorized
+    case invalidResponse
+    case serverError(statusCode: Int)
+} 

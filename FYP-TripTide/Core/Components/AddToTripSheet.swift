@@ -10,21 +10,25 @@ private struct TripListView: View {
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
+            LazyHStack {
                 ForEach(trips) { trip in
-                    AddToTripCard(trip: trip) { selectedTrip in
-                        Task {
-                            do {
-                                try await TripsManager.shared.addPlaceToTrip(
-                                    tripId: selectedTrip.id,
-                                    placeId: place.id,
-                                    placeType: place.type
-                                )
-                                onAddPlaceToTrip?(place, selectedTrip)
-                                onDismiss()
-                            } catch {
-                                onError(error.localizedDescription)
+                    AddToTripCard(trip: trip, place: place) { selectedTrip, wasAdded in
+                        if wasAdded {
+                            Task {
+                                do {
+                                    try await TripsManager.shared.addPlaceToTrip(
+                                        tripId: selectedTrip.id,
+                                        placeId: place.id,
+                                        placeType: place.type
+                                    )
+                                    onAddPlaceToTrip?(place, selectedTrip)
+                                    onDismiss()
+                                } catch {
+                                    onError(error.localizedDescription)
+                                }
                             }
+                        } else {
+                            onDismiss()
                         }
                     }
                     .padding(.horizontal, 3)
