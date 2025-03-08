@@ -18,6 +18,9 @@ struct PlaceDetailView: View {
     @State private var showMap = false
     @State private var showAddressOptions = false
     @State private var showToast = false
+    @State private var showAddToTripSheet = false
+    @State private var isAnimating: Bool = false
+    @State private var isAdded: Bool = false
     
     init(place: Place) {
         _viewModel = StateObject(wrappedValue: PlaceDetailViewModel(placeId: place.id))
@@ -91,13 +94,31 @@ struct PlaceDetailView: View {
             
             Spacer()
             
-            Image(systemName: "heart")
-                .font(.title)
-                .onTapGesture {
-                    viewModel.toggleFavorite()
+            Button(action: {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                    isAnimating = true
                 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                        isAnimating = false
+                    }
+                }
+                showAddToTripSheet = true
+            }) {
+                Text(isAdded ? "Remove" : "Add")
+            }
+            .buttonStyle(HeartToggleInDetailViewButtonStyle(isAdded: isAdded))
+            .scaleEffect(isAnimating ? 1.2 : 1.0)
         }
         .padding(.bottom, 10)
+        .sheet(isPresented: $showAddToTripSheet) {
+            AddToTripSheet(
+                place: viewModel.place,
+                onAddPlaceToTrip: { place, trip in
+                    isAdded = true
+                }
+            )
+        }
     }
     
     

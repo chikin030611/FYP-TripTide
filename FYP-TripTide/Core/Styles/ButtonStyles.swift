@@ -97,6 +97,26 @@ struct HeartToggleButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Add Button Style
+struct HeartToggleInDetailViewButtonStyle: ButtonStyle {
+    let isAdded: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        Image(systemName: isAdded ? "heart.fill" : "heart")
+            .font(.system(size: 24))
+            .padding(.bottom, 10)
+            .padding(.top, 10)
+            .frame(width: 48, height: 48)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(isAdded ? Color("mnAccentColor") : Color.white)
+                    .stroke(isAdded ? Color.clear : Color("mnAccentColor"), lineWidth: 2)
+            )
+            .foregroundColor(isAdded ? Color.white : Color("mnAccentColor"))
+            .opacity(configuration.isPressed ? 0.5 : 1.0)
+    }
+}
+
 // MARK: - Tag Button Style
 struct RectangularButtonStyle: ButtonStyle {
     @StateObject var themeManager: ThemeManager = ThemeManager()
