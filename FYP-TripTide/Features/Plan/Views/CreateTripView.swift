@@ -86,11 +86,17 @@ struct CreateTripView: View {
                             CalendarView(
                                 selectedStartDate: Binding(
                                     get: { viewModel.startDate },
-                                    set: { viewModel.updateStartDate($0) }
+                                    set: { date in
+                                        viewModel.startDate = date
+                                        viewModel.updateStartDate(date)
+                                    }
                                 ),
                                 selectedEndDate: Binding(
                                     get: { viewModel.endDate },
-                                    set: { viewModel.updateEndDate($0) }
+                                    set: { date in
+                                        viewModel.endDate = date
+                                        viewModel.updateEndDate(date)
+                                    }
                                 ),
                                 highlightedRange: viewModel.dateRangeToHighlight
                             )
