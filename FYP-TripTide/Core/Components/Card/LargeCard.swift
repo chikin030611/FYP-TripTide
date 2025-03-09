@@ -6,9 +6,26 @@ struct LargeCard: View {
     @State private var isAnimating: Bool = false
     @State private var showAddToTripSheet = false
     @StateObject var themeManager = ThemeManager()
+    @StateObject private var tripsManager = TripsManager.shared
 
     init(place: Place) {
         self.place = place
+    }
+    
+    // Check if the place is in any trip
+    private func checkIfPlaceInAnyTrip() async {
+        for trip in tripsManager.trips {
+            do {
+                let isInTrip = try await tripsManager.checkPlaceInTrip(tripId: trip.id, placeId: place.id)
+                if isInTrip {
+                    isAdded = true
+                    return
+                }
+            } catch {
+                print("Error checking if place is in trip: \(error)")
+            }
+        }
+        isAdded = false
     }
 
     var body: some View {
@@ -65,8 +82,17 @@ struct LargeCard: View {
                 place: place,
                 onAddPlaceToTrip: { place, trip in
                     isAdded = true  // Update the button state when a place is added
+                },
+                onRemovePlaceFromTrip: { place, trip in
+                    // Check if the place is still in any trip after removal
+                    Task {
+                        await checkIfPlaceInAnyTrip()
+                    }
                 }
             )
+        }
+        .task {
+            await checkIfPlaceInAnyTrip()
         }
     }
 }

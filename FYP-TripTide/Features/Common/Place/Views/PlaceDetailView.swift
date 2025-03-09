@@ -15,6 +15,7 @@ import Inject
 struct PlaceDetailView: View {
     @StateObject var themeManager = ThemeManager()
     @StateObject private var viewModel: PlaceDetailViewModel
+    @StateObject private var tripsManager = TripsManager.shared
     @State private var showMap = false
     @State private var showAddressOptions = false
     @State private var showToast = false
@@ -24,6 +25,22 @@ struct PlaceDetailView: View {
     
     init(place: Place) {
         _viewModel = StateObject(wrappedValue: PlaceDetailViewModel(placeId: place.id))
+    }
+    
+    // Check if the place is in any trip
+    private func checkIfPlaceInAnyTrip() async {
+        for trip in tripsManager.trips {
+            do {
+                let isInTrip = try await tripsManager.checkPlaceInTrip(tripId: trip.id, placeId: viewModel.place.id)
+                if isInTrip {
+                    isAdded = true
+                    return
+                }
+            } catch {
+                print("Error checking if place is in trip: \(error)")
+            }
+        }
+        isAdded = false
     }
     
     var body: some View {
@@ -72,6 +89,9 @@ struct PlaceDetailView: View {
                 }
             }
             .animation(.easeInOut, value: showToast)
+            .task {
+                await checkIfPlaceInAnyTrip()
+            }
         }
     }
     
@@ -116,6 +136,12 @@ struct PlaceDetailView: View {
                 place: viewModel.place,
                 onAddPlaceToTrip: { place, trip in
                     isAdded = true
+                },
+                onRemovePlaceFromTrip: { place, trip in
+                    // Check if the place is still in any trip after removal
+                    Task {
+                        await checkIfPlaceInAnyTrip()
+                    }
                 }
             )
         }

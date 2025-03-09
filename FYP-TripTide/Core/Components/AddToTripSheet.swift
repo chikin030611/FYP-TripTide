@@ -5,6 +5,7 @@ private struct TripListView: View {
     let trips: [Trip]
     let place: Place
     let onAddPlaceToTrip: ((Place, Trip) -> Void)?
+    let onRemovePlaceFromTrip: ((Place, Trip) -> Void)?
     let onError: (String) -> Void
     let onDismiss: () -> Void
     
@@ -15,6 +16,8 @@ private struct TripListView: View {
                     AddToTripCard(trip: trip, place: place) { selectedTrip, wasAdded in
                         if wasAdded {
                             onAddPlaceToTrip?(place, selectedTrip)
+                        } else {
+                            onRemovePlaceFromTrip?(place, selectedTrip)
                         }
                         onDismiss()
                     }
@@ -37,6 +40,7 @@ struct AddToTripSheet: View {
     @State private var error: String?
     
     var onAddPlaceToTrip: ((Place, Trip) -> Void)?
+    var onRemovePlaceFromTrip: ((Place, Trip) -> Void)?
     
     private var content: some View {
         Group {
@@ -50,6 +54,7 @@ struct AddToTripSheet: View {
                     trips: tripsManager.trips,
                     place: place,
                     onAddPlaceToTrip: onAddPlaceToTrip,
+                    onRemovePlaceFromTrip: onRemovePlaceFromTrip,
                     onError: { self.error = $0 },
                     onDismiss: { dismiss() }
                 )
