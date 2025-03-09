@@ -159,41 +159,61 @@ struct SearchTabView: View {
                     } else {
                         ScrollView {
                             VStack(alignment: .leading) {
-                                // Highly Rated
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack {
-                                        Image(systemName: viewModel.highlyRatedSection.icon)
-                                            .foregroundColor(themeManager.selectedTheme.accentColor)
-                                        Text(viewModel.highlyRatedSection.title)
-                                            .font(themeManager.selectedTheme.boldTitleFont)
-                                            .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                                if viewModel.isLoading {
+                                    ProgressView()
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                } else if let error = viewModel.error {
+                                    VStack {
+                                        Text("Error loading content")
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                        Button("Retry") {
+                                            Task {
+                                                await viewModel.refreshData()
+                                            }
+                                        }
+                                    }
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                } else {
+                                    // Highly Rated
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Image(systemName: viewModel.highlyRatedSection.icon)
+                                                .foregroundColor(themeManager.selectedTheme.accentColor)
+                                            Text(viewModel.highlyRatedSection.title)
+                                                .font(themeManager.selectedTheme.boldTitleFont)
+                                                .foregroundStyle(themeManager.selectedTheme.primaryColor)
 
-                                        Spacer()
+                                            Spacer()
 
-                                        // NavigationLink(destination: PlaceDetailView(place: place)) {
-                                            Text("View All")
-                                                .font(themeManager.selectedTheme.bodyTextFont)
-                                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                                                .underline()
-                                        // }
+                                            // NavigationLink(destination: PlaceDetailView(place: place)) {
+                                                Text("View All")
+                                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                                    .underline()
+                                            // }
+                                        }
+                                        
+                                        CardGroup(cards: viewModel.highlyRatedCards, style: .large)
+                                            .padding(.horizontal, -10)
+                
                                     }
                                     
-                                    CardGroup(cards: viewModel.highlyRatedCards, style: .large)
-                                        .padding(.horizontal, -10)
-                
+                                    // Restaurant
+                                    if !viewModel.restaurantCards.isEmpty {
+                                        RegularBodySection(icon: viewModel.restaurantSection.icon,
+                                                    title: viewModel.restaurantSection.title,
+                                                    cards: viewModel.restaurantCards)
+                                            .padding(.vertical, 5)
+                                    }
+                                    
+                                    // Lodging
+                                    if !viewModel.lodgingCards.isEmpty {
+                                        RegularBodySection(icon: viewModel.lodgingSection.icon,
+                                                    title: viewModel.lodgingSection.title,
+                                                    cards: viewModel.lodgingCards)
+                                            .padding(.vertical, 5)
+                                    }
                                 }
-                                
-                                // Restaurant
-                                RegularBodySection(icon: viewModel.restaurantSection.icon,
-                                            title: viewModel.restaurantSection.title,
-                                            cards: viewModel.restaurantCards)
-                                    .padding(.vertical, 5)
-                                
-                                // Lodging
-                                RegularBodySection(icon: viewModel.lodgingSection.icon,
-                                            title: viewModel.lodgingSection.title,
-                                            cards: viewModel.lodgingCards)
-                                    .padding(.vertical, 5)
                             }
                             .padding()
                         }
