@@ -191,7 +191,7 @@ struct EditTripView: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }) {
-                    Image(systemName: "chevron.left")
+                    Text("Cancel")
                         .foregroundColor(themeManager.selectedTheme.accentColor)
                 }
             }
