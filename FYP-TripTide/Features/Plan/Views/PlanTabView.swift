@@ -3,10 +3,11 @@ import SwiftUI
 struct PlanTabView: View {
     @StateObject private var viewModel = PlanTabViewModel()
     @StateObject private var themeManager = ThemeManager()
-    @State private var isShowingCreateTrip = false
-    @State private var isShowingCancelAlert = false
+    @State private var showingCreateTrip = false
+    @State private var showingCancelAlert = false
     @State private var interstitialSheetPresentation = false
     @State private var navigationPath = NavigationPath()
+    @State private var hasAppeared = false
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -58,7 +59,7 @@ struct PlanTabView: View {
 
                 if viewModel.isAuthenticated {
                     Button(action: {
-                        isShowingCreateTrip = true
+                        showingCreateTrip = true
                     }) {
                         Text("Create a new trip")
                             .padding()
@@ -75,18 +76,22 @@ struct PlanTabView: View {
                     viewModel.fetchTrips()
                 }
             }) {
-                CreateTripView(isPresented: $isShowingCreateTrip, showCancelAlert: $isShowingCancelAlert)
+                CreateTripView(isPresented: $showingCreateTrip, showCancelAlert: $showingCancelAlert)
                     .interactiveDismissDisabled(true)
                     .environmentObject(viewModel)
             }
-            .onChange(of: isShowingCreateTrip) { oldValue, newValue in
+            .onChange(of: showingCreateTrip) { oldValue, newValue in
                 if newValue {
                     interstitialSheetPresentation = true
                 }
             }
             .onAppear {
-                if viewModel.isAuthenticated {
-                    viewModel.fetchTrips()
+                if !hasAppeared {
+                    // Check authentication state and fetch trips if authenticated
+                    if viewModel.isAuthenticated {
+                        viewModel.fetchTrips()
+                    }
+                    hasAppeared = true
                 }
             }
             .onChange(of: navigationPath) { oldValue, newValue in
