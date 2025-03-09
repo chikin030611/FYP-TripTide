@@ -195,6 +195,19 @@ struct TripDetailView: View {
                 .padding(.bottom, 100)
             }
             .ignoresSafeArea(edges: .top)
+            .refreshable {
+                do {
+                    // Add a small delay to prevent rapid refreshes
+                    try await Task.sleep(nanoseconds: 500_000_000)
+                    await viewModel.fetchPlaces()
+                } catch {
+                    print("Refresh failed: \(error)")
+                }
+            }
+            .task {
+                // Initial fetch when view appears
+                await viewModel.fetchPlaces()
+            }
 
             // Bottom Bar
             VStack {
@@ -222,9 +235,6 @@ struct TripDetailView: View {
             .padding(.vertical, 8)
             .background(themeManager.selectedTheme.appBackgroundColor)
             .frame(maxWidth: .infinity)
-        }
-        .task {
-            await viewModel.fetchPlaces()
         }
         .sheet(isPresented: $showingEditSheet) {
             NavigationStack {

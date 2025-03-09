@@ -10,49 +10,86 @@ class TripDetailViewModel: ObservableObject {
     
     private let placesService = PlacesService.shared
     private let tripsManager = TripsManager.shared
+    private var currentTask: Task<Void, Never>?
+    
     init(trip: Trip) {
         self.trip = trip
     }
 
     @MainActor
     func fetchPlaces() async {
-        isLoading = true
-        error = nil
+        // Cancel any existing task
+        currentTask?.cancel()
         
-        do {
-            // First refresh the trip data
-            if let updatedTrip = try await tripsManager.fetchTrip(id: trip.id) {
-                self.trip = updatedTrip
+        // Create new task
+        currentTask = Task {
+            print("🔄 Starting fetchPlaces()")
+            isLoading = true
+            error = nil
+            
+            do {
+                // Check if task is cancelled
+                try Task.checkCancellation()
+                
+                print("📱 Fetching trip data...")
+                if let updatedTrip = try await tripsManager.fetchTrip(id: trip.id) {
+                    print("✅ Trip data fetched successfully")
+                    self.trip = updatedTrip
+                }
+                
+                // Check again for cancellation
+                try Task.checkCancellation()
+                
+                print("📱 Starting to fetch places...")
+                print("🏛️ Fetching tourist attractions for IDs: \(trip.touristAttractionsIds)")
+                let touristAttractions = try await fetchPlacesById(ids: trip.touristAttractionsIds)
+                try Task.checkCancellation()
+                
+                print("🍽️ Fetching restaurants for IDs: \(trip.restaurantsIds)")
+                let restaurants = try await fetchPlacesById(ids: trip.restaurantsIds)
+                try Task.checkCancellation()
+                
+                print("🏨 Fetching lodgings for IDs: \(trip.lodgingsIds)")
+                let lodgings = try await fetchPlacesById(ids: trip.lodgingsIds)
+                
+                print("📝 Updating cards...")
+                touristAttractionsCards = touristAttractions.map { Card(place: $0.toPlace()) }
+                restaurantsCards = restaurants.map { Card(place: $0.toPlace()) }
+                lodgingsCards = lodgings.map { Card(place: $0.toPlace()) }
+                
+                print("✅ All places fetched and cards updated successfully")
+                
+            } catch is CancellationError {
+                print("🚫 Task was cancelled")
+                return
+            } catch {
+                print("❌ Error occurred: \(error)")
+                if let apiError = error as? APIError {
+                    print("🌐 API Error: \(apiError.localizedDescription)")
+                    self.error = apiError.localizedDescription
+                } else {
+                    print("⚠️ General Error: \(error.localizedDescription)")
+                    self.error = error.localizedDescription
+                }
             }
             
-            // Then fetch all places
-            async let touristAttractions = fetchPlacesById(ids: trip.touristAttractionsIds)
-            async let restaurants = fetchPlacesById(ids: trip.restaurantsIds)
-            async let lodgings = fetchPlacesById(ids: trip.lodgingsIds)
-            
-            let (fetchedAttractions, fetchedRestaurants, fetchedLodgings) = try await (touristAttractions, restaurants, lodgings)
-            
-            touristAttractionsCards = fetchedAttractions.map { Card(place: $0.toPlace()) }
-            restaurantsCards = fetchedRestaurants.map { Card(place: $0.toPlace()) }
-            lodgingsCards = fetchedLodgings.map { Card(place: $0.toPlace()) }
-            
-            isLoading = false
-        } catch {
-            if let apiError = error as? APIError {
-                self.error = apiError.localizedDescription
-            } else {
-                self.error = error.localizedDescription
-            }
+            print("🏁 Setting isLoading to false")
             isLoading = false
         }
+        
+        await currentTask?.value
     }
     
     private func fetchPlacesById(ids: [String]) async throws -> [PlaceBasicData] {
-        try await withThrowingTaskGroup(of: PlaceBasicData.self) { group in
+        print("📥 fetchPlacesById started for \(ids.count) places")
+        return try await withThrowingTaskGroup(of: PlaceBasicData.self) { group in
             // Create a task for each place ID
             for id in ids {
                 group.addTask {
-                    try await self.placesService.fetchPlaceBasicById(id: id)
+                    print("🔍 Fetching place with ID: \(id)")
+                    let place = try await self.placesService.fetchPlaceBasicById(id: id)
+                    print("✅ Successfully fetched place: \(id)")
+                    return place
                 }
             }
             
@@ -60,8 +97,10 @@ class TripDetailViewModel: ObservableObject {
             var places: [PlaceBasicData] = []
             for try await place in group {
                 places.append(place)
+                print("📍 Added place to results (total: \(places.count))")
             }
             
+            print("✅ Completed fetching all places. Total: \(places.count)")
             return places
         }
     }
@@ -76,5 +115,9 @@ class TripDetailViewModel: ObservableObject {
             self.error = error.localizedDescription
             throw error
         }
+    }
+    
+    deinit {
+        currentTask?.cancel()
     }
 }
