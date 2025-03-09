@@ -1,5 +1,10 @@
 import SwiftUI
 
+extension Notification.Name {
+    static let placeRemovedFromTrip = Notification.Name("placeRemovedFromTrip")
+    static let placeAddedToTrip = Notification.Name("placeAddedToTrip")
+}
+
 struct AddToTripCard: View {
     @StateObject private var themeManager = ThemeManager()
 
@@ -197,6 +202,8 @@ struct AddToTripCard: View {
                     )
                     isInTrip = false
                     onSelect(trip, false) // Pass false for removal
+                    // Post notification when place is removed
+                    NotificationCenter.default.post(name: .placeRemovedFromTrip, object: nil)
                 } else {
                     print("Attempting to add place to trip")
                     try await TripsManager.shared.addPlaceToTrip(
@@ -206,6 +213,8 @@ struct AddToTripCard: View {
                     )
                     isInTrip = true
                     onSelect(trip, true) // Pass true for addition
+                    // Post notification when place is added
+                    NotificationCenter.default.post(name: .placeAddedToTrip, object: nil)
                 }
                 print("Place toggle successful")
             } catch {

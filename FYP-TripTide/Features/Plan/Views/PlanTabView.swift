@@ -8,25 +8,18 @@ struct PlanTabView: View {
     @State private var interstitialSheetPresentation = false
     @State private var navigationPath = NavigationPath()
     @State private var hasAppeared = false
+    @State private var shouldRefresh = false
+    @State private var isRefreshing = false
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
             ZStack(alignment: .bottom) {
                 if !viewModel.isAuthenticated {
                     UnauthenticatedView()
-                } else if viewModel.isLoading {
-                    ProgressView("Loading trips...")
-                } else if let error = viewModel.error {
-                    VStack {
-                        Text("Error: \(error)")
-                        Button("Retry") {
-                            viewModel.fetchTrips()
-                        }
-                        .buttonStyle(PrimaryButtonStyle())
-                    }
                 } else {
                     ScrollView {
-                        if viewModel.trips.isEmpty {
+                        if viewModel.trips.isEmpty && !viewModel.isLoading {
+                            // Empty state view
                             HStack {
                                 Image(systemName: "airplane")
                                     .font(.system(size: 36))
@@ -43,6 +36,11 @@ struct PlanTabView: View {
                             .padding(16)
                         } else {
                             VStack(spacing: 16) {
+                                if viewModel.isLoading && viewModel.trips.isEmpty {
+                                    ProgressView("Loading trips...")
+                                        .padding()
+                                }
+                                
                                 ForEach(viewModel.trips) { trip in
                                     NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip), navigationPath: $navigationPath)) {
                                         TripCard(trip: trip, navigationPath: $navigationPath)
@@ -50,11 +48,16 @@ struct PlanTabView: View {
                                     .padding(.bottom, 15)
                                 }
                             }
-                            .padding(.bottom, 80) // Add padding at bottom for button
+                            .padding(.bottom, 80)
                             .padding(.horizontal, 32)
                         }
                     }
                     .padding(.top, 16)
+                    .overlay {
+                        if viewModel.isLoading && !viewModel.trips.isEmpty {
+                            ProgressView()
+                        }
+                    }
                 }
 
                 if viewModel.isAuthenticated {
@@ -101,6 +104,32 @@ struct PlanTabView: View {
                     viewModel.fetchTrips()
                 }
             }
+            .onChange(of: shouldRefresh) { oldValue, newValue in
+                if newValue && !isRefreshing {
+                    isRefreshing = true
+                    print("🔄 Refreshing trips due to shouldRefresh trigger")
+                    viewModel.fetchTrips()
+                    
+                    // Reset refresh flags after a delay
+                    Task {
+                        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+                        shouldRefresh = false
+                        isRefreshing = false
+                    }
+                }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .tripDeleted)) { _ in
+            print("📣 Received tripDeleted notification")
+            shouldRefresh = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { _ in
+            print("📣 Received placeRemovedFromTrip notification")
+            shouldRefresh = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { _ in
+            print("📣 Received placeAddedToTrip notification")
+            shouldRefresh = true
         }
     }
 }

@@ -1,5 +1,9 @@
 import SwiftUI
 
+extension Notification.Name {
+    static let tripDeleted = Notification.Name("tripDeleted")
+}
+
 struct TripDetailView: View {
     @ObservedObject var viewModel: TripDetailViewModel
     @StateObject private var themeManager = ThemeManager()
@@ -251,6 +255,8 @@ struct TripDetailView: View {
                     onDelete: {
                         print("🔄 Handling delete in TripDetailView")
                         showingEditSheet = false
+                        // Post notification when trip is deleted
+                        NotificationCenter.default.post(name: .tripDeleted, object: nil)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             navigationPath = NavigationPath()
                             presentationMode.wrappedValue.dismiss()
