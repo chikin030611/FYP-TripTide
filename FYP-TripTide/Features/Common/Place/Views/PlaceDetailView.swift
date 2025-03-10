@@ -8,9 +8,6 @@
 import SwiftUI
 import CoreLocation
 import MapKit
-import Inject
-
-// TODO: Add favorite functionality
 
 struct PlaceDetailView: View {
     @StateObject var themeManager = ThemeManager()
@@ -36,7 +33,6 @@ struct PlaceDetailView: View {
             ScrollView {
                 VStack {
                     // Images
-                    // TODO: Press to zoom in
                     ImageCarousel(images: viewModel.place.images)
                     
                     // Body
