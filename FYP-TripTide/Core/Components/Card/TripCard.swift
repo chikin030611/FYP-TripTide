@@ -30,7 +30,7 @@ struct TripCard: View {
     }
     
     var body: some View {
-        NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip), navigationPath: $navigationPath)) {
+        NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel.viewModel(for: trip), navigationPath: $navigationPath)) {
             VStack {
                 ZStack {
                     // AsyncImageView(imageUrl: trip.image, width: cardWidth, height: cardHeight)

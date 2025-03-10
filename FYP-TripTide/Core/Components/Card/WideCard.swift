@@ -124,11 +124,32 @@ struct WideCard: View {
             checkPlaceStatus()
         }
         // Listen for notifications about place being added/removed from trips
-        .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { _ in
-            checkPlaceStatus()
+        // But filter them to only respond to notifications about THIS place
+        .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { notification in
+            // Get the trip ID from the notification
+            if let tripId = notification.object as? String,
+               // Get the userInfo dictionary (we'll need to add this to the notification)
+               let userInfo = notification.userInfo as? [String: String],
+               // Get the place ID from the userInfo
+               let placeId = userInfo["placeId"],
+               // Only proceed if this notification is about this place
+               placeId == place.id {
+                print("WideCard - Received placeAddedToTrip notification for place: \(place.id)")
+                checkPlaceStatus()
+            }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { _ in
-            checkPlaceStatus()
+        .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { notification in
+            // Get the trip ID from the notification
+            if let tripId = notification.object as? String,
+               // Get the userInfo dictionary
+               let userInfo = notification.userInfo as? [String: String],
+               // Get the place ID from the userInfo
+               let placeId = userInfo["placeId"],
+               // Only proceed if this notification is about this place
+               placeId == place.id {
+                print("WideCard - Received placeRemovedFromTrip notification for place: \(place.id)")
+                checkPlaceStatus()
+            }
         }
     }
 }

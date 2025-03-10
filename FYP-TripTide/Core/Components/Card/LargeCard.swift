@@ -64,6 +64,8 @@ struct LargeCard: View {
                 .buttonStyle(HeartToggleButtonStyle(isAdded: isAdded))
                 .padding(12)
                 .scaleEffect(isAnimating ? 1.2 : 1.0)
+                // Add an id to force view refresh when isAdded changes
+                .id("heart-button-\(isAdded)")
             }
         }
         .sheet(isPresented: $showAddToTripSheet) {
@@ -82,6 +84,38 @@ struct LargeCard: View {
         }
         .task {
             await checkIfPlaceInAnyTrip()
+        }
+        // Listen for notifications about place being added/removed from trips
+        // But filter them to only respond to notifications about THIS place
+        .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { notification in
+            // Get the trip ID from the notification
+            if let tripId = notification.object as? String,
+               // Get the userInfo dictionary (we'll need to add this to the notification)
+               let userInfo = notification.userInfo as? [String: String],
+               // Get the place ID from the userInfo
+               let placeId = userInfo["placeId"],
+               // Only proceed if this notification is about this place
+               placeId == place.id {
+                print("LargeCard - Received placeAddedToTrip notification for place: \(place.id)")
+                Task {
+                    await checkIfPlaceInAnyTrip()
+                }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { notification in
+            // Get the trip ID from the notification
+            if let tripId = notification.object as? String,
+               // Get the userInfo dictionary
+               let userInfo = notification.userInfo as? [String: String],
+               // Get the place ID from the userInfo
+               let placeId = userInfo["placeId"],
+               // Only proceed if this notification is about this place
+               placeId == place.id {
+                print("LargeCard - Received placeRemovedFromTrip notification for place: \(place.id)")
+                Task {
+                    await checkIfPlaceInAnyTrip()
+                }
+            }
         }
     }
 }

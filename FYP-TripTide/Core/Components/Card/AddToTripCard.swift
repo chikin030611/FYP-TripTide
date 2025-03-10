@@ -203,8 +203,12 @@ struct AddToTripCard: View {
                     )
                     isInTrip = false
                     onSelect(trip, false) // Pass false for removal
-                    // Post notification when place is removed
-                    NotificationCenter.default.post(name: .placeRemovedFromTrip, object: nil)
+                    // Post notification when place is removed, including the trip ID and place ID
+                    NotificationCenter.default.post(
+                        name: .placeRemovedFromTrip, 
+                        object: trip.id,
+                        userInfo: ["placeId": place.id]
+                    )
                 } else {
                     print("Attempting to add place to trip")
                     try await TripsManager.shared.addPlaceToTrip(
@@ -214,8 +218,12 @@ struct AddToTripCard: View {
                     )
                     isInTrip = true
                     onSelect(trip, true) // Pass true for addition
-                    // Post notification when place is added
-                    NotificationCenter.default.post(name: .placeAddedToTrip, object: nil)
+                    // Post notification when place is added, including the trip ID and place ID
+                    NotificationCenter.default.post(
+                        name: .placeAddedToTrip, 
+                        object: trip.id,
+                        userInfo: ["placeId": place.id]
+                    )
                 }
                 print("Place toggle successful")
             } catch {

@@ -8,7 +8,6 @@ struct PlanTabView: View {
     @State private var interstitialSheetPresentation = false
     @State private var navigationPath = NavigationPath()
     @State private var hasAppeared = false
-    @State private var shouldRefresh = false
     @State private var isRefreshing = false
 
     var body: some View {
@@ -42,10 +41,14 @@ struct PlanTabView: View {
                                 }
                                 
                                 ForEach(viewModel.trips) { trip in
-                                    NavigationLink(destination: TripDetailView(viewModel: TripDetailViewModel(trip: trip), navigationPath: $navigationPath)) {
+                                    NavigationLink(destination: TripDetailView(
+                                        viewModel: TripDetailViewModel.viewModel(for: trip), 
+                                        navigationPath: $navigationPath
+                                    )) {
                                         TripCard(trip: trip, navigationPath: $navigationPath)
                                     }
                                     .padding(.bottom, 15)
+                                    .id("tripcard-\(trip.id)")
                                 }
                             }
                             .padding(.bottom, 80)
@@ -57,6 +60,9 @@ struct PlanTabView: View {
                         if viewModel.isLoading && !viewModel.trips.isEmpty {
                             ProgressView()
                         }
+                    }
+                    .refreshable {
+                        viewModel.fetchTrips()
                     }
                 }
 
@@ -104,33 +110,12 @@ struct PlanTabView: View {
                     viewModel.fetchTrips()
                 }
             }
-            .onChange(of: shouldRefresh) { oldValue, newValue in
-                if newValue && !isRefreshing {
-                    isRefreshing = true
-                    print("🔄 Refreshing trips due to shouldRefresh trigger")
-                    viewModel.fetchTrips()
-                    
-                    // Reset refresh flags after a delay
-                    Task {
-                        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-                        shouldRefresh = false
-                        isRefreshing = false
-                    }
-                }
-            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .tripDeleted)) { _ in
-            print("📣 Received tripDeleted notification")
-            shouldRefresh = true
+            print("📣 Received tripDeleted notification in PlanTabView")
+            viewModel.fetchTrips()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { _ in
-            print("📣 Received placeRemovedFromTrip notification")
-            shouldRefresh = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { _ in
-            print("📣 Received placeAddedToTrip notification")
-            shouldRefresh = true
-        }
+        .id("PlanTabView")
     }
 }
 

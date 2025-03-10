@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 extension Notification.Name {
@@ -11,10 +12,20 @@ struct TripDetailView: View {
     @Binding var navigationPath: NavigationPath
     @Environment(\.presentationMode) private var presentationMode
     @State private var showingEditSheet = false
-    @State private var shouldRefresh = false
+    
+    // Track if view has already appeared to prevent multiple data fetches
+    @State private var hasAppeared = false
+    
+    // A unique identifier combining the view and trip ID to ensure stable identity
+    private let viewIdentifier: String
+    
+    init(viewModel: TripDetailViewModel, navigationPath: Binding<NavigationPath>) {
+        print("🔍 TripDetailView initialized with trip: \(viewModel.trip.name) (ID: \(viewModel.trip.id))")
+        self._viewModel = ObservedObject(wrappedValue: viewModel)
+        self._navigationPath = navigationPath
+        self.viewIdentifier = "TripDetailView-\(viewModel.trip.id)"
+    }
 
-
-    // TODO: fix the text on image padding -- different for trips that have no places and trips that have places
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
@@ -201,16 +212,27 @@ struct TripDetailView: View {
             .ignoresSafeArea(edges: .top)
             .refreshable {
                 do {
+                    print("🔄 Manual refresh triggered")
                     // Add a small delay to prevent rapid refreshes
                     try await Task.sleep(nanoseconds: 500_000_000)
                     await viewModel.fetchPlaces()
                 } catch {
-                    print("Refresh failed: \(error)")
+                    print("❌ Refresh failed: \(error)")
                 }
             }
             .task {
-                // Initial fetch when view appears
-                await viewModel.fetchPlaces()
+                // Only fetch data if this is the first appearance or a refresh is needed
+                if !hasAppeared {
+                    print("🚀 TripDetailView first appearance for trip: \(viewModel.trip.id), starting initial data fetch")
+                    await viewModel.fetchPlaces()
+                    hasAppeared = true
+                    print("📊 After initial fetch - Tourist Attractions: \(viewModel.touristAttractionsCards.count), Restaurants: \(viewModel.restaurantsCards.count), Lodgings: \(viewModel.lodgingsCards.count)")
+                } else {
+                    print("♻️ TripDetailView reappeared for trip: \(viewModel.trip.id), skipping redundant fetch")
+                }
+            }
+            .onDisappear {
+                print("👋 TripDetailView disappearing for trip: \(viewModel.trip.id)")
             }
 
             // Bottom Bar
@@ -240,6 +262,8 @@ struct TripDetailView: View {
             .background(themeManager.selectedTheme.appBackgroundColor)
             .frame(maxWidth: .infinity)
         }
+        // Use the viewIdentifier to maintain stable identity during navigation
+        .id(viewIdentifier)
         .sheet(isPresented: $showingEditSheet) {
             NavigationStack {
                 EditTripView(
