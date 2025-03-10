@@ -173,6 +173,7 @@ struct AddToTripCard: View {
             // Check if task is cancelled before making the request
             guard !Task.isCancelled else { return }
             
+            // Use the cached version (no need to force refresh here)
             isInTrip = try await TripsManager.shared.checkPlaceInTrip(
                 tripId: trip.id,
                 placeId: place.id

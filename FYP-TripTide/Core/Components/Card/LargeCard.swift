@@ -12,20 +12,9 @@ struct LargeCard: View {
         self.place = place
     }
     
-    // Check if the place is in any trip
+    // Check if the place is in any trip using the new helper method
     private func checkIfPlaceInAnyTrip() async {
-        for trip in tripsManager.trips {
-            do {
-                let isInTrip = try await tripsManager.checkPlaceInTrip(tripId: trip.id, placeId: place.id)
-                if isInTrip {
-                    isAdded = true
-                    return
-                }
-            } catch {
-                print("Error checking if place is in trip: \(error)")
-            }
-        }
-        isAdded = false
+        isAdded = await tripsManager.isPlaceInAnyTrip(placeId: place.id)
     }
 
     var body: some View {

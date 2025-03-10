@@ -216,17 +216,42 @@ class TripsService {
             throw APIError.unauthorized
         }
         
+        // Print request details for debugging
+        print("📤 checkPlaceInTrip Request URL: \(url)")
+        
         let (data, response) = try await URLSession.shared.data(for: request)
+        
+        // Print response data for debugging
+        if let responseString = String(data: data, encoding: .utf8) {
+            print("📥 checkPlaceInTrip Response Data: \(responseString)")
+        }
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
         }
+        
+        print("📥 checkPlaceInTrip Response Status Code: \(httpResponse.statusCode)")
         
         if httpResponse.statusCode == 401 {
             throw APIError.unauthorized
         }
         
         guard (200...299).contains(httpResponse.statusCode) else {
+            // Try to extract error message from response body
+            if let errorString = String(data: data, encoding: .utf8) {
+                print("❌ Server error response body: \(errorString)")
+                
+                // Try to parse as JSON for more details
+                if let errorDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    print("❌ Parsed error details: \(errorDict)")
+                    
+                    // If there's a specific error message, include it in the error
+                    if let message = errorDict["message"] as? String {
+                        throw APIError.serverErrorWithMessage(statusCode: httpResponse.statusCode, message: message)
+                    }
+                }
+            }
+            
             throw APIError.serverError(statusCode: httpResponse.statusCode)
         }
         
@@ -292,11 +317,22 @@ class TripsService {
         
         // Check for 400 Bad Request specifically for "Place already in trip"
         if httpResponse.statusCode == 400 {
-            // Try to decode the error response
-            if let errorResponse = try? JSONDecoder().decode(APIErrorResponse.self, from: data),
-               errorResponse.message == "Place already in trip" {
-                print("⚠️ Place is already in trip")
-                throw APIError.placeAlreadyInTrip
+            // Try to decode the error response as a dictionary
+            if let errorString = String(data: data, encoding: .utf8) {
+                print("❌ Error response body: \(errorString)")
+            }
+            
+            if let errorDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print("❌ Parsed error details: \(errorDict)")
+                
+                if let message = errorDict["message"] as? String {
+                    if message == "Place already in trip" {
+                        print("⚠️ Place is already in trip")
+                        throw APIError.placeAlreadyInTrip
+                    } else {
+                        throw APIError.serverErrorWithMessage(statusCode: httpResponse.statusCode, message: message)
+                    }
+                }
             }
         }
         
@@ -339,12 +375,4 @@ class TripsService {
         }
     }
 }
-
-// Add this struct to decode the error response
-private struct APIErrorResponse: Codable {
-    let status: Int
-    let message: String
-    let error: String
-}
-
 

@@ -31,6 +31,7 @@ enum APIError: Error {
     case unauthorized
     case invalidResponse
     case serverError(statusCode: Int)
+    case serverErrorWithMessage(statusCode: Int, message: String)
     case placeAlreadyInTrip
     
     var localizedDescription: String {
@@ -43,6 +44,8 @@ enum APIError: Error {
             return "Unauthorized access"
         case .serverError(let statusCode):
             return "Server error: \(statusCode)"
+        case .serverErrorWithMessage(let statusCode, let message):
+            return "Server error (\(statusCode)): \(message)"
         case .decodingError:
             return "Decoding error"
         case .networkError:

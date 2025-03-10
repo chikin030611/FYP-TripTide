@@ -14,20 +14,16 @@ struct WideCard: View {
         self.place = place
     }
     
-    // Check if the place is in any trip
-    private func checkIfPlaceInAnyTrip() async {
-        for trip in tripsManager.trips {
-            do {
-                let isInTrip = try await tripsManager.checkPlaceInTrip(tripId: trip.id, placeId: place.id)
-                if isInTrip {
-                    isAdded = true
-                    return
-                }
-            } catch {
-                print("Error checking if place is in trip: \(error)")
+    // Function to check place status and update isAdded
+    private func checkPlaceStatus() {
+        Task {
+            // Force UI update by dispatching to main thread
+            let status = await tripsManager.isPlaceInAnyTrip(placeId: place.id)
+            await MainActor.run {
+                print("WideCard - Place \(place.id) in trip status: \(status)")
+                self.isAdded = status
             }
         }
-        isAdded = false
     }
 
     var body: some View {
@@ -104,24 +100,35 @@ struct WideCard: View {
                 .buttonStyle(HeartToggleButtonStyle(isAdded: isAdded))
                 .padding(12)
                 .scaleEffect(isAnimating ? 1.2 : 1.0)
+                // Add an id to force view refresh when isAdded changes
+                .id("heart-button-\(isAdded)")
             }
         }
         .sheet(isPresented: $showAddToTripSheet) {
             AddToTripSheet(
                 place: place,
                 onAddPlaceToTrip: { place, trip in
-                    isAdded = true  // Update the button state when a place is added
+                    // Update immediately for better UX
+                    isAdded = true
+                    // Then verify with backend
+                    checkPlaceStatus()
                 },
                 onRemovePlaceFromTrip: { place, trip in
                     // Check if the place is still in any trip after removal
-                    Task {
-                        await checkIfPlaceInAnyTrip()
-                    }
+                    checkPlaceStatus()
                 }
             )
         }
-        .task {
-            await checkIfPlaceInAnyTrip()
+        // Use onAppear instead of task to ensure it runs every time the view appears
+        .onAppear {
+            checkPlaceStatus()
+        }
+        // Listen for notifications about place being added/removed from trips
+        .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { _ in
+            checkPlaceStatus()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { _ in
+            checkPlaceStatus()
         }
     }
 }

@@ -7,6 +7,9 @@ class PlaceDetailViewModel: ObservableObject {
     @Published var cameraPosition: MapCameraPosition
     @Published var isLoading = false
     @Published var error: Error?
+    @Published var isInTrip = false
+
+    @StateObject private var tripsManager = TripsManager.shared
     
     init(placeId: String) {
         // Initialize with empty place first
@@ -24,6 +27,7 @@ class PlaceDetailViewModel: ObservableObject {
         // Fetch the actual data
         Task {
             await fetchPlaceDetailById(id: placeId)
+            await checkIfPlaceInAnyTrip(placeId: placeId)
         }
     }
     
@@ -70,8 +74,14 @@ class PlaceDetailViewModel: ObservableObject {
             self.error = error
         }
     }
+
     
-    func toggleFavorite() {
-        // Implement favorite toggle logic
+    // Check if the place is in any trip
+    func checkIfPlaceInAnyTrip(placeId: String) async {
+        let status = await TripsManager.shared.isPlaceInAnyTrip(placeId: placeId)
+        await MainActor.run {
+            print("PlaceDetailView - Place \(placeId) in trip status: \(status)")
+            self.isInTrip = status
+        }
     }
 } 

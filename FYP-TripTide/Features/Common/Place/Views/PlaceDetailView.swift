@@ -15,32 +15,14 @@ import Inject
 struct PlaceDetailView: View {
     @StateObject var themeManager = ThemeManager()
     @StateObject private var viewModel: PlaceDetailViewModel
-    @StateObject private var tripsManager = TripsManager.shared
     @State private var showMap = false
     @State private var showAddressOptions = false
     @State private var showToast = false
     @State private var showAddToTripSheet = false
     @State private var isAnimating: Bool = false
-    @State private var isAdded: Bool = false
     
     init(place: Place) {
         _viewModel = StateObject(wrappedValue: PlaceDetailViewModel(placeId: place.id))
-    }
-    
-    // Check if the place is in any trip
-    private func checkIfPlaceInAnyTrip() async {
-        for trip in tripsManager.trips {
-            do {
-                let isInTrip = try await tripsManager.checkPlaceInTrip(tripId: trip.id, placeId: viewModel.place.id)
-                if isInTrip {
-                    isAdded = true
-                    return
-                }
-            } catch {
-                print("Error checking if place is in trip: \(error)")
-            }
-        }
-        isAdded = false
     }
     
     var body: some View {
@@ -89,14 +71,21 @@ struct PlaceDetailView: View {
                 }
             }
             .animation(.easeInOut, value: showToast)
-            .task {
-                await checkIfPlaceInAnyTrip()
+            // Listen for notifications about place being added/removed from trips
+            .onReceive(NotificationCenter.default.publisher(for: .placeAddedToTrip)) { _ in
+                Task {
+                    await viewModel.checkIfPlaceInAnyTrip(placeId: viewModel.place.id)
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .placeRemovedFromTrip)) { _ in
+                Task {
+                    await viewModel.checkIfPlaceInAnyTrip(placeId: viewModel.place.id)
+                }
             }
         }
     }
-    
+
     // MARK: - View Components
-    
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -125,22 +114,26 @@ struct PlaceDetailView: View {
                 }
                 showAddToTripSheet = true
             }) {
-                Text(isAdded ? "Remove" : "Add")
+                Text(viewModel.isInTrip ? "Remove" : "Add")
             }
-            .buttonStyle(HeartToggleInDetailViewButtonStyle(isAdded: isAdded))
+            .buttonStyle(HeartToggleInDetailViewButtonStyle(isAdded: viewModel.isInTrip))
             .scaleEffect(isAnimating ? 1.2 : 1.0)
+            .id("heart-button-\(viewModel.isInTrip)")
         }
         .padding(.bottom, 10)
         .sheet(isPresented: $showAddToTripSheet) {
             AddToTripSheet(
                 place: viewModel.place,
                 onAddPlaceToTrip: { place, trip in
-                    isAdded = true
+                    // Then verify with backend
+                    Task {
+                        await viewModel.checkIfPlaceInAnyTrip(placeId: viewModel.place.id)
+                    }
                 },
                 onRemovePlaceFromTrip: { place, trip in
                     // Check if the place is still in any trip after removal
                     Task {
-                        await checkIfPlaceInAnyTrip()
+                        await viewModel.checkIfPlaceInAnyTrip(placeId: viewModel.place.id)
                     }
                 }
             )
