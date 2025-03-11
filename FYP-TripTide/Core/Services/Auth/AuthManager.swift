@@ -52,7 +52,7 @@ class AuthManager: ObservableObject {
         }
     }
     
-    func signOut() {
+    func signOut() async {
         // Clear existing auth data
         self.token = nil
         self.refreshToken = nil
@@ -62,6 +62,7 @@ class AuthManager: ObservableObject {
         // Clear all caches
         PreferencesService.shared.clearCache()
         PlacesService.shared.clearCache()
+        await TripsManager.shared.refreshAllData()
     }
     
     func validateToken() async {
@@ -101,7 +102,7 @@ class AuthManager: ObservableObject {
                 self.token = newToken
             }
         } catch {
-            signOut()
+            await signOut()
             throw error
         }
     }

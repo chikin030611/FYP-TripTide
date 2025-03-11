@@ -39,6 +39,7 @@ class TripsManager: ObservableObject {
     // Clear the cache
     private func clearCache() {
         tripCache.removeAll()
+        trips.removeAll()
         lastCacheTime = nil
         placeTripCache.removeAll()
         placeTripCacheTime.removeAll()
