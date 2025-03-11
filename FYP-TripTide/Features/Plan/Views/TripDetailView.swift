@@ -262,7 +262,6 @@ struct TripDetailView: View {
             .background(themeManager.selectedTheme.appBackgroundColor)
             .frame(maxWidth: .infinity)
         }
-        // Use the viewIdentifier to maintain stable identity during navigation
         .id(viewIdentifier)
         .sheet(isPresented: $showingEditSheet) {
             NavigationStack {

@@ -41,14 +41,9 @@ struct PlanTabView: View {
                                 }
                                 
                                 ForEach(viewModel.trips) { trip in
-                                    NavigationLink(destination: TripDetailView(
-                                        viewModel: TripDetailViewModel.viewModel(for: trip), 
-                                        navigationPath: $navigationPath
-                                    )) {
-                                        TripCard(trip: trip, navigationPath: $navigationPath)
-                                    }
-                                    .padding(.bottom, 15)
-                                    .id("tripcard-\(trip.id)")
+                                    TripCard(trip: trip, navigationPath: $navigationPath)
+                                        .padding(.bottom, 15)
+                                        .id("tripcard-\(trip.id)")
                                 }
                             }
                             .padding(.bottom, 80)
@@ -115,7 +110,6 @@ struct PlanTabView: View {
             print("📣 Received tripDeleted notification in PlanTabView")
             viewModel.fetchTrips()
         }
-        .id("PlanTabView")
     }
 }
 
