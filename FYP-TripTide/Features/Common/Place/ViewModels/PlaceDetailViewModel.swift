@@ -45,7 +45,7 @@ class PlaceDetailViewModel: ObservableObject {
                 images: detail.photos.map { PlacesService.shared.appendAPIKey(to: $0) },
                 name: detail.name,
                 type: detail.type,
-                rating: Float(detail.rating),
+                rating: Float(detail.rating ?? 0),
                 ratingCount: Int(detail.ratingCount) ?? 0,
                 price: "", // Add if available in API
                 tags: detail.tags.compactMap { name in

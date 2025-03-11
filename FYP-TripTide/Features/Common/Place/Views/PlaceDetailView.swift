@@ -108,6 +108,7 @@ struct PlaceDetailView: View {
                         isAnimating = false
                     }
                 }
+                print("🔘 AddToTripSheet button tapped at \(Date())")
                 showAddToTripSheet = true
             }) {
                 Text(viewModel.isInTrip ? "Remove" : "Add")
@@ -117,6 +118,13 @@ struct PlaceDetailView: View {
             .id("heart-button-\(viewModel.isInTrip)")
         }
         .padding(.bottom, 10)
+        .onChange(of: showAddToTripSheet) { oldValue, newValue in
+            if newValue {
+                print("🔍 AddToTripSheet will present at \(Date())")
+            } else {
+                print("🔍 AddToTripSheet dismissed at \(Date())")
+            }
+        }
         .sheet(isPresented: $showAddToTripSheet) {
             AddToTripSheet(
                 place: viewModel.place,

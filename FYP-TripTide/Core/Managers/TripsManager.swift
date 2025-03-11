@@ -22,8 +22,14 @@ class TripsManager: ObservableObject {
     
     // Check if cache is valid
     private func isCacheValid() -> Bool {
-        guard let lastCacheTime = lastCacheTime else { return false }
-        return Date().timeIntervalSince(lastCacheTime) < cacheExpirationTime
+        guard let lastCacheTime = lastCacheTime else {
+            print("🕒 Cache invalid - no last cache time")
+            return false
+        }
+        let cacheAge = Date().timeIntervalSince(lastCacheTime)
+        let isValid = cacheAge < cacheExpirationTime
+        print("🕒 Cache age: \(Int(cacheAge))s, expiration: \(Int(cacheExpirationTime))s, valid: \(isValid)")
+        return isValid
     }
     
     // Get a trip from cache if available
@@ -87,14 +93,18 @@ class TripsManager: ObservableObject {
     func fetchTrips(forceRefresh: Bool = false) async {
         // Return cached trips if cache is valid and not forcing refresh
         if !forceRefresh && isCacheValid() && !trips.isEmpty {
+            print("📦 Using cached trips - count: \(trips.count), last cache time: \(String(describing: lastCacheTime))")
             return
         }
         
+        print("🔄 Cache invalid or force refresh (\(forceRefresh)) - fetching trips from API")
         isLoading = true
         error = nil
         
         do {
+            let startTime = Date()
             trips = try await tripsAPI.fetchTrips()
+            print("⏱️ API fetch completed in \(Date().timeIntervalSince(startTime)) seconds - retrieved \(trips.count) trips")
             
             // Update the cache
             lastCacheTime = Date()
@@ -107,6 +117,7 @@ class TripsManager: ObservableObject {
             } else {
                 self.error = error.localizedDescription
             }
+            print("❌ Error fetching trips: \(error)")
         }
         
         isLoading = false

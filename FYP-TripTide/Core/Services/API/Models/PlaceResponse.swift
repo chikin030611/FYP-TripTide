@@ -4,7 +4,7 @@ struct PlaceBasicData: Codable {
     let type: String
     let tags: [String]
     let photoUrl: String
-    let rating: Double
+    let rating: Double?
     let ratingCount: String
 }
 
@@ -14,7 +14,7 @@ struct PlaceDetailResponse: Codable {
     let type: String
     let tags: [String]
     let address: String
-    let rating: Double
+    let rating: Double?
     let ratingCount: String
     let openingHours: OpeningHours?
     let description: String?

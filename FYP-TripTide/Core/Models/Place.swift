@@ -5,7 +5,7 @@ struct Place: Identifiable {
     var images: [String]
     var name: String
     var type: String
-    var rating: Float
+    var rating: Float?
     var ratingCount: Int
     var price: String
     var tags: [Tag]
@@ -23,7 +23,7 @@ extension Place {
         images: [],
         name: "",
         type: "",
-        rating: 0,
+        rating: nil,
         ratingCount: 0,
         price: "",
         tags: [],

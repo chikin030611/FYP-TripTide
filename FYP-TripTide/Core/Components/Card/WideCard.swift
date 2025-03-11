@@ -64,9 +64,15 @@ struct WideCard: View {
                             Image(systemName: "star.fill")
                                 .foregroundColor(themeManager.selectedTheme.accentColor)
                                 .frame(width: 20, height: 20)
-                            Text("\(place.rating, specifier: "%.1f")")
-                                .font(themeManager.selectedTheme.bodyTextFont)
-                                .foregroundColor(.white)
+                            if let rating = place.rating {
+                                Text("\(rating, specifier: "%.1f")")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                    .foregroundColor(.white)
+                            } else {
+                                Text("N/A")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                    .foregroundColor(.white)
+                            }
                         }
                         .padding(.top, 130)
                         .padding(.horizontal, 15)
