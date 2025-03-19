@@ -290,7 +290,10 @@ struct TripDetailView: View {
             }
         }
         .sheet(isPresented: $showingItineraryView) {
-            ItineraryView(dailyItineraries: viewModel.trip.dailyItineraries, numberOfDays: viewModel.trip.numOfDays)
+            NavigationStack {
+                ItineraryView(dailyItineraries: viewModel.trip.dailyItineraries, numberOfDays: viewModel.trip.numOfDays)
+                    .interactiveDismissDisabled(true)
+            }
         }
     }
 }
