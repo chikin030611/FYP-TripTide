@@ -24,7 +24,6 @@ struct ContentView: View {
             BottomBarItem(icon: "house.fill", title: "Home", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "magnifyingglass", title: "Search", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "calendar", title: "Plan", color: themeManager.selectedTheme.accentColor),
-            BottomBarItem(icon: "lightbulb.fill", title: "Tips", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "person.fill", title: "Profile", color: themeManager.selectedTheme.accentColor)
         ]
     }
@@ -43,8 +42,6 @@ struct ContentView: View {
                     case 3:
                         PlanTabView()
                     case 4:
-                        TipsTabView()
-                    case 5:
                         UserTabView()
                     default:
                         // Show current view instead of UITestView
