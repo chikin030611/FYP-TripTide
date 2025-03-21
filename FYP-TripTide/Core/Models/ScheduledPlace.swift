@@ -6,4 +6,6 @@ struct ScheduledPlace: Identifiable, Codable {
     var startTime: Date?
     var endTime: Date?
     var notes: String?
+    var date: Date?
+    var photoUrl: String?
 } 

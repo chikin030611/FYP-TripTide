@@ -33,13 +33,21 @@ struct TripResponse: Codable {
 struct DailyItineraryResponse: Codable {
     let id: String
     let day: Int
+    let date: Int64?
     let scheduledPlaces: [ScheduledPlaceResponse]?
     
     func toDailyItinerary(tripId: String) -> DailyItinerary {
-        DailyItinerary(
+        // Convert milliseconds timestamp to Date if available
+        var actualDate: Date? = nil
+        if let dateMilliseconds = date {
+            actualDate = Date(timeIntervalSince1970: Double(dateMilliseconds) / 1000.0)
+        }
+        
+        return DailyItinerary(
             id: id,
             tripId: tripId,
             dayNumber: day,
+            date: actualDate,
             places: scheduledPlaces?.map { $0.toScheduledPlace() } ?? []
         )
     }
@@ -52,6 +60,7 @@ struct ScheduledPlaceResponse: Codable {
     let startTime: String
     let endTime: String
     let notes: String?
+    let date: Int64?
     
     func toScheduledPlace() -> ScheduledPlace {
         let formatter = DateFormatter()
@@ -79,12 +88,20 @@ struct ScheduledPlaceResponse: Codable {
                                    of: baseDate)
         }
         
+        // Convert milliseconds timestamp to Date if available
+        var actualDate: Date? = nil
+        if let dateMilliseconds = date {
+            actualDate = Date(timeIntervalSince1970: Double(dateMilliseconds) / 1000.0)
+        }
+        
         return ScheduledPlace(
             id: id,
             placeId: placeId,
             startTime: startDate,
             endTime: endDate,
-            notes: notes
+            notes: notes,
+            date: actualDate,
+            photoUrl: nil
         )
     }
 }

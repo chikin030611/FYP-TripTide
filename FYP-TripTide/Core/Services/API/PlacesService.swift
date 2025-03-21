@@ -1,5 +1,29 @@
 import Foundation
 
+// Add cache for basic place data
+actor PlaceBasicCache {
+    static let shared = PlaceBasicCache()
+    
+    private var cache: [String: (data: PlaceBasicData, timestamp: Date)] = [:]
+    private let cacheDuration: TimeInterval = 3600 // 1 hour
+    
+    func get(_ id: String) -> PlaceBasicData? {
+        guard let cached = cache[id],
+              Date().timeIntervalSince(cached.timestamp) < cacheDuration else {
+            return nil
+        }
+        return cached.data
+    }
+    
+    func set(_ data: PlaceBasicData, for id: String) {
+        cache[id] = (data: data, timestamp: Date())
+    }
+    
+    func clear() {
+        cache.removeAll()
+    }
+}
+
 class PlacesService {
     static let shared = PlacesService()
     
@@ -18,12 +42,22 @@ class PlacesService {
     }
 
     func fetchPlaceBasicById(id: String) async throws -> PlaceBasicData {
+        // Check cache first
+        if let cached = await PlaceBasicCache.shared.get(id) {
+            return cached
+        }
+        
         guard let url = URL(string: "\(APIConfig.baseURL)/places/\(id)/basic") else {
             throw APIError.invalidURL
         }
         
         let (data, _) = try await URLSession.shared.data(from: url)
-        return try JSONDecoder().decode(PlaceBasicData.self, from: data)
+        let place = try JSONDecoder().decode(PlaceBasicData.self, from: data)
+        
+        // Store in cache
+        await PlaceBasicCache.shared.set(place, for: id)
+        
+        return place
     }
 
     func fetchPlaceDetailById(id: String) async throws -> PlaceDetailResponse {
@@ -110,6 +144,10 @@ class PlacesService {
     func clearCache() {
         tagsCache.removeAllObjects()
         lastTagsFetchTime.removeAll()
+        Task {
+            await PlaceBasicCache.shared.clear()
+            await PlaceCache.shared.clear() // assuming this method exists
+        }
     }
     
     func fetchRecommendations() async throws -> [PlaceBasicData] {

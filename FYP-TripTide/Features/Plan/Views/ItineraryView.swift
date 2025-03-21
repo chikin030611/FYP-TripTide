@@ -1,58 +1,91 @@
 import SwiftUI
 
 struct ItineraryView: View {
-    let dailyItineraries: [DailyItinerary]?
-    let numberOfDays: Int
     @StateObject private var themeManager = ThemeManager()
-    @State private var selectedDayIndex = 0
-    
+    @StateObject private var viewModel: ItineraryViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int) {
+        self._viewModel = StateObject(
+            wrappedValue: ItineraryViewModel(
+                dailyItineraries: dailyItineraries,
+                numberOfDays: numberOfDays
+            ))
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            
-            if let itineraries = dailyItineraries, !itineraries.isEmpty {
-                // Days picker
+
+            if let itineraries = viewModel.dailyItineraries, !itineraries.isEmpty {
+                // Days picker - moved up and full width
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
-                        ForEach(0..<numberOfDays, id: \.self) { index in
-                            Button(action: {
-                                selectedDayIndex = index
-                            }) {
-                                Text("Day \(index + 1)")
+                        ForEach(0..<viewModel.numberOfDays, id: \.self) { index in
+                            DayButton(
+                                dayIndex: index,
+                                isSelected: viewModel.selectedDayIndex == index,
+                                onSelect: {
+                                    viewModel.selectDay(index: index)
+                                })
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .frame(maxWidth: .infinity)
+
+                if let date = viewModel.selectedDayItinerary?.date {
+                    HStack {
+                        Text(date.formatted(date: .long, time: .omitted))
+                            .font(themeManager.selectedTheme.titleFont)
+                            .foregroundColor(themeManager.selectedTheme.primaryColor)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 25)
+                                    .stroke(themeManager.selectedTheme.primaryColor, lineWidth: 1)
+                            )
+
+                        Spacer()
+
+                        Button(action: {
+                            print("Edit itinerary")
+                        }) {
+                            HStack(spacing: 2) {
+                                Image(systemName: "pencil")
+                                    .foregroundStyle(themeManager.selectedTheme.secondaryColor)
+                                    .font(themeManager.selectedTheme.titleFont)
+                                Text("Edit")
                                     .font(themeManager.selectedTheme.bodyTextFont)
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(selectedDayIndex == index ? 
-                                                  themeManager.selectedTheme.accentColor : 
-                                                  themeManager.selectedTheme.backgroundColor)
-                                    )
-                                    .foregroundColor(selectedDayIndex == index ?
-                                                    .white : 
-                                                    themeManager.selectedTheme.primaryColor)
+                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
                             }
                         }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.horizontal)
                 }
-                
+
                 // Selected day's scheduled places
-                if selectedDayIndex < itineraries.count {
-                    let day = itineraries[selectedDayIndex]
-                    let places = day.places
-                    
-                    if !places.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
+                if let dayItinerary = viewModel.selectedDayItinerary {
+                    // Check if places array exists and has items
+                    let places = dayItinerary.places
+                    if places.count > 0 {
+                        ScrollView {
                             ForEach(places) { place in
                                 ScheduledPlaceView(scheduledPlace: place)
+                                    .padding(.horizontal)
                             }
                         }
                     } else {
-                        ContentUnavailableView(
-                            "No Activities Planned",
-                            systemImage: "calendar.badge.exclamationmark",
-                            description: Text("No activities have been scheduled for Day \(day.dayNumber).")
-                        )
+                        // Show when places array is nil or empty
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("No Activities Planned")
+                                .font(themeManager.selectedTheme.titleFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                            Text(
+                                "No activities have been scheduled for Day \(dayItinerary.dayNumber ?? viewModel.selectedDayIndex + 1)."
+                            )
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        }
                         .frame(maxWidth: .infinity)
                         .padding(.top, 20)
                     }
@@ -67,7 +100,15 @@ struct ItineraryView: View {
                 .padding(.top, 20)
             }
         }
-        .padding()
+        .navigationTitle("Itinerary")
+        .navigationBarItems(
+            leading:
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.gray)
+                }
+        )
+        .accentColor(themeManager.selectedTheme.accentColor)
         .background(themeManager.selectedTheme.appBackgroundColor)
         .cornerRadius(12)
     }
@@ -75,28 +116,43 @@ struct ItineraryView: View {
 
 // Sub-view for each scheduled place
 struct ScheduledPlaceView: View {
-    let scheduledPlace: ScheduledPlace
     @StateObject private var themeManager = ThemeManager()
-    @State private var placeName: String = "Loading..."
-    @State private var placeImage: String = "placeholder"
-    @State private var isLoading = true
-    @State private var loadingError: String? = nil
-    
-    private let placesService = PlacesService.shared
-    
+    @StateObject private var viewModel: ScheduledPlaceViewModel
+
+    init(scheduledPlace: ScheduledPlace) {
+        self._viewModel = StateObject(
+            wrappedValue: ScheduledPlaceViewModel(
+                scheduledPlace: scheduledPlace
+            ))
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             // Time column
             VStack(alignment: .trailing, spacing: 4) {
-                if let startTime = scheduledPlace.startTime, 
-                   let endTime = scheduledPlace.endTime {
-                    Text(formatTime(startTime))
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.primaryColor)
-                    
-                    Text(formatTime(endTime))
-                        .font(themeManager.selectedTheme.captionTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                if viewModel.hasStartAndEndTime,
+                    let startTime = viewModel.startTime,
+                    let endTime = viewModel.endTime
+                {
+                    HStack {
+                        Image(systemName: "clock")
+                            .font(themeManager.selectedTheme.bodyTextFont)
+                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+
+                        VStack {
+                            Text(viewModel.formatTime(startTime))
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+
+                            Text(" - ")
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
+
+                            Text(viewModel.formatTime(endTime))
+                                .font(themeManager.selectedTheme.bodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                        }
+                    }
                 } else {
                     Text("No time")
                         .font(themeManager.selectedTheme.captionTextFont)
@@ -104,16 +160,16 @@ struct ScheduledPlaceView: View {
                 }
             }
             .frame(width: 80)
-            
+
             // Vertical line
             Rectangle()
                 .fill(themeManager.selectedTheme.accentColor)
                 .frame(width: 2)
                 .padding(.vertical, 4)
-            
+
             // Place details
             VStack(alignment: .leading, spacing: 8) {
-                if isLoading {
+                if viewModel.isLoading {
                     HStack {
                         ProgressView()
                             .scaleEffect(0.8)
@@ -121,7 +177,7 @@ struct ScheduledPlaceView: View {
                             .font(themeManager.selectedTheme.captionTextFont)
                             .foregroundColor(themeManager.selectedTheme.secondaryColor)
                     }
-                } else if let error = loadingError {
+                } else if let error = viewModel.loadingError {
                     VStack(alignment: .leading) {
                         Text("Error loading place")
                             .font(themeManager.selectedTheme.bodyTextFont)
@@ -131,15 +187,44 @@ struct ScheduledPlaceView: View {
                             .foregroundColor(themeManager.selectedTheme.warningColor)
                     }
                 } else {
-                    Text(placeName)
-                        .font(themeManager.selectedTheme.bodyTextFont)
-                        .foregroundColor(themeManager.selectedTheme.primaryColor)
-                    
-                    if let notes = scheduledPlace.notes, !notes.isEmpty {
-                        Text(notes)
-                            .font(themeManager.selectedTheme.captionTextFont)
-                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                            .lineLimit(2)
+                    ZStack {
+                        AsyncImageView(imageUrl: viewModel.placeImage, width: 250, height: 125)
+                            .cornerRadius(10)
+
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.black.opacity(0.01), Color.black.opacity(0.35),
+                                    ]),
+                                    startPoint: .top,
+                                    endPoint: .center
+                                )
+                            )
+                            .frame(width: 250, height: 125, alignment: .topLeading)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(viewModel.placeName)
+                                .font(themeManager.selectedTheme.boldBodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.bgTextColor)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.8)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(alignment: .bottomLeading)
+
+                            if let notes = viewModel.notes, !notes.isEmpty {
+                                Text(notes)
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.bgTextColor)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.8)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(alignment: .bottomLeading)
+                            }
+                        }
+                        .frame(width: 240, height: 115, alignment: .topLeading)
                     }
                 }
             }
@@ -152,50 +237,48 @@ struct ScheduledPlaceView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         )
         .onAppear {
-            loadPlaceDetails()
+            viewModel.loadPlaceDetails()
         }
     }
-    
-    private func loadPlaceDetails() {
-        Task {
-            isLoading = true
-            loadingError = nil
-            
-            do {
-                // Try to fetch place basic data
-                let placeData = try await placesService.fetchPlaceBasicById(id: scheduledPlace.placeId)
-                
-                await MainActor.run {
-                    placeName = placeData.name
-                    placeImage = placeData.photoUrl
-                    isLoading = false
-                }
-            } catch {
-                // For demo/development, if it's a Google Place ID that's not in our database,
-                // extract a readable name from it
-                let placeName = formatGooglePlaceId(scheduledPlace.placeId)
-                
-                await MainActor.run {
-                    self.placeName = placeName
-                    isLoading = false
-                    print("Error loading place details: \(error)")
-                }
+}
+
+struct DayButton: View {
+    let dayIndex: Int
+    let isSelected: Bool
+    let onSelect: () -> Void
+    @StateObject private var themeManager = ThemeManager()
+
+    var body: some View {
+        Button(action: {
+            onSelect()
+        }) {
+            VStack {
+                Text("Day")
+                    .font(themeManager.selectedTheme.captionTextFont)
+                    .foregroundColor(
+                        isSelected
+                            ? themeManager.selectedTheme.bgTextColor
+                            : themeManager.selectedTheme.secondaryColor)
+                Text("\(dayIndex + 1)")
+                    .font(themeManager.selectedTheme.titleFont)
+                    .foregroundColor(
+                        isSelected
+                            ? themeManager.selectedTheme.bgTextColor
+                            : themeManager.selectedTheme.secondaryColor)
+
             }
+            .padding(.vertical, 16)
+            .padding(.horizontal, 24)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(
+                        isSelected
+                            ? themeManager.selectedTheme.accentColor
+                            : themeManager.selectedTheme.backgroundColor)
+            )
+            .foregroundColor(
+                isSelected ? .white : themeManager.selectedTheme.primaryColor
+            )
         }
-    }
-    
-    private func formatGooglePlaceId(_ placeId: String) -> String {
-        // If this looks like a Google Place ID, try to make it readable
-        if placeId.hasPrefix("ChIJ") {
-            return "Place from Google Maps"
-        } else {
-            return "Place: \(placeId)"
-        }
-    }
-    
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter.string(from: date)
     }
 }
