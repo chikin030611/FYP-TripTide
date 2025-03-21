@@ -111,6 +111,11 @@ struct ItineraryView: View {
         .accentColor(themeManager.selectedTheme.accentColor)
         .background(themeManager.selectedTheme.appBackgroundColor)
         .cornerRadius(12)
+        .onAppear {
+            Task {
+                await viewModel.refreshItineraryData()
+            }
+        }
     }
 }
 

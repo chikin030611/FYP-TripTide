@@ -4,7 +4,7 @@ import SwiftUI
 
 class ItineraryViewModel: ObservableObject {
     @Published var selectedDayIndex: Int = 0
-    let dailyItineraries: [DailyItinerary]?
+    var dailyItineraries: [DailyItinerary]?
     let numberOfDays: Int
     let tripId: String
     
@@ -24,6 +24,30 @@ class ItineraryViewModel: ObservableObject {
     
     func selectDay(index: Int) {
         selectedDayIndex = index
+    }
+    
+    @MainActor
+    func updateItineraries(_ itineraries: [DailyItinerary]?) {
+        self.dailyItineraries = itineraries
+        
+        // Make sure selected day index is still valid
+        if let itineraries = itineraries, selectedDayIndex >= itineraries.count, !itineraries.isEmpty {
+            selectedDayIndex = itineraries.count - 1
+        }
+    }
+
+    func refreshItineraryData() async {
+        do {
+            print("🔄 ItineraryView: Refreshing trip data for tripId: \(tripId)")
+            if let trip = try await TripsManager.shared.fetchTrip(id: tripId, forceRefresh: true) {
+                await MainActor.run {
+                    updateItineraries(trip.dailyItineraries)
+                    print("✅ ItineraryView: Successfully refreshed itinerary data")
+                }
+            }
+        } catch {
+            print("❌ ItineraryView: Failed to refresh trip data: \(error.localizedDescription)")
+        }
     }
 }
 

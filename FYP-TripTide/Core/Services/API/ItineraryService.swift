@@ -62,6 +62,11 @@ class ItineraryService {
                     let result = response.toDailyItinerary(tripId: tripId)
                     print("✅ ItineraryService: Successfully created itinerary with ID: \(result.id)")
                     
+                    // Add this line to refresh the Trip cache after successful itinerary creation
+                    Task {
+                        await TripsManager.shared.invalidateTripCache(tripId: tripId)
+                    }
+                    
                     return result
                 } catch {
                     print("❌ ItineraryService: Decoding error: \(error)")

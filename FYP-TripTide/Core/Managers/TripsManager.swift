@@ -386,4 +386,23 @@ class TripsManager: ObservableObject {
         clearCache()
         await fetchTrips(forceRefresh: true)
     }
+    
+    @MainActor
+    func invalidateTripCache(tripId: String) async {
+        print("🔄 Invalidating cache for trip: \(tripId)")
+        
+        // Remove from trip cache
+        tripCache.removeValue(forKey: tripId)
+        
+        // Also invalidate place-trip cache for this trip
+        invalidatePlaceTripCache(tripId: tripId)
+        
+        // Re-fetch the trip to update it in the trips array
+        do {
+            _ = try await fetchTrip(id: tripId, forceRefresh: true)
+            print("✅ Trip cache refreshed for trip: \(tripId)")
+        } catch {
+            print("❌ Failed to refresh trip after cache invalidation: \(error.localizedDescription)")
+        }
+    }
 } 

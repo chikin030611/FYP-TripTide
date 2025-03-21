@@ -289,10 +289,20 @@ struct TripDetailView: View {
                 )
             }
         }
-        .sheet(isPresented: $showingItineraryView) {
+        .sheet(isPresented: $showingItineraryView, onDismiss: {
+            // Refresh trip data when sheet is dismissed
+            Task {
+                try await viewModel.fetchTrip()
+                try await viewModel.fetchPlaces()
+            }
+        }) {
             NavigationStack {
-                ItineraryView(dailyItineraries: viewModel.trip.dailyItineraries, numberOfDays: viewModel.trip.numOfDays, tripId: viewModel.trip.id)
-                    .interactiveDismissDisabled(true)
+                ItineraryView(
+                    dailyItineraries: viewModel.trip.dailyItineraries, 
+                    numberOfDays: viewModel.trip.numOfDays, 
+                    tripId: viewModel.trip.id
+                )
+                .interactiveDismissDisabled(true)
             }
         }
     }
