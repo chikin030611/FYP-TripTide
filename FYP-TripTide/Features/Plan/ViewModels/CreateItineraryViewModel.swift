@@ -9,6 +9,7 @@ class CreateItineraryViewModel: ObservableObject {
     
     // Inputs
     @Published var day: Int
+    @Published var numberOfDays: Int
     @Published var scheduledPlaces: [ScheduledPlaceInput] = []
     
     // Status
@@ -17,12 +18,16 @@ class CreateItineraryViewModel: ObservableObject {
     @Published var isSuccess = false
     
     // Available places
-    @Published var availablePlaces: [PlaceBasicData] = []
+    @Published var availablePlaces: [Place] = []
+    @Published var touristAttractions: [Place] = []
+    @Published var restaurants: [Place] = []
+    @Published var lodgings: [Place] = []
     @Published var isLoadingPlaces = false
     
-    init(tripId: String, day: Int, totalDays: Int) {
+    init(tripId: String, day: Int, numberOfDays: Int) {
         self.tripId = tripId
         self.day = day
+        self.numberOfDays = numberOfDays
         
         // Add one empty scheduled place to start with
         self.scheduledPlaces.append(ScheduledPlaceInput())
@@ -44,7 +49,17 @@ class CreateItineraryViewModel: ObservableObject {
                     let places = try await fetchPlacesById(ids: placeIds)
                     
                     await MainActor.run {
-                        self.availablePlaces = places
+                        // Convert to Place objects
+                        let allPlaces = places.map { $0.toPlace() }
+                        self.availablePlaces = allPlaces
+                        
+                        // Sort places by type
+                        self.touristAttractions = allPlaces.filter { $0.type == "tourist_attraction" }
+                        self.restaurants = allPlaces.filter { $0.type == "restaurant" }
+                        self.lodgings = allPlaces.filter { $0.type == "lodging" }
+                        
+                        print("📊 Places loaded - Tourist Attractions: \(self.touristAttractions.count), Restaurants: \(self.restaurants.count), Lodgings: \(self.lodgings.count)")
+                        
                         self.isLoadingPlaces = false
                     }
                 }
@@ -56,7 +71,7 @@ class CreateItineraryViewModel: ObservableObject {
             }
         }
     }
-    
+
     func addPlace() {
         scheduledPlaces.append(ScheduledPlaceInput())
     }

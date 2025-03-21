@@ -1,40 +1,101 @@
 import SwiftUI
 
 struct CreateItineraryView: View {
-    @StateObject private var themeManager = ThemeManager()
+    @EnvironmentObject private var themeManager: ThemeManager
     @ObservedObject var viewModel: CreateItineraryViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    init(tripId: String, day: Int, totalDays: Int) {
-        let vm = CreateItineraryViewModel(tripId: tripId, day: day, totalDays: totalDays)
+
+    @State private var selectedTab: Int = 0
+
+    init(tripId: String, day: Int, numberOfDays: Int) {
+        let vm = CreateItineraryViewModel(tripId: tripId, day: day, numberOfDays: numberOfDays)
         self._viewModel = ObservedObject(wrappedValue: vm)
     }
-    
+
     var body: some View {
         VStack(spacing: 20) {
-            // Header
-            HStack {
-                Text("Create Itinerary for Day \(viewModel.day)")
-                    .font(themeManager.selectedTheme.titleFont)
-                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                
-                Spacer()
-                
-                Picker("Day", selection: $viewModel.day) {
-                    ForEach(1...5, id: \.self) { day in
-                        Text("Day \(day)").tag(day)
-                    }
+            // Extract this to a separate view
+            DayButtonsView(
+                numberOfDays: viewModel.numberOfDays,
+                selectedDayIndex: viewModel.day,
+                onSelectDay: { index in
+                    viewModel.day = index
                 }
-                .pickerStyle(.menu)
-                .foregroundColor(themeManager.selectedTheme.accentColor)
+            )
+
+            // Custom Tab Bar
+            HStack(spacing: 0) {
+                TabButton(title: "Tourist Attractions", isSelected: selectedTab == 0) {
+                    selectedTab = 0
+                }
+
+                TabButton(title: "Restaurants", isSelected: selectedTab == 1) {
+                    selectedTab = 1
+                }
+
+                TabButton(title: "Lodging", isSelected: selectedTab == 2) {
+                    selectedTab = 2
+                }
             }
             .padding(.horizontal)
-            
+
+            TabView(selection: $selectedTab) {
+                // Tourist Attractions Tab
+                if viewModel.isLoadingPlaces {
+                    ProgressView("Loading tourist attractions...")
+                        .tag(0)
+                } else if viewModel.touristAttractions.isEmpty {
+                    ContentUnavailableView(
+                        "No Tourist Attractions",
+                        systemImage: "mappin.and.ellipse",
+                        description: Text("No tourist attractions have been saved to this trip")
+                    )
+                    .tag(0)
+                } else {
+                    CardGroup(cards: viewModel.touristAttractions.map { Card(place: $0) }, style: .regular)
+                        .tag(0)
+                }
+                
+                // Restaurants Tab
+                if viewModel.isLoadingPlaces {
+                    ProgressView("Loading restaurants...")
+                        .tag(1)
+                } else if viewModel.restaurants.isEmpty {
+                    ContentUnavailableView(
+                        "No Restaurants",
+                        systemImage: "fork.knife",
+                        description: Text("No restaurants have been saved to this trip")
+                    )
+                    .tag(1)
+                } else {
+                    CardGroup(cards: viewModel.restaurants.map { Card(place: $0) }, style: .regular)
+                        .tag(1)
+                }
+                
+                // Lodging Tab
+                if viewModel.isLoadingPlaces {
+                    ProgressView("Loading lodgings...")
+                        .tag(2)
+                } else if viewModel.lodgings.isEmpty {
+                    ContentUnavailableView(
+                        "No Lodgings",
+                        systemImage: "bed.double",
+                        description: Text("No lodgings have been saved to this trip")
+                    )
+                    .tag(2)
+                } else {
+                    CardGroup(cards: viewModel.lodgings.map { Card(place: $0) }, style: .regular)
+                        .tag(2)
+                }
+            }
+            .frame(height: 125)
+            .tabViewStyle(.page(indexDisplayMode: .never))
+
             Divider()
                 .padding(.horizontal)
-            
+
             ScrollView {
-                VStack(spacing: 24) {
+                VStack() {
                     // Places List
                     ForEach(viewModel.scheduledPlaces.indices, id: \.self) { index in
                         PlaceInputRow(
@@ -46,13 +107,13 @@ struct CreateItineraryView: View {
                             }
                         )
                         .id(viewModel.scheduledPlaces[index].id)
-                        
+
                         if index < viewModel.scheduledPlaces.count - 1 {
                             Divider()
                                 .padding(.horizontal)
                         }
                     }
-                    
+
                     // Add Place Button
                     Button(action: {
                         viewModel.addPlace()
@@ -72,7 +133,7 @@ struct CreateItineraryView: View {
                 }
                 .padding(.vertical)
             }
-            
+
             // Error message
             if let error = viewModel.error {
                 Text(error)
@@ -80,16 +141,9 @@ struct CreateItineraryView: View {
                     .foregroundColor(themeManager.selectedTheme.warningColor)
                     .padding(.horizontal)
             }
-            
+
             // Action Buttons
             HStack {
-                Button("Cancel") {
-                    dismiss()
-                }
-                .buttonStyle(SecondaryButtonStyle())
-                
-                Spacer()
-                
                 Button("Save Itinerary") {
                     Task {
                         await viewModel.saveItinerary()
@@ -100,7 +154,7 @@ struct CreateItineraryView: View {
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .disabled(viewModel.isLoading)
-                
+
                 if viewModel.isLoading {
                     ProgressView()
                         .padding(.leading, 8)
@@ -112,18 +166,43 @@ struct CreateItineraryView: View {
             viewModel.loadAvailablePlaces()
         }
         .background(themeManager.selectedTheme.appBackgroundColor)
+        .tint(themeManager.selectedTheme.accentColor)
         .navigationTitle("Create Itinerary")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
+// New separate view for day buttons
+struct DayButtonsView: View {
+    let numberOfDays: Int
+    let selectedDayIndex: Int
+    let onSelectDay: (Int) -> Void
+    
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(0..<numberOfDays, id: \.self) { index in
+                    DayButton(
+                        dayIndex: index,
+                        isSelected: selectedDayIndex == index,
+                        onSelect: {
+                            onSelectDay(index)
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+
 struct PlaceInputRow: View {
     @ObservedObject var placeInput: ScheduledPlaceInput
-    let availablePlaces: [PlaceBasicData]
+    let availablePlaces: [Place]
     let isLoading: Bool
     let onRemove: () -> Void
-    @StateObject private var themeManager = ThemeManager()
-    
+    @EnvironmentObject private var themeManager: ThemeManager
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Place selection
@@ -131,7 +210,7 @@ struct PlaceInputRow: View {
                 Text("Place")
                     .font(themeManager.selectedTheme.captionTextFont)
                     .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                
+
                 if isLoading {
                     HStack {
                         ProgressView()
@@ -140,15 +219,17 @@ struct PlaceInputRow: View {
                     .padding(.vertical, 8)
                 } else {
                     Menu {
-                        ForEach(availablePlaces, id: \.placeId) { place in
+                        ForEach(availablePlaces, id: \.id) { place in
                             Button(place.name) {
-                                placeInput.placeId = place.placeId
+                                placeInput.placeId = place.id
                             }
                         }
                     } label: {
                         HStack {
                             Text(selectedPlaceName)
-                                .foregroundColor(placeInput.placeId == nil ? .gray : themeManager.selectedTheme.primaryColor)
+                                .foregroundColor(
+                                    placeInput.placeId == nil
+                                        ? .gray : themeManager.selectedTheme.primaryColor)
                             Spacer()
                             Image(systemName: "chevron.down")
                                 .foregroundColor(themeManager.selectedTheme.secondaryColor)
@@ -162,53 +243,62 @@ struct PlaceInputRow: View {
                     }
                 }
             }
-            
+
             // Times
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Start Time")
                         .font(themeManager.selectedTheme.captionTextFont)
                         .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                    
-                    DatePicker("", selection: Binding(
-                        get: { placeInput.startTime ?? Date() },
-                        set: { placeInput.startTime = $0 }
-                    ), displayedComponents: .hourAndMinute)
+
+                    DatePicker(
+                        "",
+                        selection: Binding(
+                            get: { placeInput.startTime ?? Date() },
+                            set: { placeInput.startTime = $0 }
+                        ), displayedComponents: .hourAndMinute
+                    )
                     .labelsHidden()
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("End Time")
                         .font(themeManager.selectedTheme.captionTextFont)
                         .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                    
-                    DatePicker("", selection: Binding(
-                        get: { placeInput.endTime ?? Date().addingTimeInterval(3600) },
-                        set: { placeInput.endTime = $0 }
-                    ), displayedComponents: .hourAndMinute)
+
+                    DatePicker(
+                        "",
+                        selection: Binding(
+                            get: { placeInput.endTime ?? Date().addingTimeInterval(3600) },
+                            set: { placeInput.endTime = $0 }
+                        ), displayedComponents: .hourAndMinute
+                    )
                     .labelsHidden()
                 }
             }
-            
+
             // Notes
             VStack(alignment: .leading, spacing: 4) {
                 Text("Notes")
                     .font(themeManager.selectedTheme.captionTextFont)
                     .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                
-                TextField("Optional notes", text: Binding(
-                    get: { placeInput.notes ?? "" },
-                    set: { placeInput.notes = $0 }
-                ))
+
+                TextField(
+                    "Optional notes",
+                    text: Binding(
+                        get: { placeInput.notes ?? "" },
+                        set: { placeInput.notes = $0 }
+                    )
+                )
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.gray.opacity(0.1))
                 )
             }
-            
+
             // Remove button
             Button(action: onRemove) {
                 HStack {
@@ -221,18 +311,12 @@ struct PlaceInputRow: View {
         }
         .padding(.horizontal)
     }
-    
+
     private var selectedPlaceName: String {
         if let placeId = placeInput.placeId {
-            return availablePlaces.first(where: { $0.placeId == placeId })?.name ?? "Unknown Place"
+            return availablePlaces.first(where: { $0.id == placeId })?.name ?? "Unknown Place"
         } else {
             return "Select a place"
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        CreateItineraryView(tripId: "test-trip-id", day: 1, totalDays: 5)
-    }
-} 
