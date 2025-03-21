@@ -5,11 +5,12 @@ struct ItineraryView: View {
     @StateObject private var viewModel: ItineraryViewModel
     @Environment(\.dismiss) private var dismiss
 
-    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int) {
+    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int, tripId: String) {
         self._viewModel = StateObject(
             wrappedValue: ItineraryViewModel(
                 dailyItineraries: dailyItineraries,
-                numberOfDays: numberOfDays
+                numberOfDays: numberOfDays,
+                tripId: tripId
             ))
     }
 
@@ -48,16 +49,14 @@ struct ItineraryView: View {
 
                             Spacer()
 
-                            Button(action: {
-                                print("Edit itinerary")
-                            }) {
+                            NavigationLink(destination: CreateItineraryView(tripId: viewModel.tripId, day: dayItinerary.dayNumber, totalDays: viewModel.numberOfDays)) {
                                 HStack(spacing: 2) {
                                     Image(systemName: "pencil")
-                                        .foregroundStyle(themeManager.selectedTheme.secondaryColor)
-                                        .font(themeManager.selectedTheme.titleFont)
-                                    Text("Edit")
-                                        .font(themeManager.selectedTheme.bodyTextFont)
-                                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                    .foregroundStyle(themeManager.selectedTheme.secondaryColor)
+                                    .font(themeManager.selectedTheme.titleFont)
+                                Text("Edit")
+                                    .font(themeManager.selectedTheme.bodyTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
                                 }
                             }
                         }
@@ -77,11 +76,17 @@ struct ItineraryView: View {
                     }
                 } else {
                     // Show when the selected day has no itinerary data
-                    ContentUnavailableView(
-                        "No Itinerary for Day \(viewModel.selectedDayIndex + 1)",
-                        systemImage: "calendar.badge.exclamationmark",
-                        description: Text("This day doesn't have any scheduled activities yet.")
-                    )
+                    VStack {
+                        ContentUnavailableView(
+                            "No Itinerary for Day \(viewModel.selectedDayIndex + 1)",
+                            systemImage: "calendar.badge.exclamationmark",
+                            description: Text("This day doesn't have any scheduled activities yet.")
+                        )
+                        NavigationLink(destination: CreateItineraryView(tripId: viewModel.tripId, day: viewModel.selectedDayIndex + 1, totalDays: viewModel.numberOfDays)) {
+                            Text("Create Itinerary")
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                    }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 20)
                 }

@@ -6,10 +6,12 @@ class ItineraryViewModel: ObservableObject {
     @Published var selectedDayIndex: Int = 0
     let dailyItineraries: [DailyItinerary]?
     let numberOfDays: Int
+    let tripId: String
     
-    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int) {
+    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int, tripId: String) {
         self.dailyItineraries = dailyItineraries
         self.numberOfDays = numberOfDays
+        self.tripId = tripId
     }
     
     var selectedDayItinerary: DailyItinerary? {

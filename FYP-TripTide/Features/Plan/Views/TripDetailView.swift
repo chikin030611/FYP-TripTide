@@ -291,7 +291,7 @@ struct TripDetailView: View {
         }
         .sheet(isPresented: $showingItineraryView) {
             NavigationStack {
-                ItineraryView(dailyItineraries: viewModel.trip.dailyItineraries, numberOfDays: viewModel.trip.numOfDays)
+                ItineraryView(dailyItineraries: viewModel.trip.dailyItineraries, numberOfDays: viewModel.trip.numOfDays, tripId: viewModel.trip.id)
                     .interactiveDismissDisabled(true)
             }
         }
