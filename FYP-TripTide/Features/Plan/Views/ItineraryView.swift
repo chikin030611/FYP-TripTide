@@ -33,38 +33,38 @@ struct ItineraryView: View {
                 }
                 .frame(maxWidth: .infinity)
 
-                if let date = viewModel.selectedDayItinerary?.date {
-                    HStack {
-                        Text(date.formatted(date: .long, time: .omitted))
-                            .font(themeManager.selectedTheme.titleFont)
-                            .foregroundColor(themeManager.selectedTheme.primaryColor)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(themeManager.selectedTheme.primaryColor, lineWidth: 1)
-                            )
+                if let dayItinerary = viewModel.selectedDayItinerary {
+                    if let date = dayItinerary.date {
+                        HStack {
+                            Text(date.formatted(date: .long, time: .omitted))
+                                .font(themeManager.selectedTheme.titleFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .stroke(themeManager.selectedTheme.primaryColor, lineWidth: 1)
+                                )
 
-                        Spacer()
+                            Spacer()
 
-                        Button(action: {
-                            print("Edit itinerary")
-                        }) {
-                            HStack(spacing: 2) {
-                                Image(systemName: "pencil")
-                                    .foregroundStyle(themeManager.selectedTheme.secondaryColor)
-                                    .font(themeManager.selectedTheme.titleFont)
-                                Text("Edit")
-                                    .font(themeManager.selectedTheme.bodyTextFont)
-                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                            Button(action: {
+                                print("Edit itinerary")
+                            }) {
+                                HStack(spacing: 2) {
+                                    Image(systemName: "pencil")
+                                        .foregroundStyle(themeManager.selectedTheme.secondaryColor)
+                                        .font(themeManager.selectedTheme.titleFont)
+                                    Text("Edit")
+                                        .font(themeManager.selectedTheme.bodyTextFont)
+                                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                }
                             }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
-                }
 
-                // Selected day's scheduled places
-                if let dayItinerary = viewModel.selectedDayItinerary {
+                    // Selected day's scheduled places
                     // Check if places array exists and has items
                     let places = dayItinerary.places
                     if places.count > 0 {
@@ -74,21 +74,16 @@ struct ItineraryView: View {
                                     .padding(.horizontal)
                             }
                         }
-                    } else {
-                        // Show when places array is nil or empty
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("No Activities Planned")
-                                .font(themeManager.selectedTheme.titleFont)
-                                .foregroundColor(themeManager.selectedTheme.primaryColor)
-                            Text(
-                                "No activities have been scheduled for Day \(dayItinerary.dayNumber ?? viewModel.selectedDayIndex + 1)."
-                            )
-                            .font(themeManager.selectedTheme.bodyTextFont)
-                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 20)
                     }
+                } else {
+                    // Show when the selected day has no itinerary data
+                    ContentUnavailableView(
+                        "No Itinerary for Day \(viewModel.selectedDayIndex + 1)",
+                        systemImage: "calendar.badge.exclamationmark",
+                        description: Text("This day doesn't have any scheduled activities yet.")
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 20)
                 }
             } else {
                 ContentUnavailableView(
