@@ -51,6 +51,7 @@ struct ItineraryView: View {
                             Spacer()
 
                             NavigationLink(
+                                // TODO: Change to EditItineraryView
                                 destination: CreateItineraryView(
                                     tripId: viewModel.tripId, day: dayItinerary.dayNumber,
                                     numberOfDays: viewModel.numberOfDays)

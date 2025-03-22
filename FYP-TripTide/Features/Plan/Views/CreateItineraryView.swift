@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct CreateItineraryView: View {
     @EnvironmentObject private var themeManager: ThemeManager
@@ -17,9 +18,9 @@ struct CreateItineraryView: View {
             // Extract this to a separate view
             DayButtonsView(
                 numberOfDays: viewModel.numberOfDays,
-                selectedDayIndex: viewModel.day,
+                selectedDayIndex: viewModel.day - 1,
                 onSelectDay: { index in
-                    viewModel.day = index
+                    viewModel.day = index + 1
                 }
             )
 
@@ -52,7 +53,7 @@ struct CreateItineraryView: View {
                     )
                     .tag(0)
                 } else {
-                    CardGroup(cards: viewModel.touristAttractions.map { Card(place: $0) }, style: .regular)
+                    DragAndDropCardGroup(places: viewModel.touristAttractions)
                         .tag(0)
                 }
                 
@@ -68,7 +69,7 @@ struct CreateItineraryView: View {
                     )
                     .tag(1)
                 } else {
-                    CardGroup(cards: viewModel.restaurants.map { Card(place: $0) }, style: .regular)
+                    DragAndDropCardGroup(places: viewModel.restaurants)
                         .tag(1)
                 }
                 
@@ -84,7 +85,7 @@ struct CreateItineraryView: View {
                     )
                     .tag(2)
                 } else {
-                    CardGroup(cards: viewModel.lodgings.map { Card(place: $0) }, style: .regular)
+                    DragAndDropCardGroup(places: viewModel.lodgings)
                         .tag(2)
                 }
             }
@@ -93,9 +94,13 @@ struct CreateItineraryView: View {
 
             Divider()
                 .padding(.horizontal)
+                
+            // Drop area for cards
+            DropTargetArea(viewModel: viewModel)
+                .padding(.horizontal)
 
             ScrollView {
-                VStack() {
+                VStack(spacing: 24) {
                     // Places List
                     ForEach(viewModel.scheduledPlaces.indices, id: \.self) { index in
                         PlaceInputRow(
@@ -131,8 +136,8 @@ struct CreateItineraryView: View {
                     )
                     .padding(.horizontal)
                 }
-                .padding(.vertical)
             }
+            .padding(.vertical)
 
             // Error message
             if let error = viewModel.error {
@@ -318,5 +323,59 @@ struct PlaceInputRow: View {
         } else {
             return "Select a place"
         }
+    }
+}
+
+// Drop target area for accepting cards
+struct DropTargetArea: View {
+    @ObservedObject var viewModel: CreateItineraryViewModel
+    @EnvironmentObject private var themeManager: ThemeManager
+    @State private var isTargeted = false
+    
+    var body: some View {
+        VStack {
+            Text("Drag cards here to add to itinerary")
+                .font(themeManager.selectedTheme.captionTextFont)
+                .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                .padding(.vertical, 8)
+            
+            Image(systemName: "arrow.down.doc.fill")
+                .font(.system(size: 24))
+                .foregroundColor(themeManager.selectedTheme.accentColor)
+                .padding(.bottom, 8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.gray.opacity(isTargeted ? 0.2 : 0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(themeManager.selectedTheme.accentColor, lineWidth: isTargeted ? 2 : 1)
+                        .opacity(isTargeted ? 0.8 : 0.5)
+                )
+        )
+        .onDrop(of: [UTType.text.identifier], isTargeted: $isTargeted) { providers, _ in
+            guard let provider = providers.first else { return false }
+            
+            provider.loadObject(ofClass: NSString.self) { object, error in
+                guard error == nil else {
+                    print("Error loading object: \(error!.localizedDescription)")
+                    return
+                }
+                
+                if let placeId = object as? String {
+                    DispatchQueue.main.async {
+                        // Add new place to the itinerary with the dropped place ID
+                        let newPlace = ScheduledPlaceInput()
+                        newPlace.placeId = placeId
+                        viewModel.scheduledPlaces.append(newPlace)
+                    }
+                }
+            }
+            
+            return true
+        }
+        .animation(.easeInOut(duration: 0.2), value: isTargeted)
     }
 }
