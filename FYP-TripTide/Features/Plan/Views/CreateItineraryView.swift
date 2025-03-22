@@ -7,6 +7,7 @@ struct CreateItineraryView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTab: Int = 0
+    @State private var isDraggingCards = false
 
     init(tripId: String, day: Int, numberOfDays: Int) {
         let vm = CreateItineraryViewModel(tripId: tripId, day: day, numberOfDays: numberOfDays)
@@ -39,6 +40,7 @@ struct CreateItineraryView: View {
                 }
             }
             .padding(.horizontal)
+            .padding(.vertical, -8)
 
             TabView(selection: $selectedTab) {
                 // Tourist Attractions Tab
@@ -56,7 +58,7 @@ struct CreateItineraryView: View {
                     DragAndDropCardGroup(places: viewModel.touristAttractions)
                         .tag(0)
                 }
-                
+
                 // Restaurants Tab
                 if viewModel.isLoadingPlaces {
                     ProgressView("Loading restaurants...")
@@ -72,7 +74,7 @@ struct CreateItineraryView: View {
                     DragAndDropCardGroup(places: viewModel.restaurants)
                         .tag(1)
                 }
-                
+
                 // Lodging Tab
                 if viewModel.isLoadingPlaces {
                     ProgressView("Loading lodgings...")
@@ -92,52 +94,74 @@ struct CreateItineraryView: View {
             .frame(height: 125)
             .tabViewStyle(.page(indexDisplayMode: .never))
 
-            Divider()
-                .padding(.horizontal)
-                
-            // Drop area for cards
-            DropTargetArea(viewModel: viewModel)
-                .padding(.horizontal)
-
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Places List
-                    ForEach(viewModel.scheduledPlaces.indices, id: \.self) { index in
-                        PlaceInputRow(
-                            placeInput: viewModel.scheduledPlaces[index],
-                            availablePlaces: viewModel.availablePlaces,
-                            isLoading: viewModel.isLoadingPlaces,
-                            onRemove: {
-                                viewModel.removePlaceAt(index: index)
-                            }
-                        )
-                        .id(viewModel.scheduledPlaces[index].id)
-
-                        if index < viewModel.scheduledPlaces.count - 1 {
-                            Divider()
-                                .padding(.horizontal)
-                        }
-                    }
-
-                    // Add Place Button
-                    Button(action: {
-                        viewModel.addPlace()
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                            Text("Add Place")
-                        }
-                        .foregroundColor(themeManager.selectedTheme.accentColor)
-                    }
+            ZStack {
+                // Drop area for cards
+                DropTargetArea(viewModel: viewModel)
                     .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.gray.opacity(0.1))
-                    )
-                    .padding(.horizontal)
+                    // When any dragging operation starts, show the drop area
+                    .onChange(of: isDraggingCards) { newValue in
+                        if newValue {
+                            withAnimation {
+                                viewModel.showDropArea = true
+                            }
+                        }
+                    }
+
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Places List
+                        if !viewModel.showDropArea {
+                            ForEach(viewModel.scheduledPlaces.indices, id: \.self) { index in
+                                PlaceInputRow(
+                                    placeInput: viewModel.scheduledPlaces[index],
+                                    availablePlaces: viewModel.availablePlaces,
+                                    isLoading: viewModel.isLoadingPlaces,
+                                    onRemove: {
+                                        viewModel.removePlaceAt(index: index)
+                                    }
+                                )
+                                .id(viewModel.scheduledPlaces[index].id)
+
+                                if index < viewModel.scheduledPlaces.count - 1 {
+                                    Divider()
+                                        .padding(.horizontal)
+                                }
+                            }
+
+                        }
+                    }
+                }
+                .padding(.vertical)
+                .contentShape(Rectangle())
+                .onDrop(of: [UTType.text.identifier], isTargeted: $isDraggingCards) { providers, _ in
+                    // This acts as a general drop handler and drag state monitor
+                    // Forward the drop to appropriate handler
+                    guard let provider = providers.first else { return false }
+                    
+                    provider.loadObject(ofClass: NSString.self) { object, error in
+                        guard error == nil else {
+                            print("Error loading object: \(error!.localizedDescription)")
+                            return
+                        }
+
+                        if let placeId = object as? String {
+                            DispatchQueue.main.async {
+                                // Add new place to the itinerary with the dropped place ID
+                                let newPlace = ScheduledPlaceInput()
+                                newPlace.placeId = placeId
+                                viewModel.scheduledPlaces.append(newPlace)
+
+                                // Hide the drop area after successful drop
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    viewModel.showDropArea = false
+                                }
+                            }
+                        }
+                    }
+
+                    return true
                 }
             }
-            .padding(.vertical)
 
             // Error message
             if let error = viewModel.error {
@@ -168,7 +192,9 @@ struct CreateItineraryView: View {
             .padding()
         }
         .onAppear {
-            viewModel.loadAvailablePlaces()
+            Task {
+                await viewModel.loadAvailablePlaces()
+            }
         }
         .background(themeManager.selectedTheme.appBackgroundColor)
         .tint(themeManager.selectedTheme.accentColor)
@@ -182,12 +208,12 @@ struct DayButtonsView: View {
     let numberOfDays: Int
     let selectedDayIndex: Int
     let onSelectDay: (Int) -> Void
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(0..<numberOfDays, id: \.self) { index in
-                    DayButton(
+                    CompactDayButton(
                         dayIndex: index,
                         isSelected: selectedDayIndex == index,
                         onSelect: {
@@ -331,51 +357,101 @@ struct DropTargetArea: View {
     @ObservedObject var viewModel: CreateItineraryViewModel
     @EnvironmentObject private var themeManager: ThemeManager
     @State private var isTargeted = false
-    
+    // Add a timer to track when drag operations end
+    @State private var dragEndTimer: Timer? = nil
+
     var body: some View {
-        VStack {
-            Text("Drag cards here to add to itinerary")
-                .font(themeManager.selectedTheme.captionTextFont)
-                .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                .padding(.vertical, 8)
-            
-            Image(systemName: "arrow.down.doc.fill")
-                .font(.system(size: 24))
-                .foregroundColor(themeManager.selectedTheme.accentColor)
-                .padding(.bottom, 8)
+        // Single container with drop functionality
+        ZStack {
+            // Visual elements - only shown when showDropArea is true or being targeted
+            if viewModel.showDropArea || isTargeted {
+                VStack {
+                    Text("Hold and drag cards here to add to itinerary")
+                        .font(themeManager.selectedTheme.captionTextFont)
+                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        .padding(.vertical, 8)
+
+                    Image(systemName: "arrow.down.doc.fill")
+                        .font(.system(size: 36))
+                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                        .padding(.bottom, 8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 280)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            themeManager.selectedTheme.appBackgroundColor.opacity(
+                                isTargeted ? 0.2 : 0.1)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    themeManager.selectedTheme.secondaryColor,
+                                    lineWidth: isTargeted ? 2 : 1
+                                )
+                                .opacity(isTargeted ? 0.8 : 0.5)
+                        )
+                )
+            } else {
+                // Empty spacer when not showing drop area
+                Spacer().frame(height: 0)
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.gray.opacity(isTargeted ? 0.2 : 0.1))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(themeManager.selectedTheme.accentColor, lineWidth: isTargeted ? 2 : 1)
-                        .opacity(isTargeted ? 0.8 : 0.5)
-                )
-        )
+        .frame(height: viewModel.showDropArea || isTargeted ? 280 : 40)
+        .opacity(viewModel.showDropArea || isTargeted ? 1.0 : 0.0)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.showDropArea)
+        .animation(.easeInOut(duration: 0.2), value: isTargeted)
+        .contentShape(Rectangle())
+        .onChange(of: isTargeted) { newValue in
+            // When the target state changes
+            if newValue {
+                // Cancel any pending timer when a new drag enters
+                dragEndTimer?.invalidate()
+            } else {
+                // When drag leaves the area, start a timer
+                // This gives time for the drop operation to complete if it's going to
+                dragEndTimer?.invalidate()
+                dragEndTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                    // If this timer fires, it means no drop occurred after leaving the target area
+                    // Hide the drop area if it was only showing because of targeting
+                    if !viewModel.scheduledPlaces.isEmpty {
+                        withAnimation {
+                            viewModel.showDropArea = false
+                        }
+                    }
+                }
+            }
+        }
         .onDrop(of: [UTType.text.identifier], isTargeted: $isTargeted) { providers, _ in
-            guard let provider = providers.first else { return false }
+            // Cancel the timer because a drop occurred
+            dragEndTimer?.invalidate()
             
+            guard let provider = providers.first else { return false }
+
             provider.loadObject(ofClass: NSString.self) { object, error in
                 guard error == nil else {
                     print("Error loading object: \(error!.localizedDescription)")
                     return
                 }
-                
+
                 if let placeId = object as? String {
                     DispatchQueue.main.async {
                         // Add new place to the itinerary with the dropped place ID
                         let newPlace = ScheduledPlaceInput()
                         newPlace.placeId = placeId
                         viewModel.scheduledPlaces.append(newPlace)
+
+                        // Hide the drop area after successful drop
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            viewModel.showDropArea = false
+                        }
                     }
                 }
             }
-            
+
             return true
         }
-        .animation(.easeInOut(duration: 0.2), value: isTargeted)
     }
 }

@@ -16,6 +16,7 @@ class CreateItineraryViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String? = nil
     @Published var isSuccess = false
+    @Published var showDropArea = true
     
     // Available places
     @Published var availablePlaces: [Place] = []
@@ -29,45 +30,46 @@ class CreateItineraryViewModel: ObservableObject {
         self.day = day
         self.numberOfDays = numberOfDays
         
-        // Add one empty scheduled place to start with
-        self.scheduledPlaces.append(ScheduledPlaceInput())
+        
+        // Start loading places immediately
+        Task { 
+            await self.loadAvailablePlaces() 
+        }
     }
     
-    func loadAvailablePlaces() {
-        Task {
-            await MainActor.run {
-                self.isLoadingPlaces = true
-            }
-            
-            do {
-                // Load places saved in this trip
-                let tripsManager = TripsManager.shared
-                if let trip = try await tripsManager.fetchTrip(id: tripId) {
-                    // Combine all place IDs
-                    let placeIds = trip.touristAttractionsIds + trip.restaurantsIds + trip.lodgingsIds
-                    
-                    let places = try await fetchPlacesById(ids: placeIds)
-                    
-                    await MainActor.run {
-                        // Convert to Place objects
-                        let allPlaces = places.map { $0.toPlace() }
-                        self.availablePlaces = allPlaces
-                        
-                        // Sort places by type
-                        self.touristAttractions = allPlaces.filter { $0.type == "tourist_attraction" }
-                        self.restaurants = allPlaces.filter { $0.type == "restaurant" }
-                        self.lodgings = allPlaces.filter { $0.type == "lodging" }
-                        
-                        print("📊 Places loaded - Tourist Attractions: \(self.touristAttractions.count), Restaurants: \(self.restaurants.count), Lodgings: \(self.lodgings.count)")
-                        
-                        self.isLoadingPlaces = false
-                    }
-                }
-            } catch {
+    func loadAvailablePlaces() async {
+        await MainActor.run {
+            self.isLoadingPlaces = true
+        }
+        
+        do {
+            // Load places saved in this trip
+            let tripsManager = TripsManager.shared
+            if let trip = try await tripsManager.fetchTrip(id: tripId) {
+                // Combine all place IDs
+                let placeIds = trip.touristAttractionsIds + trip.restaurantsIds + trip.lodgingsIds
+                
+                let places = try await fetchPlacesById(ids: placeIds)
+                
                 await MainActor.run {
-                    self.error = "Failed to load places: \(error.localizedDescription)"
+                    // Convert to Place objects
+                    let allPlaces = places.map { $0.toPlace() }
+                    self.availablePlaces = allPlaces
+                    
+                    // Sort places by type
+                    self.touristAttractions = allPlaces.filter { $0.type == "tourist_attraction" }
+                    self.restaurants = allPlaces.filter { $0.type == "restaurant" }
+                    self.lodgings = allPlaces.filter { $0.type == "lodging" }
+                    
+                    print("📊 Places loaded - Tourist Attractions: \(self.touristAttractions.count), Restaurants: \(self.restaurants.count), Lodgings: \(self.lodgings.count)")
+                    
                     self.isLoadingPlaces = false
                 }
+            }
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to load places: \(error.localizedDescription)"
+                self.isLoadingPlaces = false
             }
         }
     }
@@ -79,6 +81,10 @@ class CreateItineraryViewModel: ObservableObject {
     func removePlaceAt(index: Int) {
         guard index < scheduledPlaces.count else { return }
         scheduledPlaces.remove(at: index)
+
+        if scheduledPlaces.isEmpty {
+            showDropArea = true
+        }
     }
     
     func saveItinerary() async {
