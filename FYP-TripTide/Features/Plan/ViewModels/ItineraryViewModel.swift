@@ -57,6 +57,7 @@ class ScheduledPlaceViewModel: ObservableObject {
     
     @Published var placeName: String = "Loading..."
     @Published var placeImage: String = "placeholder"
+    @Published var placeType: String = "Loading..."
     @Published var isLoading: Bool = true
     @Published var loadingError: String? = nil
     @Published var isPlaceLoaded: Bool = false
@@ -100,6 +101,7 @@ class ScheduledPlaceViewModel: ObservableObject {
                 
                 await MainActor.run {
                     self.placeName = placeData.name
+                    self.placeType = placeData.type.formatTagName()
                     // Make sure photoUrl is not empty
                     if !placeData.photoUrl.isEmpty {
                         self.placeImage = placesService.appendAPIKey(to: placeData.photoUrl)
@@ -110,6 +112,7 @@ class ScheduledPlaceViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.placeName = "Failed to load"
+                    self.placeType = "Failed to load"
                     self.isLoading = false
                     self.loadingError = "Could not load place data"
                     print("Error loading place details: \(error)")

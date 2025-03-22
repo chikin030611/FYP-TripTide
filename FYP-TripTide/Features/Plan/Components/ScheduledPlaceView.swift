@@ -89,6 +89,18 @@ struct ScheduledPlaceView: View {
                             .frame(width: 250, height: 125, alignment: .topLeading)
 
                         VStack(alignment: .leading, spacing: 4) {
+                            ZStack {
+                                Text(viewModel.placeType.formatTagName())
+                                    .font(themeManager.selectedTheme.captionTextFont)
+                                    .foregroundColor(themeManager.selectedTheme.bgTextColor)
+                            }
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(themeManager.selectedTheme.accentColor)
+                            )
+
                             Text(viewModel.placeName)
                                 .font(themeManager.selectedTheme.boldBodyTextFont)
                                 .foregroundColor(themeManager.selectedTheme.bgTextColor)

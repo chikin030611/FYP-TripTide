@@ -99,13 +99,15 @@ struct CreateItineraryView: View {
                 DropTargetArea(viewModel: viewModel)
                     .padding()
                     // When any dragging operation starts, show the drop area
-                    .onChange(of: isDraggingCards) { newValue in
-                        if newValue {
-                            withAnimation {
-                                viewModel.showDropArea = true
+                    .onChange(
+                        of: isDraggingCards,
+                        perform: { newValue in
+                            if newValue {
+                                withAnimation {
+                                    viewModel.showDropArea = true
+                                }
                             }
-                        }
-                    }
+                        })
 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -133,11 +135,12 @@ struct CreateItineraryView: View {
                 }
                 .padding(.vertical)
                 .contentShape(Rectangle())
-                .onDrop(of: [UTType.text.identifier], isTargeted: $isDraggingCards) { providers, _ in
+                .onDrop(of: [UTType.text.identifier], isTargeted: $isDraggingCards) {
+                    providers, _ in
                     // This acts as a general drop handler and drag state monitor
                     // Forward the drop to appropriate handler
                     guard let provider = providers.first else { return false }
-                    
+
                     provider.loadObject(ofClass: NSString.self) { object, error in
                         guard error == nil else {
                             print("Error loading object: \(error!.localizedDescription)")
@@ -227,131 +230,6 @@ struct DayButtonsView: View {
     }
 }
 
-struct PlaceInputRow: View {
-    @ObservedObject var placeInput: ScheduledPlaceInput
-    let availablePlaces: [Place]
-    let isLoading: Bool
-    let onRemove: () -> Void
-    @EnvironmentObject private var themeManager: ThemeManager
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Place selection
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Place")
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
-
-                if isLoading {
-                    HStack {
-                        ProgressView()
-                        Text("Loading places...")
-                    }
-                    .padding(.vertical, 8)
-                } else {
-                    Menu {
-                        ForEach(availablePlaces, id: \.id) { place in
-                            Button(place.name) {
-                                placeInput.placeId = place.id
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text(selectedPlaceName)
-                                .foregroundColor(
-                                    placeInput.placeId == nil
-                                        ? .gray : themeManager.selectedTheme.primaryColor)
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.1))
-                        )
-                    }
-                }
-            }
-
-            // Times
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Start Time")
-                        .font(themeManager.selectedTheme.captionTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
-
-                    DatePicker(
-                        "",
-                        selection: Binding(
-                            get: { placeInput.startTime ?? Date() },
-                            set: { placeInput.startTime = $0 }
-                        ), displayedComponents: .hourAndMinute
-                    )
-                    .labelsHidden()
-                }
-
-                Spacer()
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("End Time")
-                        .font(themeManager.selectedTheme.captionTextFont)
-                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
-
-                    DatePicker(
-                        "",
-                        selection: Binding(
-                            get: { placeInput.endTime ?? Date().addingTimeInterval(3600) },
-                            set: { placeInput.endTime = $0 }
-                        ), displayedComponents: .hourAndMinute
-                    )
-                    .labelsHidden()
-                }
-            }
-
-            // Notes
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Notes")
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
-
-                TextField(
-                    "Optional notes",
-                    text: Binding(
-                        get: { placeInput.notes ?? "" },
-                        set: { placeInput.notes = $0 }
-                    )
-                )
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.1))
-                )
-            }
-
-            // Remove button
-            Button(action: onRemove) {
-                HStack {
-                    Image(systemName: "trash")
-                    Text("Remove")
-                }
-                .foregroundColor(themeManager.selectedTheme.warningColor)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .padding(.horizontal)
-    }
-
-    private var selectedPlaceName: String {
-        if let placeId = placeInput.placeId {
-            return availablePlaces.first(where: { $0.id == placeId })?.name ?? "Unknown Place"
-        } else {
-            return "Select a place"
-        }
-    }
-}
-
 // Drop target area for accepting cards
 struct DropTargetArea: View {
     @ObservedObject var viewModel: CreateItineraryViewModel
@@ -404,30 +282,34 @@ struct DropTargetArea: View {
         .animation(.easeInOut(duration: 0.2), value: viewModel.showDropArea)
         .animation(.easeInOut(duration: 0.2), value: isTargeted)
         .contentShape(Rectangle())
-        .onChange(of: isTargeted) { newValue in
-            // When the target state changes
-            if newValue {
-                // Cancel any pending timer when a new drag enters
-                dragEndTimer?.invalidate()
-            } else {
-                // When drag leaves the area, start a timer
-                // This gives time for the drop operation to complete if it's going to
-                dragEndTimer?.invalidate()
-                dragEndTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                    // If this timer fires, it means no drop occurred after leaving the target area
-                    // Hide the drop area if it was only showing because of targeting
-                    if !viewModel.scheduledPlaces.isEmpty {
-                        withAnimation {
-                            viewModel.showDropArea = false
+        .onChange(
+            of: isTargeted,
+            perform: { newValue in
+                // When the target state changes
+                if newValue {
+                    // Cancel any pending timer when a new drag enters
+                    dragEndTimer?.invalidate()
+                } else {
+                    // When drag leaves the area, start a timer
+                    // This gives time for the drop operation to complete if it's going to
+                    dragEndTimer?.invalidate()
+                    dragEndTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {
+                        _ in
+                        // If this timer fires, it means no drop occurred after leaving the target area
+                        // Hide the drop area if it was only showing because of targeting
+                        if !viewModel.scheduledPlaces.isEmpty {
+                            withAnimation {
+                                viewModel.showDropArea = false
+                            }
                         }
                     }
                 }
             }
-        }
+        )
         .onDrop(of: [UTType.text.identifier], isTargeted: $isTargeted) { providers, _ in
             // Cancel the timer because a drop occurred
             dragEndTimer?.invalidate()
-            
+
             guard let provider = providers.first else { return false }
 
             provider.loadObject(ofClass: NSString.self) { object, error in
