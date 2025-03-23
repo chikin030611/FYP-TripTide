@@ -179,7 +179,7 @@ struct EditItineraryView: View {
 
             // Action Buttons
             HStack {
-                Button(viewModel.isEditing ? "Update Itinerary" : "Save Itinerary") {
+                Button(viewModel.isEditing ? "Update Itinerary" : "Create Itinerary") {
                     Task {
                         await viewModel.saveItinerary()
                         if viewModel.isSuccess {

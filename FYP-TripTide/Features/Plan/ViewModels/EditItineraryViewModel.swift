@@ -12,7 +12,7 @@ class EditItineraryViewModel: ObservableObject {
     @Published var day: Int {
         didSet {
             if oldValue != day {
-                // Defensive check before accessing dictionary
+                // Save current places for the old day
                 if oldValue > 0 {
                     scheduledPlacesByDay[oldValue] = scheduledPlaces
                 }
@@ -20,13 +20,18 @@ class EditItineraryViewModel: ObservableObject {
                 // Update with places for the new day (or empty array if none exist)
                 scheduledPlaces = scheduledPlacesByDay[day] ?? []
                 
-                // If we're in editing mode, try to fetch the itinerary for this day
-                if isEditing {
-                    // Only fetch if we don't already have data for this day
-                    if !scheduledPlacesByDay.keys.contains(day) {
-                        Task {
-                            await fetchExistingItinerary()
-                        }
+                // Update existingItineraryId based on the current day
+                if let itinerary = allItineraries.first(where: { $0.dayNumber == day }) {
+                    existingItineraryId = itinerary.id
+                } else {
+                    existingItineraryId = nil
+                }
+                
+                // If we don't already have data for this day and allItineraries is already loaded,
+                // try to fetch the itinerary for this day
+                if !allItineraries.isEmpty && !scheduledPlacesByDay.keys.contains(day) {
+                    Task {
+                        await fetchExistingItinerary()
                     }
                 }
                 
@@ -46,7 +51,18 @@ class EditItineraryViewModel: ObservableObject {
     @Published var error: String? = nil
     @Published var isSuccess = false
     @Published var showDropArea = true
-    @Published var isEditing = false
+    private var _isEditing: Bool = false // Internal backing storage
+    var isEditing: Bool {
+        get {
+            // Dynamic determination: we're editing if there's an existing itinerary for the current day
+            return existingItineraryId != nil
+        }
+        set {
+            // We still need to be able to set this initially, but it'll be overridden
+            // when existingItineraryId changes
+            _isEditing = newValue
+        }
+    }
     @Published var existingItineraryId: String? = nil
     
     // Available places
@@ -67,14 +83,15 @@ class EditItineraryViewModel: ObservableObject {
         self.tripId = tripId
         self.day = day
         self.numberOfDays = numberOfDays
-        self.isEditing = isEditing
+        // We'll still initialize _isEditing, but it will be overridden as needed
+        self._isEditing = isEditing
         
         // Start loading places immediately using tracked tasks
         loadPlacesTask = Task { 
             await self.loadAvailablePlaces() 
         }
         
-        // Always fetch all itineraries, regardless of editing mode
+        // Always fetch all itineraries
         fetchTask = Task {
             await self.fetchAllItineraries()
         }
@@ -90,73 +107,59 @@ class EditItineraryViewModel: ObservableObject {
     func fetchAllItineraries() async {
         guard !isLoading else { return } // Prevent concurrent fetches
         
-        await MainActor.run {
-            self.isLoading = true
-            self.error = nil
-        }
+        self.isLoading = true
+        self.error = nil
         
         do {
-            // Add timeout or cancellation check
             let itineraries = try await itineraryManager.fetchAllItineraries(tripId: tripId)
             
             // Check if task was cancelled before updating UI
             guard !Task.isCancelled else { return }
             
-            await MainActor.run {
-                self.allItineraries = itineraries
-                
-                // Populate scheduledPlacesByDay dictionary for all days
-                for itinerary in itineraries {
-                    let inputs = itinerary.places.map { place in
-                        let input = ScheduledPlaceInput()
-                        input.placeId = place.placeId
-                        input.startTime = place.startTime
-                        input.endTime = place.endTime
-                        input.notes = place.notes
-                        return input
-                    }
-                    
-                    self.scheduledPlacesByDay[itinerary.dayNumber] = inputs
-                    
-                    // If this is the current day, update scheduledPlaces
-                    if itinerary.dayNumber == self.day {
-                        self.existingItineraryId = itinerary.id
-                        self.scheduledPlaces = inputs
-                        self.showDropArea = inputs.isEmpty
-                        
-                        // Set isEditing to true if we found an existing itinerary for this day
-                        self.isEditing = true
-                    }
+            self.allItineraries = itineraries
+            
+            // Populate scheduledPlacesByDay dictionary for all days
+            for itinerary in itineraries {
+                let inputs = itinerary.places.map { place in
+                    let input = ScheduledPlaceInput()
+                    input.placeId = place.placeId
+                    input.startTime = place.startTime
+                    input.endTime = place.endTime
+                    input.notes = place.notes
+                    return input
                 }
                 
-                // If there's no data for the current day, initialize it as empty
-                if !self.scheduledPlacesByDay.keys.contains(self.day) {
-                    self.scheduledPlaces = []
-                    self.scheduledPlacesByDay[self.day] = []
-                    self.showDropArea = true
-                    
-                    // If we're in editing mode but there's no data for this day,
-                    // we're actually creating a new itinerary
-                    if self.isEditing {
-                        self.existingItineraryId = nil
-                    }
-                }
+                self.scheduledPlacesByDay[itinerary.dayNumber] = inputs
                 
-                self.isLoading = false
+                // If this is the current day, update scheduledPlaces
+                if itinerary.dayNumber == self.day {
+                    self.existingItineraryId = itinerary.id
+                    self.scheduledPlaces = inputs
+                    self.showDropArea = inputs.isEmpty
+                }
             }
+            
+            // If there's no data for the current day, initialize it as empty
+            if !self.scheduledPlacesByDay.keys.contains(self.day) {
+                self.scheduledPlaces = []
+                self.scheduledPlacesByDay[self.day] = []
+                self.showDropArea = true
+                self.existingItineraryId = nil
+            }
+            
+            self.isLoading = false
+            
         } catch let apiError as APIError where apiError == .notFound {
             // If no itineraries exist yet, that's ok
-            await MainActor.run {
-                self.allItineraries = []
-                self.scheduledPlaces = []
-                self.showDropArea = true
-                self.isLoading = false
-            }
+            self.allItineraries = []
+            self.scheduledPlaces = []
+            self.showDropArea = true
+            self.isLoading = false
+            self.existingItineraryId = nil
+            
         } catch {
-            await MainActor.run {
-                self.error = "Failed to load itineraries: \(error.localizedDescription)"
-                self.isLoading = false
-            }
+            self.error = "Failed to load itineraries: \(error.localizedDescription)"
+            self.isLoading = false
         }
     }
     
@@ -316,7 +319,7 @@ class EditItineraryViewModel: ObservableObject {
             let dtos = currentPlaces.compactMap { place -> ScheduledPlaceDto? in
                 guard let placeId = place.placeId, !placeId.isEmpty else { return nil }
                 
-                // Format time strings
+                // Format time strings safely
                 let formatter = DateFormatter()
                 formatter.dateFormat = "HH:mm:ss"
                 
@@ -331,57 +334,36 @@ class EditItineraryViewModel: ObservableObject {
                 )
             }
             
-            if isEditing {
-                // If we're editing an existing itinerary
-                if let existingId = existingItineraryId {
-                    if dtos.isEmpty {
-                        // If all places were removed, delete the itinerary
-                        try await itineraryManager.deleteItinerary(tripId: tripId, day: day)
+            // Simplify logic: we're editing if there's an existing ID, otherwise creating
+            if let existingId = existingItineraryId {
+                if dtos.isEmpty {
+                    // If all places were removed, delete the itinerary
+                    try await itineraryManager.deleteItinerary(tripId: tripId, day: day)
+                    
+                    await MainActor.run {
+                        self.isSuccess = true
+                        self.isLoading = false
+                        // Make sure our local state reflects the deletion
+                        self.existingItineraryId = nil
                         
-                        await MainActor.run {
-                            self.isSuccess = true
-                            self.isLoading = false
-                            // Make sure our local state reflects the deletion
-                            self.existingItineraryId = nil
-                            
-                            // Update our allItineraries array too
-                            self.allItineraries.removeAll(where: { $0.dayNumber == self.day })
-                        }
-                    } else {
-                        // Otherwise update with the places we have
-                        let dailyItinerary = try await itineraryManager.updateItinerary(
-                            tripId: tripId,
-                            day: day,
-                            scheduledPlaces: dtos
-                        )
-                        
-                        await MainActor.run {
-                            self.isSuccess = true
-                            self.isLoading = false
-                        }
+                        // Update our allItineraries array too
+                        self.allItineraries.removeAll(where: { $0.dayNumber == self.day })
                     }
-                } else if !dtos.isEmpty {
-                    // If there was no existing itinerary but we have places, create a new one
-                    let dailyItinerary = try await itineraryManager.createItinerary(
-                        tripId: tripId, 
+                } else {
+                    // Otherwise update with the places we have
+                    let dailyItinerary = try await itineraryManager.updateItinerary(
+                        tripId: tripId,
                         day: day,
                         scheduledPlaces: dtos
                     )
                     
-                    await MainActor.run {
-                        self.existingItineraryId = dailyItinerary.id
-                        self.isSuccess = true
-                        self.isLoading = false
-                    }
-                } else {
-                    // No existing itinerary and no places - nothing to do
                     await MainActor.run {
                         self.isSuccess = true
                         self.isLoading = false
                     }
                 }
             } else {
-                // If we're creating a new itinerary, only proceed if we have places
+                // Creating a new itinerary
                 if !dtos.isEmpty {
                     let dailyItinerary = try await itineraryManager.createItinerary(
                         tripId: tripId, 
