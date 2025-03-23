@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import SwiftUI
 
+@MainActor
 class EditItineraryViewModel: ObservableObject {
     private let itineraryManager = ItineraryManager.shared
     private let placesService = PlacesService.shared
@@ -11,8 +12,10 @@ class EditItineraryViewModel: ObservableObject {
     @Published var day: Int {
         didSet {
             if oldValue != day {
-                // Save current places for the old day
-                scheduledPlacesByDay[oldValue] = scheduledPlaces
+                // Defensive check before accessing dictionary
+                if oldValue > 0 {
+                    scheduledPlacesByDay[oldValue] = scheduledPlaces
+                }
                 
                 // Update with places for the new day (or empty array if none exist)
                 scheduledPlaces = scheduledPlacesByDay[day] ?? []
@@ -56,32 +59,48 @@ class EditItineraryViewModel: ObservableObject {
     // Add a property to store all fetched itineraries
     @Published var allItineraries: [DailyItinerary] = []
     
+    // Add these properties to track tasks
+    private var fetchTask: Task<Void, Never>? = nil
+    private var loadPlacesTask: Task<Void, Never>? = nil
+    
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
         self.numberOfDays = numberOfDays
         self.isEditing = isEditing
         
-        // Start loading places immediately
-        Task { 
+        // Start loading places immediately using tracked tasks
+        loadPlacesTask = Task { 
             await self.loadAvailablePlaces() 
-            
-            // If editing existing itinerary, fetch all itineraries at once
-            if isEditing {
-                await self.fetchAllItineraries()
-            }
+        }
+        
+        // Always fetch all itineraries, regardless of editing mode
+        fetchTask = Task {
+            await self.fetchAllItineraries()
         }
     }
     
+    // Add a deinit method to cancel tasks
+    deinit {
+        fetchTask?.cancel()
+        loadPlacesTask?.cancel()
+        print("EditItineraryViewModel deinit")
+    }
+    
     func fetchAllItineraries() async {
+        guard !isLoading else { return } // Prevent concurrent fetches
+        
         await MainActor.run {
             self.isLoading = true
             self.error = nil
         }
         
         do {
-            // Use the manager instead of service directly
+            // Add timeout or cancellation check
             let itineraries = try await itineraryManager.fetchAllItineraries(tripId: tripId)
+            
+            // Check if task was cancelled before updating UI
+            guard !Task.isCancelled else { return }
             
             await MainActor.run {
                 self.allItineraries = itineraries
@@ -104,6 +123,9 @@ class EditItineraryViewModel: ObservableObject {
                         self.existingItineraryId = itinerary.id
                         self.scheduledPlaces = inputs
                         self.showDropArea = inputs.isEmpty
+                        
+                        // Set isEditing to true if we found an existing itinerary for this day
+                        self.isEditing = true
                     }
                 }
                 
@@ -112,12 +134,18 @@ class EditItineraryViewModel: ObservableObject {
                     self.scheduledPlaces = []
                     self.scheduledPlacesByDay[self.day] = []
                     self.showDropArea = true
+                    
+                    // If we're in editing mode but there's no data for this day,
+                    // we're actually creating a new itinerary
+                    if self.isEditing {
+                        self.existingItineraryId = nil
+                    }
                 }
                 
                 self.isLoading = false
             }
         } catch let apiError as APIError where apiError == .notFound {
-            // If no itineraries exist yet, that's ok for edit flow
+            // If no itineraries exist yet, that's ok
             await MainActor.run {
                 self.allItineraries = []
                 self.scheduledPlaces = []
@@ -292,8 +320,8 @@ class EditItineraryViewModel: ObservableObject {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "HH:mm:ss"
                 
-                let startTime = place.startTime != nil ? formatter.string(from: place.startTime!) : "00:00:00"
-                let endTime = place.endTime != nil ? formatter.string(from: place.endTime!) : "00:00:00"
+                let startTime = place.startTime.map { formatter.string(from: $0) } ?? "00:00:00"
+                let endTime = place.endTime.map { formatter.string(from: $0) } ?? "00:00:00"
                 
                 return ScheduledPlaceDto(
                     placeId: placeId,

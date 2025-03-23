@@ -50,7 +50,6 @@ struct ItineraryView: View {
                             Spacer()
 
                             NavigationLink(
-                                // TODO: Change to EditItineraryView
                                 destination: EditItineraryView(
                                     tripId: viewModel.tripId, day: dayItinerary.dayNumber,
                                     numberOfDays: viewModel.numberOfDays,
@@ -91,8 +90,11 @@ struct ItineraryView: View {
                         )
                         NavigationLink(
                             destination: EditItineraryView(
-                                tripId: viewModel.tripId, day: viewModel.selectedDayIndex + 1,
-                                numberOfDays: viewModel.numberOfDays)
+                                tripId: viewModel.tripId, 
+                                day: viewModel.selectedDayIndex + 1,
+                                numberOfDays: viewModel.numberOfDays,
+                                isEditing: true
+                            )
                         ) {
                             Text("Create Itinerary")
                         }
@@ -109,7 +111,14 @@ struct ItineraryView: View {
                         description: Text("This trip doesn't have an itinerary yet.")
                     )
 
-                    NavigationLink(destination: EditItineraryView(tripId: viewModel.tripId, day: viewModel.selectedDayIndex + 1, numberOfDays: viewModel.numberOfDays)) {
+                    NavigationLink(
+                        destination: EditItineraryView(
+                            tripId: viewModel.tripId, 
+                            day: viewModel.selectedDayIndex + 1,
+                            numberOfDays: viewModel.numberOfDays,
+                            isEditing: true
+                        )
+                    ) {
                         Text("Create Itinerary")
                     }
                     .buttonStyle(PrimaryButtonStyle())
