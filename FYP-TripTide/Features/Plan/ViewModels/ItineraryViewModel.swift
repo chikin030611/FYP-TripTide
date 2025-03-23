@@ -3,23 +3,35 @@ import Combine
 import SwiftUI
 
 class ItineraryViewModel: ObservableObject {
+    private let itineraryManager = ItineraryManager.shared
+    
     @Published var selectedDayIndex: Int = 0
-    var dailyItineraries: [DailyItinerary]?
+    @Published var dailyItineraries: [DailyItinerary] = []
+    @Published var isLoading = false
+    @Published var error: String? = nil
+    
     let numberOfDays: Int
     let tripId: String
     
-    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int, tripId: String) {
-        self.dailyItineraries = dailyItineraries
-        self.numberOfDays = numberOfDays
+    init(tripId: String, numberOfDays: Int, initialItineraries: [DailyItinerary]? = nil) {
         self.tripId = tripId
+        self.numberOfDays = numberOfDays
+        
+        if let itineraries = initialItineraries {
+            self.dailyItineraries = itineraries
+        }
+        
+        // Load itineraries if not provided
+        if initialItineraries == nil {
+            Task {
+                await loadItineraries()
+            }
+        }
     }
     
     var selectedDayItinerary: DailyItinerary? {
-        guard let itineraries = dailyItineraries,
-              selectedDayIndex < itineraries.count else {
-            return nil
-        }
-        return itineraries[selectedDayIndex]
+        // Find the itinerary for the selected day by day number
+        return dailyItineraries.first(where: { $0.dayNumber == selectedDayIndex + 1 })
     }
     
     func selectDay(index: Int) {
@@ -27,27 +39,45 @@ class ItineraryViewModel: ObservableObject {
     }
     
     @MainActor
-    func updateItineraries(_ itineraries: [DailyItinerary]?) {
-        self.dailyItineraries = itineraries
+    func loadItineraries() async {
+        self.isLoading = true
+        self.error = nil
         
-        // Make sure selected day index is still valid
-        if let itineraries = itineraries, selectedDayIndex >= itineraries.count, !itineraries.isEmpty {
-            selectedDayIndex = itineraries.count - 1
+        do {
+            let itineraries = try await itineraryManager.fetchAllItineraries(tripId: tripId)
+            self.dailyItineraries = itineraries
+            self.isLoading = false
+        } catch {
+            self.error = "Failed to load itineraries: \(error.localizedDescription)"
+            self.isLoading = false
+            print("❌ ItineraryViewModel: Error loading itineraries: \(error)")
         }
     }
-
+    
+    @MainActor
     func refreshItineraryData() async {
+        self.isLoading = true
+        self.error = nil
+        
         do {
-            print("🔄 ItineraryView: Refreshing trip data for tripId: \(tripId)")
-            if let trip = try await TripsManager.shared.fetchTrip(id: tripId, forceRefresh: true) {
-                await MainActor.run {
-                    updateItineraries(trip.dailyItineraries)
-                    print("✅ ItineraryView: Successfully refreshed itinerary data")
-                }
-            }
+            print("🔄 ItineraryViewModel: Refreshing itinerary data for tripId: \(tripId)")
+            
+            // Force refresh from API
+            let itineraries = try await itineraryManager.fetchAllItineraries(tripId: tripId, forceRefresh: true)
+            self.dailyItineraries = itineraries
+            print("✅ ItineraryViewModel: Successfully refreshed \(itineraries.count) itineraries")
+            
+            self.isLoading = false
         } catch {
-            print("❌ ItineraryView: Failed to refresh trip data: \(error.localizedDescription)")
+            self.error = "Failed to refresh itineraries: \(error.localizedDescription)"
+            self.isLoading = false
+            print("❌ ItineraryViewModel: Failed to refresh itinerary data: \(error.localizedDescription)")
         }
+    }
+    
+    // Helper method to get the itinerary for a specific day
+    func getItineraryForDay(day: Int) -> DailyItinerary? {
+        return dailyItineraries.first(where: { $0.dayNumber == day })
     }
 }
 

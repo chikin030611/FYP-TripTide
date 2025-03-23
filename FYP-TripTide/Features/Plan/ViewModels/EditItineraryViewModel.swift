@@ -3,7 +3,7 @@ import Combine
 import SwiftUI
 
 class EditItineraryViewModel: ObservableObject {
-    private let itineraryService = ItineraryService.shared
+    private let itineraryManager = ItineraryManager.shared
     private let placesService = PlacesService.shared
     private let tripId: String
     
@@ -53,6 +53,9 @@ class EditItineraryViewModel: ObservableObject {
     @Published var lodgings: [Place] = []
     @Published var isLoadingPlaces = false
     
+    // Add a property to store all fetched itineraries
+    @Published var allItineraries: [DailyItinerary] = []
+    
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
@@ -63,60 +66,109 @@ class EditItineraryViewModel: ObservableObject {
         Task { 
             await self.loadAvailablePlaces() 
             
-            // If editing existing itinerary, fetch it
+            // If editing existing itinerary, fetch all itineraries at once
             if isEditing {
-                await self.fetchExistingItinerary()
+                await self.fetchAllItineraries()
             }
         }
     }
     
-    func fetchExistingItinerary() async {
+    func fetchAllItineraries() async {
         await MainActor.run {
             self.isLoading = true
             self.error = nil
         }
         
         do {
-            let dailyItinerary = try await itineraryService.fetchItinerary(tripId: tripId, day: day)
+            // Use the manager instead of service directly
+            let itineraries = try await itineraryManager.fetchAllItineraries(tripId: tripId)
             
             await MainActor.run {
-                self.existingItineraryId = dailyItinerary.id
+                self.allItineraries = itineraries
                 
-                // Convert scheduled places to input model
-                self.scheduledPlaces = dailyItinerary.places.map { place in
-                    let input = ScheduledPlaceInput()
-                    input.placeId = place.placeId
-                    input.startTime = place.startTime
-                    input.endTime = place.endTime
-                    input.notes = place.notes
-                    return input
+                // Populate scheduledPlacesByDay dictionary for all days
+                for itinerary in itineraries {
+                    let inputs = itinerary.places.map { place in
+                        let input = ScheduledPlaceInput()
+                        input.placeId = place.placeId
+                        input.startTime = place.startTime
+                        input.endTime = place.endTime
+                        input.notes = place.notes
+                        return input
+                    }
+                    
+                    self.scheduledPlacesByDay[itinerary.dayNumber] = inputs
+                    
+                    // If this is the current day, update scheduledPlaces
+                    if itinerary.dayNumber == self.day {
+                        self.existingItineraryId = itinerary.id
+                        self.scheduledPlaces = inputs
+                        self.showDropArea = inputs.isEmpty
+                    }
                 }
                 
-                // Save these places in our day dictionary
-                self.scheduledPlacesByDay[self.day] = self.scheduledPlaces
-                
-                // If there are places, hide the drop area
-                if !self.scheduledPlaces.isEmpty {
-                    self.showDropArea = false
+                // If there's no data for the current day, initialize it as empty
+                if !self.scheduledPlacesByDay.keys.contains(self.day) {
+                    self.scheduledPlaces = []
+                    self.scheduledPlacesByDay[self.day] = []
+                    self.showDropArea = true
                 }
                 
                 self.isLoading = false
             }
         } catch let apiError as APIError where apiError == .notFound {
-            // If itinerary doesn't exist yet, that's ok for edit flow
+            // If no itineraries exist yet, that's ok for edit flow
             await MainActor.run {
-                // Clear the places for this day and show drop area
+                self.allItineraries = []
                 self.scheduledPlaces = []
-                self.scheduledPlacesByDay[self.day] = []
                 self.showDropArea = true
                 self.isLoading = false
             }
         } catch {
             await MainActor.run {
-                self.error = "Failed to load itinerary: \(error.localizedDescription)"
+                self.error = "Failed to load itineraries: \(error.localizedDescription)"
                 self.isLoading = false
             }
         }
+    }
+    
+    func fetchExistingItinerary() async {
+        // If we've already fetched all itineraries, use the cached data
+        if !allItineraries.isEmpty {
+            await MainActor.run {
+                if let itinerary = allItineraries.first(where: { $0.dayNumber == day }) {
+                    self.existingItineraryId = itinerary.id
+                    
+                    // Convert scheduled places to input model if not already in dictionary
+                    if !scheduledPlacesByDay.keys.contains(day) {
+                        let inputs = itinerary.places.map { place in
+                            let input = ScheduledPlaceInput()
+                            input.placeId = place.placeId
+                            input.startTime = place.startTime
+                            input.endTime = place.endTime
+                            input.notes = place.notes
+                            return input
+                        }
+                        
+                        self.scheduledPlaces = inputs
+                        self.scheduledPlacesByDay[day] = inputs
+                    } else {
+                        self.scheduledPlaces = scheduledPlacesByDay[day] ?? []
+                    }
+                    
+                    self.showDropArea = self.scheduledPlaces.isEmpty
+                } else {
+                    // No itinerary for this day
+                    self.scheduledPlaces = []
+                    self.scheduledPlacesByDay[day] = []
+                    self.showDropArea = true
+                }
+            }
+            return
+        }
+        
+        // Otherwise, fetch all itineraries
+        await fetchAllItineraries()
     }
     
     func loadAvailablePlaces() async {
@@ -249,15 +301,15 @@ class EditItineraryViewModel: ObservableObject {
                 let dailyItinerary: DailyItinerary
                 
                 if isEditing {
-                    // Update existing itinerary
-                    dailyItinerary = try await itineraryService.updateItinerary(
+                    // Update existing itinerary (now using manager)
+                    dailyItinerary = try await itineraryManager.updateItinerary(
                         tripId: tripId,
                         day: day,
                         scheduledPlaces: dtos
                     )
                 } else {
-                    // Create new itinerary
-                    dailyItinerary = try await itineraryService.createItinerary(
+                    // Create new itinerary (now using manager)
+                    dailyItinerary = try await itineraryManager.createItinerary(
                         tripId: tripId, 
                         day: day,
                         scheduledPlaces: dtos

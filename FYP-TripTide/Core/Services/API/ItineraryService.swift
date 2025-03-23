@@ -67,6 +67,15 @@ class ItineraryService {
                         await TripsManager.shared.invalidateTripCache(tripId: tripId)
                     }
                     
+                    // After successful creation, add this line:
+                    Task {
+                        // Invalidate the ItineraryManager cache
+                        ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
+                        
+                        // Also refresh Trip cache since it may contain itinerary data
+                        await TripsManager.shared.invalidateTripCache(tripId: tripId)
+                    }
+                    
                     return result
                 } catch {
                     print("❌ ItineraryService: Decoding error: \(error)")
@@ -100,15 +109,14 @@ class ItineraryService {
         }
     }
     
-    func fetchItinerary(tripId: String, day: Int) async throws -> DailyItinerary {
-        print("🔍 ItineraryService: Fetching itinerary for trip \(tripId), day \(day)")
+    func fetchAllItineraries(tripId: String) async throws -> [DailyItinerary] {
+        print("🔍 ItineraryService: Fetching all itineraries for trip \(tripId)")
         
         guard let token = await AuthManager.shared.token else {
             print("❌ ItineraryService: Missing auth token")
             throw APIError.unauthorized
         }
         
-        // Use the endpoint that fetches all itineraries
         guard let url = URL(string: "\(baseURL)/trips/\(tripId)/itineraries") else {
             print("❌ ItineraryService: Invalid URL \(baseURL)/trips/\(tripId)/itineraries")
             throw APIError.invalidURL
@@ -144,15 +152,10 @@ class ItineraryService {
                     let responses = try decoder.decode([ItineraryResponse].self, from: data)
                     print("✅ ItineraryService: Successfully decoded \(responses.count) itineraries")
                     
-                    // Find the itinerary for the requested day
-                    if let response = responses.first(where: { $0.day == day }) {
-                        print("✅ ItineraryService: Found itinerary for day \(day)")
-                        let result = response.toDailyItinerary(tripId: tripId)
-                        return result
-                    } else {
-                        print("❌ ItineraryService: No itinerary found for day \(day)")
-                        throw APIError.notFound
-                    }
+                    // Convert all responses to DailyItinerary objects
+                    let itineraries = responses.map { $0.toDailyItinerary(tripId: tripId) }
+                    return itineraries
+                    
                 } catch {
                     print("❌ ItineraryService: Decoding error: \(error)")
                     if let jsonString = String(data: data, encoding: .utf8) {
@@ -165,7 +168,8 @@ class ItineraryService {
                 throw APIError.unauthorized
             case 404:
                 print("❌ ItineraryService: Resource not found (404)")
-                throw APIError.notFound
+                // For all itineraries, a 404 means no itineraries exist yet
+                return []
             default:
                 print("❌ ItineraryService: Server error with status code: \(httpResponse.statusCode)")
                 throw APIError.serverError(statusCode: httpResponse.statusCode)
@@ -179,6 +183,21 @@ class ItineraryService {
         } catch {
             print("❌ ItineraryService: Unexpected error: \(error.localizedDescription)")
             throw APIError.invalidResponse
+        }
+    }
+    
+    func fetchItinerary(tripId: String, day: Int) async throws -> DailyItinerary {
+        print("🔍 ItineraryService: Fetching itinerary for trip \(tripId), day \(day)")
+        
+        // Call the new method to get all itineraries
+        let allItineraries = try await fetchAllItineraries(tripId: tripId)
+        
+        // Find the itinerary for the requested day
+        if let itinerary = allItineraries.first(where: { $0.dayNumber == day }) {
+            return itinerary
+        } else {
+            print("❌ ItineraryService: No itinerary found for day \(day)")
+            throw APIError.notFound
         }
     }
     
@@ -238,6 +257,15 @@ class ItineraryService {
                     
                     // Refresh the Trip cache after successful update
                     Task {
+                        await TripsManager.shared.invalidateTripCache(tripId: tripId)
+                    }
+                    
+                    // After successful update, add this line:
+                    Task {
+                        // Invalidate the ItineraryManager cache
+                        ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
+                        
+                        // Also refresh Trip cache since it may contain itinerary data
                         await TripsManager.shared.invalidateTripCache(tripId: tripId)
                     }
                     

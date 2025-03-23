@@ -5,19 +5,18 @@ struct ItineraryView: View {
     @StateObject private var viewModel: ItineraryViewModel
     @Environment(\.dismiss) private var dismiss
 
-    init(dailyItineraries: [DailyItinerary]?, numberOfDays: Int, tripId: String) {
+    init(numberOfDays: Int, tripId: String) {
         self._viewModel = StateObject(
             wrappedValue: ItineraryViewModel(
-                dailyItineraries: dailyItineraries,
-                numberOfDays: numberOfDays,
-                tripId: tripId
+                tripId: tripId,
+                numberOfDays: numberOfDays
             ))
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
 
-            if let itineraries = viewModel.dailyItineraries, !itineraries.isEmpty {
+            if viewModel.dailyItineraries.count > 0 {
                 // Days picker - moved up and full width
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {

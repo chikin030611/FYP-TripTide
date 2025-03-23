@@ -298,7 +298,6 @@ struct TripDetailView: View {
         }) {
             NavigationStack {
                 ItineraryView(
-                    dailyItineraries: viewModel.trip.dailyItineraries, 
                     numberOfDays: viewModel.trip.numOfDays, 
                     tripId: viewModel.trip.id
                 )
