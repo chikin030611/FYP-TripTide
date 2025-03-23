@@ -238,6 +238,13 @@ class EditItineraryViewModel: ObservableObject {
 
         if scheduledPlaces.isEmpty {
             showDropArea = true
+            
+            // If we're editing and this was the last place, delete the itinerary
+            if isEditing && existingItineraryId != nil {
+                Task {
+                    await deleteItineraryIfEmpty()
+                }
+            }
         }
     }
     
@@ -296,34 +303,74 @@ class EditItineraryViewModel: ObservableObject {
                 )
             }
             
-            // Only proceed if we have at least one valid place
-            if !dtos.isEmpty {
-                let dailyItinerary: DailyItinerary
-                
-                if isEditing {
-                    // Update existing itinerary (now using manager)
-                    dailyItinerary = try await itineraryManager.updateItinerary(
-                        tripId: tripId,
-                        day: day,
-                        scheduledPlaces: dtos
-                    )
-                } else {
-                    // Create new itinerary (now using manager)
-                    dailyItinerary = try await itineraryManager.createItinerary(
+            if isEditing {
+                // If we're editing an existing itinerary
+                if let existingId = existingItineraryId {
+                    if dtos.isEmpty {
+                        // If all places were removed, delete the itinerary
+                        try await itineraryManager.deleteItinerary(tripId: tripId, day: day)
+                        
+                        await MainActor.run {
+                            self.isSuccess = true
+                            self.isLoading = false
+                            // Make sure our local state reflects the deletion
+                            self.existingItineraryId = nil
+                            
+                            // Update our allItineraries array too
+                            self.allItineraries.removeAll(where: { $0.dayNumber == self.day })
+                        }
+                    } else {
+                        // Otherwise update with the places we have
+                        let dailyItinerary = try await itineraryManager.updateItinerary(
+                            tripId: tripId,
+                            day: day,
+                            scheduledPlaces: dtos
+                        )
+                        
+                        await MainActor.run {
+                            self.isSuccess = true
+                            self.isLoading = false
+                        }
+                    }
+                } else if !dtos.isEmpty {
+                    // If there was no existing itinerary but we have places, create a new one
+                    let dailyItinerary = try await itineraryManager.createItinerary(
                         tripId: tripId, 
                         day: day,
                         scheduledPlaces: dtos
                     )
-                }
-                
-                await MainActor.run {
-                    self.isSuccess = true
-                    self.isLoading = false
+                    
+                    await MainActor.run {
+                        self.existingItineraryId = dailyItinerary.id
+                        self.isSuccess = true
+                        self.isLoading = false
+                    }
+                } else {
+                    // No existing itinerary and no places - nothing to do
+                    await MainActor.run {
+                        self.isSuccess = true
+                        self.isLoading = false
+                    }
                 }
             } else {
-                await MainActor.run {
-                    self.error = "Please add at least one place with a valid ID"
-                    self.isLoading = false
+                // If we're creating a new itinerary, only proceed if we have places
+                if !dtos.isEmpty {
+                    let dailyItinerary = try await itineraryManager.createItinerary(
+                        tripId: tripId, 
+                        day: day,
+                        scheduledPlaces: dtos
+                    )
+                    
+                    await MainActor.run {
+                        self.existingItineraryId = dailyItinerary.id
+                        self.isSuccess = true
+                        self.isLoading = false
+                    }
+                } else {
+                    await MainActor.run {
+                        self.error = "Please add at least one place with a valid ID"
+                        self.isLoading = false
+                    }
                 }
             }
         } catch {
@@ -350,6 +397,38 @@ class EditItineraryViewModel: ObservableObject {
             }
             
             return places
+        }
+    }
+    
+    // Convenience method to delete itinerary if all places were removed
+    func deleteItineraryIfEmpty() async {
+        // Only relevant if we're editing an existing itinerary
+        if isEditing, let existingId = existingItineraryId, scheduledPlaces.isEmpty {
+            await MainActor.run {
+                self.isLoading = true
+                self.error = nil
+            }
+            
+            do {
+                try await itineraryManager.deleteItinerary(tripId: tripId, day: day)
+                
+                await MainActor.run {
+                    self.isSuccess = true
+                    self.isLoading = false
+                    self.existingItineraryId = nil
+                    
+                    // Update our allItineraries array too
+                    self.allItineraries.removeAll(where: { $0.dayNumber == self.day })
+                    
+                    // Update our dictionary
+                    self.scheduledPlacesByDay[self.day] = []
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = "Failed to delete empty itinerary: \(error.localizedDescription)"
+                    self.isLoading = false
+                }
+            }
         }
     }
 }
