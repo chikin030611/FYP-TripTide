@@ -1,16 +1,16 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct CreateItineraryView: View {
+struct EditItineraryView: View {
     @EnvironmentObject private var themeManager: ThemeManager
-    @ObservedObject var viewModel: CreateItineraryViewModel
+    @ObservedObject var viewModel: EditItineraryViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTab: Int = 0
     @State private var isDraggingCards = false
 
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
-        let vm = CreateItineraryViewModel(
+        let vm = EditItineraryViewModel(
             tripId: tripId,
             day: day,
             numberOfDays: numberOfDays,
@@ -154,10 +154,8 @@ struct CreateItineraryView: View {
 
                         if let placeId = object as? String {
                             DispatchQueue.main.async {
-                                // Add new place to the itinerary with the dropped place ID
-                                let newPlace = ScheduledPlaceInput()
-                                newPlace.placeId = placeId
-                                viewModel.scheduledPlaces.append(newPlace)
+                                // Use the new method that handles dictionary updates
+                                viewModel.addPlaceWithId(placeId)
 
                                 // Hide the drop area after successful drop
                                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -237,7 +235,7 @@ struct DayButtonsView: View {
 
 // Drop target area for accepting cards
 struct DropTargetArea: View {
-    @ObservedObject var viewModel: CreateItineraryViewModel
+    @ObservedObject var viewModel: EditItineraryViewModel
     @EnvironmentObject private var themeManager: ThemeManager
     @State private var isTargeted = false
     // Add a timer to track when drag operations end
@@ -325,10 +323,8 @@ struct DropTargetArea: View {
 
                 if let placeId = object as? String {
                     DispatchQueue.main.async {
-                        // Add new place to the itinerary with the dropped place ID
-                        let newPlace = ScheduledPlaceInput()
-                        newPlace.placeId = placeId
-                        viewModel.scheduledPlaces.append(newPlace)
+                        // Use the new method that handles dictionary updates
+                        viewModel.addPlaceWithId(placeId)
 
                         // Hide the drop area after successful drop
                         withAnimation(.easeInOut(duration: 0.3)) {

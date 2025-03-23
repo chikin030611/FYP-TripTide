@@ -34,7 +34,7 @@ struct ContentView: View {
                 Group {
                     switch selectedIndex {
                     case 0:
-                        CreateItineraryView(tripId: "1", day: 0, numberOfDays: 5)
+                        EditItineraryView(tripId: "1", day: 0, numberOfDays: 5)
                     case 1:
                         HomeTabView()
                     case 2:

@@ -2,15 +2,41 @@ import Foundation
 import Combine
 import SwiftUI
 
-class CreateItineraryViewModel: ObservableObject {
+class EditItineraryViewModel: ObservableObject {
     private let itineraryService = ItineraryService.shared
     private let placesService = PlacesService.shared
     private let tripId: String
     
     // Inputs
-    @Published var day: Int
+    @Published var day: Int {
+        didSet {
+            if oldValue != day {
+                // Save current places for the old day
+                scheduledPlacesByDay[oldValue] = scheduledPlaces
+                
+                // Update with places for the new day (or empty array if none exist)
+                scheduledPlaces = scheduledPlacesByDay[day] ?? []
+                
+                // If we're in editing mode, try to fetch the itinerary for this day
+                if isEditing {
+                    // Only fetch if we don't already have data for this day
+                    if !scheduledPlacesByDay.keys.contains(day) {
+                        Task {
+                            await fetchExistingItinerary()
+                        }
+                    }
+                }
+                
+                // Update UI state
+                showDropArea = scheduledPlaces.isEmpty
+            }
+        }
+    }
     @Published var numberOfDays: Int
     @Published var scheduledPlaces: [ScheduledPlaceInput] = []
+    
+    // Dictionary to store scheduled places for each day
+    private var scheduledPlacesByDay: [Int: [ScheduledPlaceInput]] = [:]
     
     // Status
     @Published var isLoading = false
@@ -66,6 +92,9 @@ class CreateItineraryViewModel: ObservableObject {
                     return input
                 }
                 
+                // Save these places in our day dictionary
+                self.scheduledPlacesByDay[self.day] = self.scheduledPlaces
+                
                 // If there are places, hide the drop area
                 if !self.scheduledPlaces.isEmpty {
                     self.showDropArea = false
@@ -76,6 +105,10 @@ class CreateItineraryViewModel: ObservableObject {
         } catch let apiError as APIError where apiError == .notFound {
             // If itinerary doesn't exist yet, that's ok for edit flow
             await MainActor.run {
+                // Clear the places for this day and show drop area
+                self.scheduledPlaces = []
+                self.scheduledPlacesByDay[self.day] = []
+                self.showDropArea = true
                 self.isLoading = false
             }
         } catch {
@@ -125,14 +158,33 @@ class CreateItineraryViewModel: ObservableObject {
 
     func addPlace() {
         scheduledPlaces.append(ScheduledPlaceInput())
+        // Also update our dictionary
+        scheduledPlacesByDay[day] = scheduledPlaces
     }
     
     func removePlaceAt(index: Int) {
         guard index < scheduledPlaces.count else { return }
         scheduledPlaces.remove(at: index)
+        
+        // Update our dictionary
+        scheduledPlacesByDay[day] = scheduledPlaces
 
         if scheduledPlaces.isEmpty {
             showDropArea = true
+        }
+    }
+    
+    func addPlaceWithId(_ placeId: String) {
+        let newPlace = ScheduledPlaceInput()
+        newPlace.placeId = placeId
+        scheduledPlaces.append(newPlace)
+        
+        // Update our dictionary
+        scheduledPlacesByDay[day] = scheduledPlaces
+        
+        // Hide drop area
+        if !scheduledPlaces.isEmpty {
+            showDropArea = false
         }
     }
     
@@ -143,7 +195,10 @@ class CreateItineraryViewModel: ObservableObject {
         }
         
         do {
-            let dtos = scheduledPlaces.compactMap { place -> ScheduledPlaceDto? in
+            // Make sure we're working with the current places
+            let currentPlaces = scheduledPlaces
+            
+            let dtos = currentPlaces.compactMap { place -> ScheduledPlaceDto? in
                 guard let placeId = place.placeId, !placeId.isEmpty else { return nil }
                 
                 // Format time strings
