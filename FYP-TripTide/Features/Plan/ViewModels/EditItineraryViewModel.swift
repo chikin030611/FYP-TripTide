@@ -157,7 +157,22 @@ class EditItineraryViewModel: ObservableObject {
     }
 
     func addPlace() {
-        scheduledPlaces.append(ScheduledPlaceInput())
+        let newPlace = ScheduledPlaceInput()
+        
+        // Set default times
+        let calendar = Calendar.current
+        var startComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+        startComponents.hour = 9
+        startComponents.minute = 0
+        newPlace.startTime = calendar.date(from: startComponents)
+        
+        var endComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+        endComponents.hour = 11
+        endComponents.minute = 0
+        newPlace.endTime = calendar.date(from: endComponents)
+        
+        scheduledPlaces.append(newPlace)
+        
         // Also update our dictionary
         scheduledPlacesByDay[day] = scheduledPlaces
     }
@@ -177,6 +192,19 @@ class EditItineraryViewModel: ObservableObject {
     func addPlaceWithId(_ placeId: String) {
         let newPlace = ScheduledPlaceInput()
         newPlace.placeId = placeId
+        
+        // Set default times
+        let calendar = Calendar.current
+        var startComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+        startComponents.hour = 9
+        startComponents.minute = 0
+        newPlace.startTime = calendar.date(from: startComponents)
+        
+        var endComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+        endComponents.hour = 11
+        endComponents.minute = 0
+        newPlace.endTime = calendar.date(from: endComponents)
+        
         scheduledPlaces.append(newPlace)
         
         // Update our dictionary

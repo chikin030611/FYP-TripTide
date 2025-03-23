@@ -66,7 +66,18 @@ struct PlaceInputRow: View {
                                 DatePicker(
                                     "",
                                     selection: Binding(
-                                        get: { placeInput.startTime ?? Date() },
+                                        get: { 
+                                            if let time = placeInput.startTime {
+                                                return time
+                                            } else {
+                                                // Default to 9:00 AM when first creating
+                                                let calendar = Calendar.current
+                                                var components = calendar.dateComponents([.year, .month, .day], from: Date())
+                                                components.hour = 9
+                                                components.minute = 0
+                                                return calendar.date(from: components) ?? Date()
+                                            }
+                                        },
                                         set: { placeInput.startTime = $0 }
                                     ), displayedComponents: .hourAndMinute
                                 )
@@ -84,7 +95,16 @@ struct PlaceInputRow: View {
                                     "",
                                     selection: Binding(
                                         get: {
-                                            placeInput.endTime ?? Date().addingTimeInterval(3600)
+                                            if let time = placeInput.endTime {
+                                                return time
+                                            } else {
+                                                // Default to 11:00 AM (2 hours after start)
+                                                let calendar = Calendar.current
+                                                var components = calendar.dateComponents([.year, .month, .day], from: Date())
+                                                components.hour = 11
+                                                components.minute = 0
+                                                return calendar.date(from: components) ?? Date().addingTimeInterval(3600)
+                                            }
                                         },
                                         set: { placeInput.endTime = $0 }
                                     ), displayedComponents: .hourAndMinute
