@@ -24,7 +24,7 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 } 
 
-enum APIError: Error {
+enum APIError: Error, Equatable {
     case invalidURL
     case decodingError
     case networkError
@@ -33,6 +33,7 @@ enum APIError: Error {
     case serverError(statusCode: Int)
     case serverErrorWithMessage(statusCode: Int, message: String)
     case placeAlreadyInTrip
+    case notFound
     
     var localizedDescription: String {
         switch self {
@@ -52,6 +53,27 @@ enum APIError: Error {
             return "Network error"
         case .placeAlreadyInTrip:
             return "This place is already in your trip"
+        case .notFound:
+            return "Not found"
+        }
+    }
+    
+    static func == (lhs: APIError, rhs: APIError) -> Bool {
+        switch (lhs, rhs) {
+        case (.invalidURL, .invalidURL), 
+             (.decodingError, .decodingError),
+             (.networkError, .networkError),
+             (.unauthorized, .unauthorized),
+             (.invalidResponse, .invalidResponse),
+             (.placeAlreadyInTrip, .placeAlreadyInTrip),
+             (.notFound, .notFound):
+            return true
+        case let (.serverError(lhsCode), .serverError(rhsCode)):
+            return lhsCode == rhsCode
+        case let (.serverErrorWithMessage(lhsCode, lhsMsg), .serverErrorWithMessage(rhsCode, rhsMsg)):
+            return lhsCode == rhsCode && lhsMsg == rhsMsg
+        default:
+            return false
         }
     }
 }

@@ -9,8 +9,13 @@ struct CreateItineraryView: View {
     @State private var selectedTab: Int = 0
     @State private var isDraggingCards = false
 
-    init(tripId: String, day: Int, numberOfDays: Int) {
-        let vm = CreateItineraryViewModel(tripId: tripId, day: day, numberOfDays: numberOfDays)
+    init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
+        let vm = CreateItineraryViewModel(
+            tripId: tripId,
+            day: day,
+            numberOfDays: numberOfDays,
+            isEditing: isEditing
+        )
         self._viewModel = ObservedObject(wrappedValue: vm)
     }
 
@@ -176,7 +181,7 @@ struct CreateItineraryView: View {
 
             // Action Buttons
             HStack {
-                Button("Save Itinerary") {
+                Button(viewModel.isEditing ? "Update Itinerary" : "Save Itinerary") {
                     Task {
                         await viewModel.saveItinerary()
                         if viewModel.isSuccess {
@@ -201,7 +206,7 @@ struct CreateItineraryView: View {
         }
         .background(themeManager.selectedTheme.appBackgroundColor)
         .tint(themeManager.selectedTheme.accentColor)
-        .navigationTitle("Create Itinerary")
+        .navigationTitle(viewModel.isEditing ? "Edit Itinerary" : "Create Itinerary")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

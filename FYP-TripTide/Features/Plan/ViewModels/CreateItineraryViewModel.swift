@@ -17,6 +17,8 @@ class CreateItineraryViewModel: ObservableObject {
     @Published var error: String? = nil
     @Published var isSuccess = false
     @Published var showDropArea = true
+    @Published var isEditing = false
+    @Published var existingItineraryId: String? = nil
     
     // Available places
     @Published var availablePlaces: [Place] = []
@@ -25,15 +27,62 @@ class CreateItineraryViewModel: ObservableObject {
     @Published var lodgings: [Place] = []
     @Published var isLoadingPlaces = false
     
-    init(tripId: String, day: Int, numberOfDays: Int) {
+    init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
         self.numberOfDays = numberOfDays
-        
+        self.isEditing = isEditing
         
         // Start loading places immediately
         Task { 
             await self.loadAvailablePlaces() 
+            
+            // If editing existing itinerary, fetch it
+            if isEditing {
+                await self.fetchExistingItinerary()
+            }
+        }
+    }
+    
+    func fetchExistingItinerary() async {
+        await MainActor.run {
+            self.isLoading = true
+            self.error = nil
+        }
+        
+        do {
+            let dailyItinerary = try await itineraryService.fetchItinerary(tripId: tripId, day: day)
+            
+            await MainActor.run {
+                self.existingItineraryId = dailyItinerary.id
+                
+                // Convert scheduled places to input model
+                self.scheduledPlaces = dailyItinerary.places.map { place in
+                    let input = ScheduledPlaceInput()
+                    input.placeId = place.placeId
+                    input.startTime = place.startTime
+                    input.endTime = place.endTime
+                    input.notes = place.notes
+                    return input
+                }
+                
+                // If there are places, hide the drop area
+                if !self.scheduledPlaces.isEmpty {
+                    self.showDropArea = false
+                }
+                
+                self.isLoading = false
+            }
+        } catch let apiError as APIError where apiError == .notFound {
+            // If itinerary doesn't exist yet, that's ok for edit flow
+            await MainActor.run {
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to load itinerary: \(error.localizedDescription)"
+                self.isLoading = false
+            }
         }
     }
     
@@ -114,11 +163,23 @@ class CreateItineraryViewModel: ObservableObject {
             
             // Only proceed if we have at least one valid place
             if !dtos.isEmpty {
-                let dailyItinerary = try await itineraryService.createItinerary(
-                    tripId: tripId, 
-                    day: day,
-                    scheduledPlaces: dtos
-                )
+                let dailyItinerary: DailyItinerary
+                
+                if isEditing {
+                    // Update existing itinerary
+                    dailyItinerary = try await itineraryService.updateItinerary(
+                        tripId: tripId,
+                        day: day,
+                        scheduledPlaces: dtos
+                    )
+                } else {
+                    // Create new itinerary
+                    dailyItinerary = try await itineraryService.createItinerary(
+                        tripId: tripId, 
+                        day: day,
+                        scheduledPlaces: dtos
+                    )
+                }
                 
                 await MainActor.run {
                     self.isSuccess = true

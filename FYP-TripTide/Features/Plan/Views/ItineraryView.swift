@@ -54,7 +54,9 @@ struct ItineraryView: View {
                                 // TODO: Change to EditItineraryView
                                 destination: CreateItineraryView(
                                     tripId: viewModel.tripId, day: dayItinerary.dayNumber,
-                                    numberOfDays: viewModel.numberOfDays)
+                                    numberOfDays: viewModel.numberOfDays,
+                                    isEditing: true
+                                )
                             ) {
                                 HStack(spacing: 2) {
                                     Image(systemName: "pencil")
