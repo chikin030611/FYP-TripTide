@@ -45,7 +45,8 @@ struct MainContentView: View {
     @Binding var selectedTab: Int
     @Binding var isDraggingCards: Bool
     let dismiss: DismissAction
-    
+    @State private var isExpanded = false
+
     var body: some View {
         VStack(spacing: 20) {
             DayButtonsView(
@@ -55,27 +56,38 @@ struct MainContentView: View {
                     viewModel.day = index + 1
                 }
             )
-            
-            TabBarView(selectedTab: $selectedTab)
-            
-            PlacesTabView(
-                viewModel: viewModel,
-                selectedTab: selectedTab
+
+            DisclosureGroup(
+                isExpanded: $isExpanded,
+                content: {
+                    TabBarView(selectedTab: $selectedTab)
+
+                    PlacesTabView(
+                        viewModel: viewModel,
+                        selectedTab: selectedTab
+                    )
+                },
+                label: {
+                    Text("Available Places")
+                        .font(themeManager.selectedTheme.titleFont)
+                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                }
             )
-            
+            .padding(.horizontal)
+
             PlacesDropArea(
                 viewModel: viewModel,
                 isDraggingCards: $isDraggingCards
             )
-            
+
             if let error = viewModel.error {
                 ErrorMessageView(error: error)
             }
-            
+
             if !viewModel.timeOverlapWarnings.isEmpty {
                 TimeOverlapWarningsView(warnings: viewModel.timeOverlapWarnings)
             }
-            
+
             ActionButtonsView(
                 viewModel: viewModel,
                 dismiss: dismiss
@@ -86,30 +98,29 @@ struct MainContentView: View {
 
 struct TabBarView: View {
     @Binding var selectedTab: Int
-    
+
     var body: some View {
         HStack(spacing: 0) {
             TabButton(title: "Tourist Attractions", isSelected: selectedTab == 0) {
                 selectedTab = 0
             }
-            
+
             TabButton(title: "Restaurants", isSelected: selectedTab == 1) {
                 selectedTab = 1
             }
-            
+
             TabButton(title: "Lodging", isSelected: selectedTab == 2) {
                 selectedTab = 2
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, -8)
+        .padding(.vertical, -4)
     }
 }
 
 struct PlacesTabView: View {
     @ObservedObject var viewModel: EditItineraryViewModel
     let selectedTab: Int
-    
+
     var body: some View {
         TabView(selection: .constant(selectedTab)) {
             PlacesListView(
@@ -120,7 +131,7 @@ struct PlacesTabView: View {
                 emptyIcon: "mappin.and.ellipse"
             )
             .tag(0)
-            
+
             PlacesListView(
                 isLoading: viewModel.isLoadingPlaces,
                 places: viewModel.restaurants,
@@ -129,7 +140,7 @@ struct PlacesTabView: View {
                 emptyIcon: "fork.knife"
             )
             .tag(1)
-            
+
             PlacesListView(
                 isLoading: viewModel.isLoadingPlaces,
                 places: viewModel.lodgings,
@@ -150,7 +161,7 @@ struct PlacesListView: View {
     let emptyMessage: String
     let emptyDescription: String
     let emptyIcon: String
-    
+
     var body: some View {
         if isLoading {
             ProgressView("Loading...")
@@ -169,7 +180,7 @@ struct PlacesListView: View {
 struct PlacesDropArea: View {
     @ObservedObject var viewModel: EditItineraryViewModel
     @Binding var isDraggingCards: Bool
-    
+
     var body: some View {
         ZStack {
             DropTargetArea(viewModel: viewModel)
@@ -181,7 +192,7 @@ struct PlacesDropArea: View {
                         }
                     }
                 }
-            
+
             ScrollView {
                 VStack(spacing: 24) {
                     if !viewModel.showDropArea {
@@ -196,7 +207,7 @@ struct PlacesDropArea: View {
                                 viewModel: viewModel
                             )
                             .id(viewModel.scheduledPlaces[index].id)
-                            
+
                             if index < viewModel.scheduledPlaces.count - 1 {
                                 Divider()
                                     .padding(.horizontal)
@@ -209,13 +220,13 @@ struct PlacesDropArea: View {
             .contentShape(Rectangle())
             .onDrop(of: [UTType.text.identifier], isTargeted: $isDraggingCards) { providers, _ in
                 guard let provider = providers.first else { return false }
-                
+
                 provider.loadObject(ofClass: NSString.self) { object, error in
                     guard error == nil else {
                         print("Error loading object: \(error!.localizedDescription)")
                         return
                     }
-                    
+
                     if let placeId = object as? String {
                         Task { @MainActor in
                             viewModel.addPlaceWithId(placeId)
@@ -225,7 +236,7 @@ struct PlacesDropArea: View {
                         }
                     }
                 }
-                
+
                 return true
             }
         }
@@ -235,7 +246,7 @@ struct PlacesDropArea: View {
 struct ErrorMessageView: View {
     @EnvironmentObject private var themeManager: ThemeManager
     let error: String
-    
+
     var body: some View {
         Text(error)
             .font(themeManager.selectedTheme.captionTextFont)
@@ -247,7 +258,7 @@ struct ErrorMessageView: View {
 struct TimeOverlapWarningsView: View {
     @EnvironmentObject private var themeManager: ThemeManager
     let warnings: [String]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ForEach(warnings, id: \.self) { warning in
@@ -268,7 +279,7 @@ struct TimeOverlapWarningsView: View {
 struct ActionButtonsView: View {
     @ObservedObject var viewModel: EditItineraryViewModel
     let dismiss: DismissAction
-    
+
     var body: some View {
         HStack {
             Button(viewModel.isEditing ? "Update Itinerary" : "Create Itinerary") {
@@ -281,7 +292,7 @@ struct ActionButtonsView: View {
             }
             .buttonStyle(PrimaryButtonStyle())
             .disabled(viewModel.isLoading)
-            
+
             if viewModel.isLoading {
                 ProgressView()
                     .padding(.leading, 8)
