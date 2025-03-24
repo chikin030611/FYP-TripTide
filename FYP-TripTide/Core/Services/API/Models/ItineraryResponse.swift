@@ -32,14 +32,24 @@ struct APIScheduledPlace: Codable {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         
+        // Safely handle start time
         var startDate: Date? = nil
         if !startTime.isEmpty && startTime != "00:00:00" {
-            startDate = dateFormatter.date(from: startTime)
+            if let date = dateFormatter.date(from: startTime) {
+                startDate = date
+            } else {
+                print("⚠️ APIScheduledPlace: Failed to parse start time: \(startTime)")
+            }
         }
         
+        // Safely handle end time
         var endDate: Date? = nil
         if !endTime.isEmpty && endTime != "00:00:00" {
-            endDate = dateFormatter.date(from: endTime)
+            if let date = dateFormatter.date(from: endTime) {
+                endDate = date
+            } else {
+                print("⚠️ APIScheduledPlace: Failed to parse end time: \(endTime)")
+            }
         }
         
         return ScheduledPlace(

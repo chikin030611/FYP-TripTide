@@ -148,12 +148,27 @@ class ItineraryService {
                         print("📄 ItineraryService: Raw JSON response: \(jsonString)")
                     }
                     
-                    // Decode as array of ItineraryResponse
+                    // First try to decode as a single ItineraryResponse to check if we got a single object
+                    if let singleResponse = try? decoder.decode(ItineraryResponse.self, from: data) {
+                        print("✅ ItineraryService: Successfully decoded single itinerary")
+                        let itinerary = singleResponse.toDailyItinerary(tripId: tripId)
+                        return [itinerary]
+                    }
+                    
+                    // If not a single object, try decoding as array
                     let responses = try decoder.decode([ItineraryResponse].self, from: data)
                     print("✅ ItineraryService: Successfully decoded \(responses.count) itineraries")
                     
-                    // Convert all responses to DailyItinerary objects
-                    let itineraries = responses.map { $0.toDailyItinerary(tripId: tripId) }
+                    // Convert all responses to DailyItinerary objects with nil checks
+                    let itineraries = responses.compactMap { response -> DailyItinerary? in
+                        do {
+                            return response.toDailyItinerary(tripId: tripId)
+                        } catch {
+                            print("❌ ItineraryService: Error converting itinerary: \(error)")
+                            return nil
+                        }
+                    }
+                    
                     return itineraries
                     
                 } catch {
