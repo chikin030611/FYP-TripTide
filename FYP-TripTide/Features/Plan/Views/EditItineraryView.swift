@@ -113,7 +113,7 @@ struct TabBarView: View {
                 selectedTab = 2
             }
         }
-        .padding(.vertical, -4)
+        .padding(.vertical, -2)
     }
 }
 
