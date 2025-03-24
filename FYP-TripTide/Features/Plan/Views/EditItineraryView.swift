@@ -20,183 +20,12 @@ struct EditItineraryView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Extract this to a separate view
-            DayButtonsView(
-                numberOfDays: viewModel.numberOfDays,
-                selectedDayIndex: viewModel.day - 1,
-                onSelectDay: { index in
-                    viewModel.day = index + 1
-                }
-            )
-
-            // Custom Tab Bar
-            HStack(spacing: 0) {
-                TabButton(title: "Tourist Attractions", isSelected: selectedTab == 0) {
-                    selectedTab = 0
-                }
-
-                TabButton(title: "Restaurants", isSelected: selectedTab == 1) {
-                    selectedTab = 1
-                }
-
-                TabButton(title: "Lodging", isSelected: selectedTab == 2) {
-                    selectedTab = 2
-                }
-            }
-            .padding(.horizontal)
-            .padding(.vertical, -8)
-
-            TabView(selection: $selectedTab) {
-                // Tourist Attractions Tab
-                if viewModel.isLoadingPlaces {
-                    ProgressView("Loading tourist attractions...")
-                        .tag(0)
-                } else if viewModel.touristAttractions.isEmpty {
-                    ContentUnavailableView(
-                        "No Tourist Attractions",
-                        systemImage: "mappin.and.ellipse",
-                        description: Text("No tourist attractions have been saved to this trip")
-                    )
-                    .tag(0)
-                } else {
-                    DragAndDropCardGroup(places: viewModel.touristAttractions)
-                        .tag(0)
-                }
-
-                // Restaurants Tab
-                if viewModel.isLoadingPlaces {
-                    ProgressView("Loading restaurants...")
-                        .tag(1)
-                } else if viewModel.restaurants.isEmpty {
-                    ContentUnavailableView(
-                        "No Restaurants",
-                        systemImage: "fork.knife",
-                        description: Text("No restaurants have been saved to this trip")
-                    )
-                    .tag(1)
-                } else {
-                    DragAndDropCardGroup(places: viewModel.restaurants)
-                        .tag(1)
-                }
-
-                // Lodging Tab
-                if viewModel.isLoadingPlaces {
-                    ProgressView("Loading lodgings...")
-                        .tag(2)
-                } else if viewModel.lodgings.isEmpty {
-                    ContentUnavailableView(
-                        "No Lodgings",
-                        systemImage: "bed.double",
-                        description: Text("No lodgings have been saved to this trip")
-                    )
-                    .tag(2)
-                } else {
-                    DragAndDropCardGroup(places: viewModel.lodgings)
-                        .tag(2)
-                }
-            }
-            .frame(height: 125)
-            .tabViewStyle(.page(indexDisplayMode: .never))
-
-            ZStack {
-                // Drop area for cards
-                DropTargetArea(viewModel: viewModel)
-                    .padding()
-                    // When any dragging operation starts, show the drop area
-                    .onChange(
-                        of: isDraggingCards,
-                        perform: { newValue in
-                            if newValue {
-                                withAnimation {
-                                    viewModel.showDropArea = true
-                                }
-                            }
-                        })
-
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Places List
-                        if !viewModel.showDropArea {
-                            ForEach(viewModel.scheduledPlaces.indices, id: \.self) { index in
-                                PlaceInputRow(
-                                    placeInput: viewModel.scheduledPlaces[index],
-                                    availablePlaces: viewModel.availablePlaces,
-                                    isLoading: viewModel.isLoadingPlaces,
-                                    onRemove: {
-                                        viewModel.removePlaceAt(index: index)
-                                    }
-                                )
-                                .id(viewModel.scheduledPlaces[index].id)
-
-                                if index < viewModel.scheduledPlaces.count - 1 {
-                                    Divider()
-                                        .padding(.horizontal)
-                                }
-                            }
-
-                        }
-                    }
-                }
-                .padding(.vertical)
-                .contentShape(Rectangle())
-                .onDrop(of: [UTType.text.identifier], isTargeted: $isDraggingCards) {
-                    providers, _ in
-                    // This acts as a general drop handler and drag state monitor
-                    // Forward the drop to appropriate handler
-                    guard let provider = providers.first else { return false }
-
-                    provider.loadObject(ofClass: NSString.self) { object, error in
-                        guard error == nil else {
-                            print("Error loading object: \(error!.localizedDescription)")
-                            return
-                        }
-
-                        if let placeId = object as? String {
-                            DispatchQueue.main.async {
-                                // Use the new method that handles dictionary updates
-                                viewModel.addPlaceWithId(placeId)
-
-                                // Hide the drop area after successful drop
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    viewModel.showDropArea = false
-                                }
-                            }
-                        }
-                    }
-
-                    return true
-                }
-            }
-
-            // Error message
-            if let error = viewModel.error {
-                Text(error)
-                    .font(themeManager.selectedTheme.captionTextFont)
-                    .foregroundColor(themeManager.selectedTheme.warningColor)
-                    .padding(.horizontal)
-            }
-
-            // Action Buttons
-            HStack {
-                Button(viewModel.isEditing ? "Update Itinerary" : "Create Itinerary") {
-                    Task {
-                        await viewModel.saveItinerary()
-                        if viewModel.isSuccess {
-                            dismiss()
-                        }
-                    }
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .disabled(viewModel.isLoading)
-
-                if viewModel.isLoading {
-                    ProgressView()
-                        .padding(.leading, 8)
-                }
-            }
-            .padding()
-        }
+        MainContentView(
+            viewModel: viewModel,
+            selectedTab: $selectedTab,
+            isDraggingCards: $isDraggingCards,
+            dismiss: dismiss
+        )
         .onAppear {
             Task {
                 await viewModel.loadAvailablePlaces()
@@ -206,6 +35,258 @@ struct EditItineraryView: View {
         .tint(themeManager.selectedTheme.accentColor)
         .navigationTitle(viewModel.isEditing ? "Edit Itinerary" : "Create Itinerary")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// Add this new struct before the EditItineraryView
+struct MainContentView: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+    @ObservedObject var viewModel: EditItineraryViewModel
+    @Binding var selectedTab: Int
+    @Binding var isDraggingCards: Bool
+    let dismiss: DismissAction
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            DayButtonsView(
+                numberOfDays: viewModel.numberOfDays,
+                selectedDayIndex: viewModel.day - 1,
+                onSelectDay: { index in
+                    viewModel.day = index + 1
+                }
+            )
+            
+            TabBarView(selectedTab: $selectedTab)
+            
+            PlacesTabView(
+                viewModel: viewModel,
+                selectedTab: selectedTab
+            )
+            
+            PlacesDropArea(
+                viewModel: viewModel,
+                isDraggingCards: $isDraggingCards
+            )
+            
+            if let error = viewModel.error {
+                ErrorMessageView(error: error)
+            }
+            
+            if !viewModel.timeOverlapWarnings.isEmpty {
+                TimeOverlapWarningsView(warnings: viewModel.timeOverlapWarnings)
+            }
+            
+            ActionButtonsView(
+                viewModel: viewModel,
+                dismiss: dismiss
+            )
+        }
+    }
+}
+
+struct TabBarView: View {
+    @Binding var selectedTab: Int
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            TabButton(title: "Tourist Attractions", isSelected: selectedTab == 0) {
+                selectedTab = 0
+            }
+            
+            TabButton(title: "Restaurants", isSelected: selectedTab == 1) {
+                selectedTab = 1
+            }
+            
+            TabButton(title: "Lodging", isSelected: selectedTab == 2) {
+                selectedTab = 2
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, -8)
+    }
+}
+
+struct PlacesTabView: View {
+    @ObservedObject var viewModel: EditItineraryViewModel
+    let selectedTab: Int
+    
+    var body: some View {
+        TabView(selection: .constant(selectedTab)) {
+            PlacesListView(
+                isLoading: viewModel.isLoadingPlaces,
+                places: viewModel.touristAttractions,
+                emptyMessage: "No Tourist Attractions",
+                emptyDescription: "No tourist attractions have been saved to this trip",
+                emptyIcon: "mappin.and.ellipse"
+            )
+            .tag(0)
+            
+            PlacesListView(
+                isLoading: viewModel.isLoadingPlaces,
+                places: viewModel.restaurants,
+                emptyMessage: "No Restaurants",
+                emptyDescription: "No restaurants have been saved to this trip",
+                emptyIcon: "fork.knife"
+            )
+            .tag(1)
+            
+            PlacesListView(
+                isLoading: viewModel.isLoadingPlaces,
+                places: viewModel.lodgings,
+                emptyMessage: "No Lodgings",
+                emptyDescription: "No lodgings have been saved to this trip",
+                emptyIcon: "bed.double"
+            )
+            .tag(2)
+        }
+        .frame(height: 125)
+        .tabViewStyle(.page(indexDisplayMode: .never))
+    }
+}
+
+struct PlacesListView: View {
+    let isLoading: Bool
+    let places: [Place]
+    let emptyMessage: String
+    let emptyDescription: String
+    let emptyIcon: String
+    
+    var body: some View {
+        if isLoading {
+            ProgressView("Loading...")
+        } else if places.isEmpty {
+            ContentUnavailableView(
+                emptyMessage,
+                systemImage: emptyIcon,
+                description: Text(emptyDescription)
+            )
+        } else {
+            DragAndDropCardGroup(places: places)
+        }
+    }
+}
+
+struct PlacesDropArea: View {
+    @ObservedObject var viewModel: EditItineraryViewModel
+    @Binding var isDraggingCards: Bool
+    
+    var body: some View {
+        ZStack {
+            DropTargetArea(viewModel: viewModel)
+                .padding()
+                .onChange(of: isDraggingCards) { _, newValue in
+                    if newValue {
+                        withAnimation {
+                            viewModel.showDropArea = true
+                        }
+                    }
+                }
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    if !viewModel.showDropArea {
+                        ForEach(viewModel.scheduledPlaces.indices, id: \.self) { index in
+                            PlaceInputRow(
+                                placeInput: viewModel.scheduledPlaces[index],
+                                availablePlaces: viewModel.availablePlaces,
+                                isLoading: viewModel.isLoadingPlaces,
+                                onRemove: {
+                                    viewModel.removePlaceAt(index: index)
+                                },
+                                viewModel: viewModel
+                            )
+                            .id(viewModel.scheduledPlaces[index].id)
+                            
+                            if index < viewModel.scheduledPlaces.count - 1 {
+                                Divider()
+                                    .padding(.horizontal)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.vertical)
+            .contentShape(Rectangle())
+            .onDrop(of: [UTType.text.identifier], isTargeted: $isDraggingCards) { providers, _ in
+                guard let provider = providers.first else { return false }
+                
+                provider.loadObject(ofClass: NSString.self) { object, error in
+                    guard error == nil else {
+                        print("Error loading object: \(error!.localizedDescription)")
+                        return
+                    }
+                    
+                    if let placeId = object as? String {
+                        Task { @MainActor in
+                            viewModel.addPlaceWithId(placeId)
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                viewModel.showDropArea = false
+                            }
+                        }
+                    }
+                }
+                
+                return true
+            }
+        }
+    }
+}
+
+struct ErrorMessageView: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+    let error: String
+    
+    var body: some View {
+        Text(error)
+            .font(themeManager.selectedTheme.captionTextFont)
+            .foregroundColor(themeManager.selectedTheme.warningColor)
+            .padding(.horizontal)
+    }
+}
+
+struct TimeOverlapWarningsView: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+    let warnings: [String]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(warnings, id: \.self) { warning in
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(themeManager.selectedTheme.warningColor)
+                    Text(warning)
+                        .font(themeManager.selectedTheme.captionTextFont)
+                        .foregroundColor(themeManager.selectedTheme.warningColor)
+                }
+                .padding(.horizontal)
+            }
+        }
+        .background(themeManager.selectedTheme.warningColor.opacity(0.1))
+    }
+}
+
+struct ActionButtonsView: View {
+    @ObservedObject var viewModel: EditItineraryViewModel
+    let dismiss: DismissAction
+    
+    var body: some View {
+        HStack {
+            Button(viewModel.isEditing ? "Update Itinerary" : "Create Itinerary") {
+                Task {
+                    await viewModel.saveItinerary()
+                    if viewModel.isSuccess {
+                        dismiss()
+                    }
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(viewModel.isLoading)
+            
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding(.leading, 8)
+            }
+        }
     }
 }
 

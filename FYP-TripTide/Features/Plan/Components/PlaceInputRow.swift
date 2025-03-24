@@ -6,6 +6,7 @@ struct PlaceInputRow: View {
     let isLoading: Bool
     let onRemove: () -> Void
     @EnvironmentObject private var themeManager: ThemeManager
+    @ObservedObject var viewModel: EditItineraryViewModel
 
     // Compute selected place from placeInput.placeId
     private var selectedPlace: Place? {
@@ -78,7 +79,11 @@ struct PlaceInputRow: View {
                                                 return calendar.date(from: components) ?? Date()
                                             }
                                         },
-                                        set: { placeInput.startTime = $0 }
+                                        set: { newTime in
+                                            placeInput.startTime = newTime
+                                            // Check for overlaps after updating the time
+                                            viewModel.checkForTimeOverlaps()
+                                        }
                                     ), displayedComponents: .hourAndMinute
                                 )
                                 .labelsHidden()
@@ -106,7 +111,11 @@ struct PlaceInputRow: View {
                                                 return calendar.date(from: components) ?? Date().addingTimeInterval(3600)
                                             }
                                         },
-                                        set: { placeInput.endTime = $0 }
+                                        set: { newTime in
+                                            placeInput.endTime = newTime
+                                            // Check for overlaps after updating the time
+                                            viewModel.checkForTimeOverlaps()
+                                        }
                                     ), displayedComponents: .hourAndMinute
                                 )
                                 .labelsHidden()

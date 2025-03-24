@@ -79,6 +79,9 @@ class EditItineraryViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>? = nil
     private var loadPlacesTask: Task<Void, Never>? = nil
     
+    // Add these properties near the top of the class with other @Published properties
+    @Published var timeOverlapWarnings: [String] = []
+    
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
@@ -267,6 +270,9 @@ class EditItineraryViewModel: ObservableObject {
         // Update our dictionary
         scheduledPlacesByDay[day] = scheduledPlaces
 
+        // Check for overlaps after removing a place
+        checkForTimeOverlaps()
+
         if scheduledPlaces.isEmpty {
             showDropArea = true
             
@@ -279,6 +285,38 @@ class EditItineraryViewModel: ObservableObject {
         }
     }
     
+    // Add this method to check for time overlaps
+    func checkForTimeOverlaps() {
+        timeOverlapWarnings.removeAll()
+        
+        guard scheduledPlaces.count > 1 else { return }
+        
+        for i in 0..<scheduledPlaces.count {
+            for j in (i + 1)..<scheduledPlaces.count {
+                let place1 = scheduledPlaces[i]
+                let place2 = scheduledPlaces[j]
+                
+                guard let start1 = place1.startTime,
+                      let end1 = place1.endTime,
+                      let start2 = place2.startTime,
+                      let end2 = place2.endTime else {
+                    continue
+                }
+                
+                // Check if the time periods overlap
+                if start1 < end2 && start2 < end1 {
+                    // Get place names for better warning messages
+                    let place1Name = availablePlaces.first(where: { $0.id == place1.placeId })?.name ?? "Unknown Place"
+                    let place2Name = availablePlaces.first(where: { $0.id == place2.placeId })?.name ?? "Unknown Place"
+                    
+                    let warning = "Time overlap detected between '\(place1Name)' and '\(place2Name)'"
+                    timeOverlapWarnings.append(warning)
+                }
+            }
+        }
+    }
+    
+    // Modify the addPlaceWithId method to check for overlaps after adding a place
     func addPlaceWithId(_ placeId: String) {
         let newPlace = ScheduledPlaceInput()
         newPlace.placeId = placeId
@@ -299,6 +337,9 @@ class EditItineraryViewModel: ObservableObject {
         
         // Update our dictionary
         scheduledPlacesByDay[day] = scheduledPlaces
+        
+        // Check for time overlaps
+        checkForTimeOverlaps()
         
         // Hide drop area
         if !scheduledPlaces.isEmpty {
