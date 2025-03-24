@@ -70,7 +70,7 @@ class ItineraryService {
                     // After successful creation, add this line:
                     Task {
                         // Invalidate the ItineraryManager cache
-                        ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
+                        await ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
                         
                         // Also refresh Trip cache since it may contain itinerary data
                         await TripsManager.shared.invalidateTripCache(tripId: tripId)
@@ -278,7 +278,7 @@ class ItineraryService {
                     // After successful update, add this line:
                     Task {
                         // Invalidate the ItineraryManager cache
-                        ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
+                        await ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
                         
                         // Also refresh Trip cache since it may contain itinerary data
                         await TripsManager.shared.invalidateTripCache(tripId: tripId)
@@ -349,7 +349,7 @@ class ItineraryService {
                 // Invalidate caches
                 Task {
                     // Invalidate the ItineraryManager cache
-                    ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
+                    await ItineraryManager.shared.invalidateItineraryCache(tripId: tripId)
                     
                     // Also refresh Trip cache since it may contain itinerary data
                     await TripsManager.shared.invalidateTripCache(tripId: tripId)

@@ -93,7 +93,28 @@ struct MainContentView: View {
                 dismiss: dismiss
             )
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                backButton
+            }
+        }
     }
+
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+
+    var backButton: some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            HStack(spacing: 4) {
+                Image(systemName: "chevron.left")
+                // Text("Back")
+            }
+            .foregroundColor(themeManager.selectedTheme.primaryColor)
+        }
+    }
+
 }
 
 struct TabBarView: View {

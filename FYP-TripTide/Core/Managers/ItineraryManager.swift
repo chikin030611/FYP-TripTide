@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class ItineraryManager {
     static let shared = ItineraryManager()
 
@@ -37,8 +38,10 @@ class ItineraryManager {
             let itineraries = try await itineraryService.fetchAllItineraries(tripId: tripId)
 
             // Update cache
-            itinerariesCache[tripId] = itineraries
-            lastFetchTime[tripId] = Date()
+            await MainActor.run {
+                itinerariesCache[tripId] = itineraries
+                lastFetchTime[tripId] = Date()
+            }
 
             print(
                 "📦 ItineraryManager: Updated cache with \(itineraries.count) itineraries for trip \(tripId)"
