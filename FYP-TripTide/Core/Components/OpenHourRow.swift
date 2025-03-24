@@ -69,6 +69,11 @@ struct OpenHourRow: View {
             showOpenHours.toggle()
         } label: {
             HStack {
+                Image(systemName: "clock")
+                    .font(themeManager.selectedTheme.boldTitleFont)
+                    .foregroundStyle(themeManager.selectedTheme.primaryColor)
+                    .padding(.trailing, 5)
+
                 VStack(alignment: .leading) {
                     
                     // Display open or closed status

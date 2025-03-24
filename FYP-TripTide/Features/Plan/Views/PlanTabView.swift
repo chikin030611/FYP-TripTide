@@ -131,7 +131,7 @@ private struct UnauthenticatedView: View {
                 .foregroundColor(themeManager.selectedTheme.secondaryColor)
 
             Button(action: {
-                tabManager.switchToTab(4)
+                tabManager.switchToTab(3)
             }) {
                 Text("Get Started")
                     .padding()

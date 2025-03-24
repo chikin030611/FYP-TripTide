@@ -45,7 +45,7 @@ struct PlaceDetailView: View {
                             .padding(.bottom, 10)
                         
                         // Recommended Staying Time
-                        stayingTimeSection
+                        // stayingTimeSection
                         
                         // Description
                         descriptionSection

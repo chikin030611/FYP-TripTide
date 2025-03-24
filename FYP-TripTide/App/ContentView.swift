@@ -20,7 +20,6 @@ struct ContentView: View {
     
     private var items: [BottomBarItem] {
         [
-            BottomBarItem(icon: "paintbrush.fill", title: "UI Test", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "house.fill", title: "Home", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "magnifyingglass", title: "Search", color: themeManager.selectedTheme.accentColor),
             BottomBarItem(icon: "calendar", title: "Plan", color: themeManager.selectedTheme.accentColor),
@@ -34,14 +33,12 @@ struct ContentView: View {
                 Group {
                     switch selectedIndex {
                     case 0:
-                        EditItineraryView(tripId: "1", day: 0, numberOfDays: 5)
-                    case 1:
                         HomeTabView()
-                    case 2:
+                    case 1:
                         SearchTabView(viewModel: searchTabViewModel)
-                    case 3:
+                    case 2:
                         PlanTabView()
-                    case 4:
+                    case 3:
                         UserTabView()
                     default:
                         // Show current view instead of UITestView
