@@ -119,50 +119,51 @@ class EditItineraryViewModel: ObservableObject {
             // Check if task was cancelled before updating UI
             guard !Task.isCancelled else { return }
             
-            self.allItineraries = itineraries
-            
-            // Populate scheduledPlacesByDay dictionary for all days
-            for itinerary in itineraries {
-                let inputs = itinerary.places.map { place in
-                    let input = ScheduledPlaceInput()
-                    input.placeId = place.placeId
-                    input.startTime = place.startTime
-                    input.endTime = place.endTime
-                    input.notes = place.notes
-                    return input
+            await MainActor.run {
+                self.allItineraries = itineraries
+                
+                // Populate scheduledPlacesByDay dictionary for all days
+                for itinerary in itineraries {
+                    let inputs = itinerary.places.map { place in
+                        let input = ScheduledPlaceInput()
+                        input.placeId = place.placeId
+                        input.startTime = place.startTime
+                        input.endTime = place.endTime
+                        input.notes = place.notes
+                        return input
+                    }
+                    
+                    self.scheduledPlacesByDay[itinerary.dayNumber] = inputs
+                    
+                    // If this is the current day, update scheduledPlaces
+                    if itinerary.dayNumber == self.day {
+                        self.existingItineraryId = itinerary.id
+                        self.scheduledPlaces = inputs
+                        self.showDropArea = inputs.isEmpty
+                    }
                 }
                 
-                self.scheduledPlacesByDay[itinerary.dayNumber] = inputs
-                
-                // If this is the current day, update scheduledPlaces
-                if itinerary.dayNumber == self.day {
-                    self.existingItineraryId = itinerary.id
-                    self.scheduledPlaces = inputs
-                    self.showDropArea = inputs.isEmpty
+                // If there's no data for the current day, initialize it as empty
+                if !self.scheduledPlacesByDay.keys.contains(self.day) {
+                    self.scheduledPlaces = []
+                    self.scheduledPlacesByDay[self.day] = []
+                    self.showDropArea = true
+                    self.existingItineraryId = nil
                 }
+                
+                self.isLoading = false
             }
-            
-            // If there's no data for the current day, initialize it as empty
-            if !self.scheduledPlacesByDay.keys.contains(self.day) {
+        } catch {
+            await MainActor.run {
+                self.error = "Failed to load itineraries: \(error.localizedDescription)"
+                self.isLoading = false
+                // Reset state on error
+                self.allItineraries = []
                 self.scheduledPlaces = []
-                self.scheduledPlacesByDay[self.day] = []
+                self.scheduledPlacesByDay = [:]
                 self.showDropArea = true
                 self.existingItineraryId = nil
             }
-            
-            self.isLoading = false
-            
-        } catch let apiError as APIError where apiError == .notFound {
-            // If no itineraries exist yet, that's ok
-            self.allItineraries = []
-            self.scheduledPlaces = []
-            self.showDropArea = true
-            self.isLoading = false
-            self.existingItineraryId = nil
-            
-        } catch {
-            self.error = "Failed to load itineraries: \(error.localizedDescription)"
-            self.isLoading = false
         }
     }
     
