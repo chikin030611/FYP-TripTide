@@ -320,7 +320,8 @@ struct ActionButtonsView: View {
                 showPreview = true
             }
             .buttonStyle(PrimaryButtonStyle())
-            .disabled(viewModel.isLoading)
+            .disabled(viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty)
+            .opacity(!viewModel.timeOverlapWarnings.isEmpty ? 0.7 : 1.0)
             .sheet(isPresented: $showPreview) {
                 if let previewVM = previewViewModel {
                     ItineraryPreviewView(
