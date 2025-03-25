@@ -88,6 +88,20 @@ struct MainContentView: View {
                 TimeOverlapWarningsView(warnings: viewModel.timeOverlapWarnings)
             }
 
+            if viewModel.isEditing && viewModel.scheduledPlaces.isEmpty {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(themeManager.selectedTheme.warningColor)
+                    Text("All places removed. Press 'Preview Changes' to confirm deletion.")
+                        .font(themeManager.selectedTheme.captionTextFont)
+                        .foregroundColor(themeManager.selectedTheme.warningColor)
+                }
+                .padding()
+                .background(themeManager.selectedTheme.warningColor.opacity(0.1))
+                .cornerRadius(8)
+                .padding(.horizontal)
+            }
+
             ActionButtonsView(
                 viewModel: viewModel,
                 dismiss: dismiss

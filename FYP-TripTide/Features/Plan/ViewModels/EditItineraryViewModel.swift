@@ -303,12 +303,8 @@ class EditItineraryViewModel: ObservableObject {
         if scheduledPlaces.isEmpty {
             showDropArea = true
             
-            // If we're editing and this was the last place, delete the itinerary
-            if isEditing && existingItineraryId != nil {
-                Task {
-                    await deleteItineraryIfEmpty()
-                }
-            }
+            // Remove the automatic deletion when all places are removed
+            // We'll let the confirmation flow handle this now
         }
     }
     
