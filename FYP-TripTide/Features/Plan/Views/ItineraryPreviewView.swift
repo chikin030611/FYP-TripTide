@@ -6,6 +6,18 @@ struct ItineraryPreviewView: View {
     let onConfirm: () -> Void
     let onCancel: () -> Void
     @Environment(\.dismiss) private var dismissPreview
+    
+    // Add this computed property to sort places by start time
+    private var sortedPlaces: [ScheduledPlaceInput] {
+        return viewModel.scheduledPlaces.sorted { place1, place2 in
+            // Get the start times, defaulting to a far future date if nil
+            let time1 = place1.startTime ?? Date.distantFuture
+            let time2 = place2.startTime ?? Date.distantFuture
+            
+            // Sort by start time
+            return time1 < time2
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -42,7 +54,8 @@ struct ItineraryPreviewView: View {
                     } else {
                         ScrollView {
                             VStack(spacing: 16) {
-                                ForEach(viewModel.scheduledPlaces) { place in
+                                // Use the sorted places instead of the original array
+                                ForEach(sortedPlaces) { place in
                                     ScheduledPlacePreviewView(scheduledPlace: place, availablePlaces: viewModel.availablePlaces)
                                         .padding(.horizontal)
                                 }
