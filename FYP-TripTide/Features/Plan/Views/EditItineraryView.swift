@@ -345,6 +345,17 @@ struct ActionButtonsView: View {
                             viewModel.scheduledPlaces = previewVM.scheduledPlaces
                             viewModel.scheduledPlacesByDay = previewVM.scheduledPlacesByDay
                             
+                            // IMPORTANT: Make sure we're saving to the current day, not the original day
+                            // This is the key fix - ensure the day value is properly transferred
+                            viewModel.day = previewVM.day
+                            
+                            // Update existingItineraryId to match the current day
+                            if let itinerary = viewModel.allItineraries.first(where: { $0.dayNumber == viewModel.day }) {
+                                viewModel.existingItineraryId = itinerary.id
+                            } else {
+                                viewModel.existingItineraryId = nil
+                            }
+                            
                             Task {
                                 await viewModel.saveItinerary()
                                 if viewModel.isSuccess {
