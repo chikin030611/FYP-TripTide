@@ -80,7 +80,21 @@ struct PlaceInputRow: View {
                                             }
                                         },
                                         set: { newTime in
+                                            let formatter = DateFormatter()
+                                            formatter.dateFormat = "HH:mm:ss"
+                                            print("⏰ Start time picker changed to \(formatter.string(from: newTime))")
+                                            
+                                            // Debug the current time before update
+                                            if let currentTime = placeInput.startTime {
+                                                print("⏰ Current start time is \(formatter.string(from: currentTime))")
+                                            } else {
+                                                print("⏰ Current start time is nil")
+                                            }
+                                            
                                             placeInput.startTime = newTime
+                                            
+                                            print("⏰ After update, placeInput.startTime = \(placeInput.startTime.map { formatter.string(from: $0) } ?? "nil")")
+                                            
                                             // Check for overlaps after updating the time
                                             viewModel.checkForTimeOverlaps()
                                         }
@@ -112,7 +126,21 @@ struct PlaceInputRow: View {
                                             }
                                         },
                                         set: { newTime in
+                                            let formatter = DateFormatter()
+                                            formatter.dateFormat = "HH:mm:ss"
+                                            print("⏰ End time picker changed to \(formatter.string(from: newTime))")
+                                            
+                                            // Debug the current time before update
+                                            if let currentTime = placeInput.endTime {
+                                                print("⏰ Current end time is \(formatter.string(from: currentTime))")
+                                            } else {
+                                                print("⏰ Current end time is nil")
+                                            }
+                                            
                                             placeInput.endTime = newTime
+                                            
+                                            print("⏰ After update, placeInput.endTime = \(placeInput.endTime.map { formatter.string(from: $0) } ?? "nil")")
+                                            
                                             // Check for overlaps after updating the time
                                             viewModel.checkForTimeOverlaps()
                                         }

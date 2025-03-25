@@ -44,7 +44,7 @@ class EditItineraryViewModel: ObservableObject {
     @Published var scheduledPlaces: [ScheduledPlaceInput] = []
     
     // Dictionary to store scheduled places for each day
-    private var scheduledPlacesByDay: [Int: [ScheduledPlaceInput]] = [:]
+    @Published var scheduledPlacesByDay: [Int: [ScheduledPlaceInput]] = [:]
     
     // Status
     @Published var isLoading = false
@@ -82,6 +82,9 @@ class EditItineraryViewModel: ObservableObject {
     // Add these properties near the top of the class with other @Published properties
     @Published var timeOverlapWarnings: [String] = []
     
+    // Add this property near the top with other properties
+    @Published var isPreviewMode = false
+    
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
@@ -108,6 +111,12 @@ class EditItineraryViewModel: ObservableObject {
     }
     
     func fetchAllItineraries() async {
+        // Skip fetching if in preview mode
+        if isPreviewMode {
+            print("🔍 Skipping fetch in preview mode")
+            return
+        }
+        
         guard !isLoading else { return } // Prevent concurrent fetches
         
         self.isLoading = true
@@ -130,6 +139,12 @@ class EditItineraryViewModel: ObservableObject {
                         input.startTime = place.startTime
                         input.endTime = place.endTime
                         input.notes = place.notes
+                        
+                        // Set up notification callback
+                        input.notifyParent = { [weak self] in
+                            self?.updateDictionaryForCurrentDay()
+                        }
+                        
                         return input
                     }
                     
@@ -168,6 +183,12 @@ class EditItineraryViewModel: ObservableObject {
     }
     
     func fetchExistingItinerary() async {
+        // Skip fetching if in preview mode
+        if isPreviewMode {
+            print("🔍 Skipping fetch in preview mode")
+            return
+        }
+        
         // If we've already fetched all itineraries, use the cached data
         if !allItineraries.isEmpty {
             await MainActor.run {
@@ -258,6 +279,11 @@ class EditItineraryViewModel: ObservableObject {
         endComponents.minute = 0
         newPlace.endTime = calendar.date(from: endComponents)
         
+        // Set up notification callback
+        newPlace.notifyParent = { [weak self] in
+            self?.updateDictionaryForCurrentDay()
+        }
+        
         scheduledPlaces.append(newPlace)
         
         // Also update our dictionary
@@ -334,6 +360,11 @@ class EditItineraryViewModel: ObservableObject {
         endComponents.minute = 0
         newPlace.endTime = calendar.date(from: endComponents)
         
+        // Set up notification callback
+        newPlace.notifyParent = { [weak self] in
+            self?.updateDictionaryForCurrentDay()
+        }
+        
         scheduledPlaces.append(newPlace)
         
         // Update our dictionary
@@ -346,6 +377,30 @@ class EditItineraryViewModel: ObservableObject {
         if !scheduledPlaces.isEmpty {
             showDropArea = false
         }
+    }
+    
+    // Add a method to update the dictionary whenever a scheduled place is modified
+    private func updateDictionaryForCurrentDay() {
+        print("📝 updateDictionaryForCurrentDay called for day \(day)")
+        scheduledPlacesByDay[day] = scheduledPlaces
+        
+        // Debug the current places in the dictionary
+        if let places = scheduledPlacesByDay[day] {
+            print("�� Dictionary updated for day \(day) with \(places.count) places")
+            
+            for (index, place) in places.enumerated() {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm:ss"
+                let startTimeStr = place.startTime.map { formatter.string(from: $0) } ?? "nil"
+                let endTimeStr = place.endTime.map { formatter.string(from: $0) } ?? "nil"
+                
+                print("�� Place \(index): ID=\(place.placeId ?? "nil"), Start=\(startTimeStr), End=\(endTimeStr)")
+            }
+        } else {
+            print("⚠️ Dictionary entry for day \(day) is nil after update")
+        }
+        
+        checkForTimeOverlaps()
     }
     
     func saveItinerary() async {
@@ -483,13 +538,114 @@ class EditItineraryViewModel: ObservableObject {
             }
         }
     }
+    
+    // Add a public method for updating the dictionary
+    func forceUpdateDictionaryForCurrentDay() {
+        print("🔨 forceUpdateDictionaryForCurrentDay called for day \(day)")
+        
+        // Make a deep copy of the scheduled places
+        let placesCopy = scheduledPlaces.map { place -> ScheduledPlaceInput in
+            let newPlace = ScheduledPlaceInput()
+            newPlace.placeId = place.placeId
+            newPlace.startTime = place.startTime
+            newPlace.endTime = place.endTime
+            newPlace.notes = place.notes
+            
+            // Set up notification callback
+            newPlace.notifyParent = { [weak self] in
+                self?.updateDictionaryForCurrentDay()
+            }
+            
+            return newPlace
+        }
+        
+        scheduledPlacesByDay[day] = placesCopy
+        
+        // Debug output
+        if let storedPlaces = scheduledPlacesByDay[day] {
+            print("🔨 Dictionary updated with \(storedPlaces.count) places for day \(day)")
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm:ss"
+            
+            for (index, place) in storedPlaces.enumerated() {
+                let placeName = availablePlaces.first(where: { $0.id == place.placeId })?.name ?? "Unknown"
+                let startTimeStr = place.startTime.map { formatter.string(from: $0) } ?? "nil"
+                let endTimeStr = place.endTime.map { formatter.string(from: $0) } ?? "nil"
+                
+                print("🔨 Updated place \(index): \(placeName), Start=\(startTimeStr), End=\(endTimeStr)")
+            }
+        } else {
+            print("⚠️ Dictionary entry for day \(day) is still nil after forced update")
+        }
+    }
+    
+    // Add this method to create a preview copy
+    func createPreviewCopy() -> EditItineraryViewModel {
+        let previewModel = EditItineraryViewModel(
+            tripId: self.tripId,
+            day: self.day,
+            numberOfDays: self.numberOfDays,
+            isEditing: self.isEditing
+        )
+        
+        // Mark as preview mode to prevent fetching
+        previewModel.isPreviewMode = true
+        
+        // Copy current state
+        previewModel.scheduledPlaces = self.scheduledPlaces
+        previewModel.scheduledPlacesByDay = self.scheduledPlacesByDay
+        previewModel.availablePlaces = self.availablePlaces
+        previewModel.existingItineraryId = self.existingItineraryId
+        previewModel.allItineraries = self.allItineraries
+        previewModel.touristAttractions = self.touristAttractions
+        previewModel.restaurants = self.restaurants
+        previewModel.lodgings = self.lodgings
+        
+        return previewModel
+    }
 }
 
 // Input model for the form
 class ScheduledPlaceInput: Identifiable, ObservableObject {
     let id = UUID()
-    @Published var placeId: String? = nil
-    @Published var startTime: Date? = nil
-    @Published var endTime: Date? = nil
-    @Published var notes: String? = nil
+    @Published var placeId: String? = nil {
+        didSet {
+            print("🔄 ScheduledPlaceInput: placeId changed to \(String(describing: placeId))")
+            notifyParent?()
+        }
+    }
+    @Published var startTime: Date? = nil {
+        didSet {
+            if let time = startTime {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm:ss"
+                print("🔄 ScheduledPlaceInput: startTime changed to \(formatter.string(from: time))")
+            } else {
+                print("🔄 ScheduledPlaceInput: startTime changed to nil")
+            }
+            notifyParent?()
+        }
+    }
+    @Published var endTime: Date? = nil {
+        didSet {
+            if let time = endTime {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm:ss"
+                print("🔄 ScheduledPlaceInput: endTime changed to \(formatter.string(from: time))")
+            } else {
+                print("🔄 ScheduledPlaceInput: endTime changed to nil")
+            }
+            notifyParent?()
+        }
+    }
+    @Published var notes: String? = nil {
+        didSet {
+            print("🔄 ScheduledPlaceInput: notes changed to \(String(describing: notes))")
+            notifyParent?()
+        }
+    }
+    
+    // Callback to notify parent view model of changes
+    var notifyParent: (() -> Void)? = nil
 } 

@@ -300,19 +300,49 @@ struct TimeOverlapWarningsView: View {
 struct ActionButtonsView: View {
     @ObservedObject var viewModel: EditItineraryViewModel
     let dismiss: DismissAction
+    @State private var showPreview = false
+    @State private var previewViewModel: EditItineraryViewModel? = nil
 
     var body: some View {
         HStack {
-            Button(viewModel.isEditing ? "Update Itinerary" : "Create Itinerary") {
-                Task {
-                    await viewModel.saveItinerary()
-                    if viewModel.isSuccess {
-                        dismiss()
-                    }
-                }
+            Button(viewModel.isEditing ? "Preview Changes" : "Preview Itinerary") {
+                print("🔘 Preview button clicked")
+                
+                // Force update dictionary before creating preview
+                viewModel.forceUpdateDictionaryForCurrentDay()
+                
+                // Create a preview copy
+                previewViewModel = viewModel.createPreviewCopy()
+                
+                // Debug output
+                print("📋 Created preview model with isPreviewMode=\(previewViewModel?.isPreviewMode ?? false)")
+                
+                showPreview = true
             }
             .buttonStyle(PrimaryButtonStyle())
             .disabled(viewModel.isLoading)
+            .sheet(isPresented: $showPreview) {
+                if let previewVM = previewViewModel {
+                    ItineraryPreviewView(
+                        viewModel: previewVM,
+                        onConfirm: {
+                            // Copy data from preview model back to original model before saving
+                            viewModel.scheduledPlaces = previewVM.scheduledPlaces
+                            viewModel.scheduledPlacesByDay = previewVM.scheduledPlacesByDay
+                            
+                            Task {
+                                await viewModel.saveItinerary()
+                                if viewModel.isSuccess {
+                                    dismiss()
+                                }
+                            }
+                        },
+                        onCancel: {
+                            showPreview = false
+                        }
+                    )
+                }
+            }
 
             if viewModel.isLoading {
                 ProgressView()
