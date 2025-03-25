@@ -90,14 +90,14 @@ struct ScheduledPlaceView: View {
                                 content: {
                                     Text(notes)
                                         .font(themeManager.selectedTheme.bodyTextFont)
-                                        .foregroundColor(
-                                            themeManager.selectedTheme.primaryColor)
+                                        .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                 },
                                 label: {
                                     Text("Notes")
                                         .font(themeManager.selectedTheme.bodyTextFont)
                                         .foregroundColor(
-                                            themeManager.selectedTheme.primaryColor)
+                                            themeManager.selectedTheme.secondaryColor)
                                 })
                         }
                     }
