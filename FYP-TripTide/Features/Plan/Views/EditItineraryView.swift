@@ -87,6 +87,10 @@ struct MainContentView: View {
             if !viewModel.timeOverlapWarnings.isEmpty {
                 TimeOverlapWarningsView(warnings: viewModel.timeOverlapWarnings)
             }
+            
+            if !viewModel.invalidTimeRangeWarnings.isEmpty {
+                InvalidTimeRangeWarningsView(warnings: viewModel.invalidTimeRangeWarnings)
+            }
 
             if viewModel.isEditing && viewModel.scheduledPlaces.isEmpty {
                 HStack {
@@ -311,6 +315,30 @@ struct TimeOverlapWarningsView: View {
     }
 }
 
+struct InvalidTimeRangeWarningsView: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+    let warnings: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(warnings, id: \.self) { warning in
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(themeManager.selectedTheme.warningColor)
+                    Text(warning)
+                        .font(themeManager.selectedTheme.captionTextFont)
+                        .foregroundColor(themeManager.selectedTheme.warningColor)
+                }
+                .padding(.horizontal)
+            }
+        }
+        .padding(8)
+        .background(themeManager.selectedTheme.warningColor.opacity(0.1))
+        .cornerRadius(8)
+        .padding(.horizontal)
+    }
+}
+
 struct ActionButtonsView: View {
     @ObservedObject var viewModel: EditItineraryViewModel
     let dismiss: DismissAction
@@ -334,8 +362,8 @@ struct ActionButtonsView: View {
                 showPreview = true
             }
             .buttonStyle(PrimaryButtonStyle())
-            .disabled(viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty)
-            .opacity(!viewModel.timeOverlapWarnings.isEmpty ? 0.7 : 1.0)
+            .disabled(viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty || !viewModel.invalidTimeRangeWarnings.isEmpty)
+            .opacity((!viewModel.timeOverlapWarnings.isEmpty || !viewModel.invalidTimeRangeWarnings.isEmpty) ? 0.7 : 1.0)
             .sheet(isPresented: $showPreview) {
                 if let previewVM = previewViewModel {
                     ItineraryPreviewView(

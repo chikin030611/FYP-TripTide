@@ -81,6 +81,7 @@ class EditItineraryViewModel: ObservableObject {
     
     // Add these properties near the top of the class with other @Published properties
     @Published var timeOverlapWarnings: [String] = []
+    @Published var invalidTimeRangeWarnings: [String] = []
     
     // Add this property near the top with other properties
     @Published var isPreviewMode = false
@@ -312,8 +313,13 @@ class EditItineraryViewModel: ObservableObject {
     func checkForTimeOverlaps() {
         timeOverlapWarnings.removeAll()
         
-        guard scheduledPlaces.count > 1 else { return }
+        guard scheduledPlaces.count > 1 else { 
+            // Even if there's only one place, we should check its time range
+            checkForInvalidTimeRanges()
+            return 
+        }
         
+        // Original overlap checking logic
         for i in 0..<scheduledPlaces.count {
             for j in (i + 1)..<scheduledPlaces.count {
                 let place1 = scheduledPlaces[i]
@@ -335,6 +341,30 @@ class EditItineraryViewModel: ObservableObject {
                     let warning = "Time overlap detected between '\(place1Name)' and '\(place2Name)'"
                     timeOverlapWarnings.append(warning)
                 }
+            }
+        }
+        
+        // Also check for invalid time ranges
+        checkForInvalidTimeRanges()
+    }
+    
+    // Add this method to check for invalid time ranges
+    func checkForInvalidTimeRanges() {
+        invalidTimeRangeWarnings.removeAll()
+        
+        for place in scheduledPlaces {
+            guard let startTime = place.startTime,
+                  let endTime = place.endTime else {
+                continue
+            }
+            
+            // Check if end time is before start time
+            if endTime < startTime {
+                // Get place name for better warning messages
+                let placeName = availablePlaces.first(where: { $0.id == place.placeId })?.name ?? "Unknown Place"
+                
+                let warning = "Invalid time range for '\(placeName)': End time cannot be before start time"
+                invalidTimeRangeWarnings.append(warning)
             }
         }
     }
@@ -366,7 +396,7 @@ class EditItineraryViewModel: ObservableObject {
         // Update our dictionary
         scheduledPlacesByDay[day] = scheduledPlaces
         
-        // Check for time overlaps
+        // Check for time overlaps and invalid time ranges
         checkForTimeOverlaps()
         
         // Hide drop area
@@ -597,6 +627,8 @@ class EditItineraryViewModel: ObservableObject {
         previewModel.touristAttractions = self.touristAttractions
         previewModel.restaurants = self.restaurants
         previewModel.lodgings = self.lodgings
+        previewModel.timeOverlapWarnings = self.timeOverlapWarnings
+        previewModel.invalidTimeRangeWarnings = self.invalidTimeRangeWarnings
         
         return previewModel
     }
