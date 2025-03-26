@@ -44,7 +44,7 @@ struct HomeTabView: View {
                                     .fill(themeManager.selectedTheme.backgroundColor)
                             )
                             .onTapGesture {
-                                tabManager.switchToTab(2)
+                                tabManager.switchToTab(1)
                             }
 
                             Spacer()
@@ -66,7 +66,7 @@ struct HomeTabView: View {
                                     .padding(.bottom, 10)
 
                                 Button(action: {
-                                    tabManager.switchToTab(3)
+                                    tabManager.switchToTab(2)
                                 }) {
                                     Text("Start Planning")
                                         .font(themeManager.selectedTheme.bodyTextFont)

@@ -27,6 +27,10 @@ actor PlaceCache {
         cleanCache()
     }
     
+    func clear() {
+        cache.removeAll()
+    }
+    
     private func cleanCache() {
         let now = Date()
         cache = cache.filter { now.timeIntervalSince($0.value.timestamp) <= cacheTimeout }

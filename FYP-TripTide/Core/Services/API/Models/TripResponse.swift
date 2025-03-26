@@ -10,13 +10,12 @@ struct TripResponse: Codable {
     let touristAttractionIds: [String]
     let restaurantIds: [String]
     let lodgingIds: [String]
-    let dailyItineraries: [DailyItinerary]?
-    let user: UserResponse
+    let dailyItineraries: [DailyItineraryResponse]?
     
     func toTrip() -> Trip {
         Trip(
             id: id,
-            userId: String(user.id),
+            userId: "",
             name: name,
             description: description,
             touristAttractionsIds: touristAttractionIds,
@@ -24,7 +23,85 @@ struct TripResponse: Codable {
             lodgingsIds: lodgingIds,
             startDate: startDate,
             endDate: endDate,
-            image: image
+            image: image,
+            dailyItineraries: dailyItineraries?.map { $0.toDailyItinerary(tripId: id) }
+        )
+    }
+}
+
+// Response model for DailyItinerary
+struct DailyItineraryResponse: Codable {
+    let id: String
+    let day: Int
+    let date: Int64?
+    let scheduledPlaces: [ScheduledPlaceResponse]?
+    
+    func toDailyItinerary(tripId: String) -> DailyItinerary {
+        // Convert milliseconds timestamp to Date if available
+        var actualDate: Date? = nil
+        if let dateMilliseconds = date {
+            actualDate = Date(timeIntervalSince1970: Double(dateMilliseconds) / 1000.0)
+        }
+        
+        return DailyItinerary(
+            id: id,
+            tripId: tripId,
+            dayNumber: day,
+            date: actualDate,
+            places: scheduledPlaces?.map { $0.toScheduledPlace() } ?? []
+        )
+    }
+}
+
+// Response model for ScheduledPlace
+struct ScheduledPlaceResponse: Codable {
+    let id: String
+    let placeId: String
+    let startTime: String
+    let endTime: String
+    let notes: String?
+    let date: Int64?
+    
+    func toScheduledPlace() -> ScheduledPlace {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        
+        // Create base date to combine with time
+        let calendar = Calendar.current
+        let now = Date()
+        let baseDate = calendar.startOfDay(for: now)
+        
+        // Parse time strings to Date objects
+        var startDate: Date? = nil
+        if let timeDate = formatter.date(from: startTime) {
+            startDate = calendar.date(bySettingHour: calendar.component(.hour, from: timeDate),
+                                     minute: calendar.component(.minute, from: timeDate),
+                                     second: calendar.component(.second, from: timeDate),
+                                     of: baseDate)
+        }
+        
+        var endDate: Date? = nil
+        if let timeDate = formatter.date(from: endTime) {
+            endDate = calendar.date(bySettingHour: calendar.component(.hour, from: timeDate),
+                                   minute: calendar.component(.minute, from: timeDate),
+                                   second: calendar.component(.second, from: timeDate),
+                                   of: baseDate)
+        }
+        
+        // Convert milliseconds timestamp to Date if available
+        var actualDate: Date? = nil
+        if let dateMilliseconds = date {
+            actualDate = Date(timeIntervalSince1970: Double(dateMilliseconds) / 1000.0)
+        }
+        
+        return ScheduledPlace(
+            id: id,
+            placeId: placeId,
+            startTime: startDate,
+            endTime: endDate,
+            notes: notes,
+            date: actualDate,
+            photoUrl: nil
         )
     }
 }

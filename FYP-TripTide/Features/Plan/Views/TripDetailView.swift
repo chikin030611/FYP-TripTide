@@ -12,6 +12,7 @@ struct TripDetailView: View {
     @Binding var navigationPath: NavigationPath
     @Environment(\.presentationMode) private var presentationMode
     @State private var showingEditSheet = false
+    @State private var showingItineraryView = false
     
     // Track if view has already appeared to prevent multiple data fetches
     @State private var hasAppeared = false
@@ -250,7 +251,7 @@ struct TripDetailView: View {
                     Spacer()
 
                     Button(action: {
-                        print("Plan your itinerary")
+                        showingItineraryView = true
                     }) {
                         Text("Plan your itinerary")
                     }
@@ -286,6 +287,21 @@ struct TripDetailView: View {
                         }
                     }
                 )
+            }
+        }
+        .sheet(isPresented: $showingItineraryView, onDismiss: {
+            // Refresh trip data when sheet is dismissed
+            Task {
+                try await viewModel.fetchTrip()
+                try await viewModel.fetchPlaces()
+            }
+        }) {
+            NavigationStack {
+                ItineraryView(
+                    numberOfDays: viewModel.trip.numOfDays, 
+                    tripId: viewModel.trip.id
+                )
+                .interactiveDismissDisabled(true)
             }
         }
     }

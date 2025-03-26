@@ -39,7 +39,8 @@ struct Trip: Identifiable {
         lodgingsIds: [String] = [],
         startDate: Date,
         endDate: Date,
-        image: String? = nil) {
+        image: String? = nil,
+        dailyItineraries: [DailyItinerary]? = nil) {
         
         self.id = id
         self.userId = userId
@@ -51,7 +52,7 @@ struct Trip: Identifiable {
         self.startDate = startDate
         self.endDate = endDate
         self.image = image ?? Trip.defaultImages.randomElement() ?? Trip.defaultImages[0]
-        self.dailyItineraries = []
+        self.dailyItineraries = dailyItineraries
     }
 }
 
