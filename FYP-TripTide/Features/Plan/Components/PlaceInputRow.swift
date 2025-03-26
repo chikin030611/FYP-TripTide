@@ -91,6 +91,9 @@ struct PlaceInputRow: View {
                                                 print("⏰ Current start time is nil")
                                             }
                                             
+                                            // Save state before changing time
+                                            viewModel.saveStateBeforeEdit()
+                                            
                                             placeInput.startTime = newTime
                                             
                                             print("⏰ After update, placeInput.startTime = \(placeInput.startTime.map { formatter.string(from: $0) } ?? "nil")")
@@ -137,6 +140,9 @@ struct PlaceInputRow: View {
                                                 print("⏰ Current end time is nil")
                                             }
                                             
+                                            // Save state before changing time
+                                            viewModel.saveStateBeforeEdit()
+                                            
                                             placeInput.endTime = newTime
                                             
                                             print("⏰ After update, placeInput.endTime = \(placeInput.endTime.map { formatter.string(from: $0) } ?? "nil")")
@@ -160,7 +166,11 @@ struct PlaceInputRow: View {
                                 "Optional notes",
                                 text: Binding(
                                     get: { placeInput.notes ?? "" },
-                                    set: { placeInput.notes = $0 }
+                                    set: { 
+                                        // Save state before changing notes
+                                        viewModel.saveStateBeforeEdit()
+                                        placeInput.notes = $0 
+                                    }
                                 )
                             )
                             .padding()

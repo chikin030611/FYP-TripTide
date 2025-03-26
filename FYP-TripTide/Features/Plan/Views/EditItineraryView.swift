@@ -69,8 +69,21 @@ struct MainContentView: View {
                             RoundedRectangle(cornerRadius: 25)
                                 .stroke(themeManager.selectedTheme.primaryColor, lineWidth: 1)
                         )
-                    
+
                     Spacer()
+
+                    // Add undo button
+                    if viewModel.canUndo {
+                        Button {
+                            viewModel.undo()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.uturn.backward")
+                                Text("Undo")
+                            }
+                        }
+                        .buttonStyle(SecondaryTagButtonStyle())
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -105,7 +118,7 @@ struct MainContentView: View {
             if !viewModel.timeOverlapWarnings.isEmpty {
                 TimeOverlapWarningsView(warnings: viewModel.timeOverlapWarnings)
             }
-            
+
             if !viewModel.invalidTimeRangeWarnings.isEmpty {
                 InvalidTimeRangeWarningsView(warnings: viewModel.invalidTimeRangeWarnings)
             }
@@ -366,21 +379,29 @@ struct ActionButtonsView: View {
         HStack {
             Button(viewModel.isEditing ? "Preview Changes" : "Preview Itinerary") {
                 print("🔘 Preview button clicked")
-                
+
                 // Force update dictionary before creating preview
                 viewModel.forceUpdateDictionaryForCurrentDay()
-                
+
                 // Create a preview copy
                 previewViewModel = viewModel.createPreviewCopy()
-                
+
                 // Debug output
-                print("📋 Created preview model with isPreviewMode=\(previewViewModel?.isPreviewMode ?? false)")
-                
+                print(
+                    "📋 Created preview model with isPreviewMode=\(previewViewModel?.isPreviewMode ?? false)"
+                )
+
                 showPreview = true
             }
             .buttonStyle(PrimaryButtonStyle())
-            .disabled(viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty || !viewModel.invalidTimeRangeWarnings.isEmpty)
-            .opacity((!viewModel.timeOverlapWarnings.isEmpty || !viewModel.invalidTimeRangeWarnings.isEmpty) ? 0.7 : 1.0)
+            .disabled(
+                viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty
+                    || !viewModel.invalidTimeRangeWarnings.isEmpty
+            )
+            .opacity(
+                (!viewModel.timeOverlapWarnings.isEmpty
+                    || !viewModel.invalidTimeRangeWarnings.isEmpty) ? 0.7 : 1.0
+            )
             .sheet(isPresented: $showPreview) {
                 if let previewVM = previewViewModel {
                     ItineraryPreviewView(
@@ -389,18 +410,20 @@ struct ActionButtonsView: View {
                             // Copy data from preview model back to original model before saving
                             viewModel.scheduledPlaces = previewVM.scheduledPlaces
                             viewModel.scheduledPlacesByDay = previewVM.scheduledPlacesByDay
-                            
+
                             // IMPORTANT: Make sure we're saving to the current day, not the original day
                             // This is the key fix - ensure the day value is properly transferred
                             viewModel.day = previewVM.day
-                            
+
                             // Update existingItineraryId to match the current day
-                            if let itinerary = viewModel.allItineraries.first(where: { $0.dayNumber == viewModel.day }) {
+                            if let itinerary = viewModel.allItineraries.first(where: {
+                                $0.dayNumber == viewModel.day
+                            }) {
                                 viewModel.existingItineraryId = itinerary.id
                             } else {
                                 viewModel.existingItineraryId = nil
                             }
-                            
+
                             Task {
                                 await viewModel.saveItinerary()
                                 if viewModel.isSuccess {
