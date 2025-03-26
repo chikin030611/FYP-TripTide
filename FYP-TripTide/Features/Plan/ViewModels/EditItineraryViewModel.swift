@@ -86,12 +86,41 @@ class EditItineraryViewModel: ObservableObject {
     // Add this property near the top with other properties
     @Published var isPreviewMode = false
     
+    // Add a computed property to get the date for the selected day
+    var selectedDate: Date? {
+        // Find the itinerary for the current day to get its date
+        if let itinerary = allItineraries.first(where: { $0.dayNumber == day }) {
+            return itinerary.date
+        }
+        
+        // If no itinerary exists yet but we have a cached trip, calculate date from trip start date
+        if let trip = cachedTrip {
+            let calendar = Calendar.current
+            return calendar.date(byAdding: .day, value: day - 1, to: trip.startDate)
+        }
+        
+        return nil
+    }
+    
+    // Add a property to store the cached trip
+    private var cachedTrip: Trip? = nil
+    
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
         self.numberOfDays = numberOfDays
         // We'll still initialize _isEditing, but it will be overridden as needed
         self._isEditing = isEditing
+        
+        // Load the trip to get its start date
+        Task {
+            do {
+                let tripsManager = TripsManager.shared
+                self.cachedTrip = try await tripsManager.fetchTrip(id: tripId)
+            } catch {
+                print("Error loading trip: \(error.localizedDescription)")
+            }
+        }
         
         // Start loading places immediately using tracked tasks
         loadPlacesTask = Task { 

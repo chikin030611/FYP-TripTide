@@ -48,7 +48,7 @@ struct MainContentView: View {
     @State private var isExpanded = false
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 12) {
             DayButtonsView(
                 numberOfDays: viewModel.numberOfDays,
                 selectedDayIndex: viewModel.day - 1,
@@ -56,6 +56,24 @@ struct MainContentView: View {
                     viewModel.day = index + 1
                 }
             )
+
+            // Display the date for the selected day
+            if let date = viewModel.selectedDate {
+                HStack {
+                    Text(date.formatted(date: .long, time: .omitted))
+                        .font(themeManager.selectedTheme.titleFont)
+                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(themeManager.selectedTheme.primaryColor, lineWidth: 1)
+                        )
+                    
+                    Spacer()
+                }
+                .padding(.horizontal)
+            }
 
             DisclosureGroup(
                 isExpanded: $isExpanded,
@@ -127,7 +145,6 @@ struct MainContentView: View {
         }) {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
-                // Text("Back")
             }
             .foregroundColor(themeManager.selectedTheme.primaryColor)
         }
