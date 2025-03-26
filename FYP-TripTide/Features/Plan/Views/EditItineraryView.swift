@@ -3,20 +3,21 @@ import UniformTypeIdentifiers
 
 struct EditItineraryView: View {
     @EnvironmentObject private var themeManager: ThemeManager
-    @ObservedObject var viewModel: EditItineraryViewModel
+    @StateObject private var viewModel: EditItineraryViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTab: Int = 0
     @State private var isDraggingCards = false
 
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
+        print("⚠️ EditItineraryView init - tripId: \(tripId), day: \(day)")
         let vm = EditItineraryViewModel(
             tripId: tripId,
             day: day,
             numberOfDays: numberOfDays,
             isEditing: isEditing
         )
-        self._viewModel = ObservedObject(wrappedValue: vm)
+        _viewModel = StateObject(wrappedValue: vm)
     }
 
     var body: some View {
@@ -27,9 +28,13 @@ struct EditItineraryView: View {
             dismiss: dismiss
         )
         .onAppear {
+            print("⚠️ EditItineraryView onAppear")
             Task {
                 await viewModel.loadAvailablePlaces()
             }
+        }
+        .onDisappear {
+            print("⚠️ EditItineraryView onDisappear")
         }
         .background(themeManager.selectedTheme.appBackgroundColor)
         .tint(themeManager.selectedTheme.accentColor)

@@ -2,10 +2,16 @@ import SwiftUI
 
 struct OpenHoursSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject var themeManager = ThemeManager()
+    @EnvironmentObject private var themeManager: ThemeManager
     
     let openHours: [OpenHour]
     private let weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    
+    // Add init for debugging
+    init(openHours: [OpenHour]) {
+        print("🕒 OpenHoursSheet init - \(openHours.count) hours")
+        self.openHours = openHours
+    }
     
     private var todayWeekdayIndex: Int {
         let today = Date()
@@ -57,6 +63,12 @@ struct OpenHoursSheet: View {
             .listStyle(.plain)
             .navigationTitle("Opening Hours")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                print("🕒 OpenHoursSheet appeared")
+            }
+            .onDisappear {
+                print("🕒 OpenHoursSheet disappeared")
+            }
         }
         .presentationDetents([.height(380)])
     }

@@ -177,4 +177,13 @@ class PlacesService {
         // Decode the array directly
         return try JSONDecoder().decode([PlaceBasicData].self, from: data)
     }
+    
+    func fetchPlaceOpeningHours(id: String) async throws -> PlaceDetailResponse.OpeningHours {
+        guard let url = URL(string: "\(APIConfig.baseURL)/places/\(id)/opening-hours") else {
+            throw APIError.invalidURL
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(PlaceDetailResponse.OpeningHours.self, from: data)
+    }
 }
