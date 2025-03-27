@@ -17,7 +17,7 @@ class SearchTabViewModel: ObservableObject {
     
     let highlyRatedSection = (
         icon: "sparkles",
-        title: NSLocalizedString("Highly Rated Attractions", comment: "Title of the For You section")
+        title: NSLocalizedString("Tourist Attraction", comment: "Title of the tourist attraction section")
     )
     
     let restaurantSection = (
