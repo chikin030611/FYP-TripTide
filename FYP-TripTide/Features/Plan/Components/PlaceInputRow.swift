@@ -5,10 +5,10 @@ struct OpeningHoursSheetWrapper: View {
     @EnvironmentObject private var themeManager: ThemeManager
     let placeId: String
     @Binding var isPresented: Bool
-
+    
     @State private var openingHours: [OpenHour] = []
     @State private var isLoading = true
-
+    
     var body: some View {
         Group {
             if isLoading {
@@ -25,7 +25,7 @@ struct OpeningHoursSheetWrapper: View {
                     print("📊 Fetching hours from API for placeId: \(placeId)")
                     let hours = try await PlacesService.shared.fetchPlaceOpeningHours(id: placeId)
                     let openHours = [OpenHour].from(hours)
-
+                    
                     await MainActor.run {
                         print("📊 Hours loaded successfully: \(openHours.count) entries")
                         self.openingHours = openHours
@@ -49,10 +49,10 @@ struct PlaceInputRow: View {
     let onRemove: () -> Void
     @EnvironmentObject private var themeManager: ThemeManager
     @ObservedObject var viewModel: EditItineraryViewModel
-
+    
     // Simplify state - just track if sheet is shown
     @State private var showOpeningHours = false
-
+    
     // Compute selected place from placeInput.placeId
     private var selectedPlace: Place? {
         guard let placeId = placeInput.placeId else { return nil }
@@ -82,42 +82,35 @@ struct PlaceInputRow: View {
                         .padding(.vertical, 4)
 
                     VStack(alignment: .leading, spacing: 2) {
+                        // Type
+                        ZStack {
+                            Text(place.type.formatTagName())
+                                .font(themeManager.selectedTheme.captionTextFont)
+                                .foregroundColor(themeManager.selectedTheme.bgTextColor)
+                        }
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(themeManager.selectedTheme.accentColor)
+                        )
 
                         // Name and Opening Hours Info Button
                         HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                // Type
-                                ZStack {
-                                    Text(place.type.formatTagName())
-                                        .font(themeManager.selectedTheme.captionTextFont)
-                                        .foregroundColor(themeManager.selectedTheme.bgTextColor)
-                                }
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 2)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(themeManager.selectedTheme.accentColor)
-                                )
-
-                                Text(place.name)
-                                    .font(themeManager.selectedTheme.boldBodyTextFont)
-                                    .foregroundColor(themeManager.selectedTheme.primaryColor)
-                                    .lineLimit(2)
-                                    .multilineTextAlignment(.leading)
-                            }
-
-                            Spacer()
-
+                            Text(place.name)
+                                .font(themeManager.selectedTheme.boldBodyTextFont)
+                                .foregroundColor(themeManager.selectedTheme.primaryColor)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                            
                             // Simplified button action
                             Button(action: {
                                 print("ℹ️ Info button tapped for place: \(place.id)")
                                 showOpeningHours = true
                             }) {
-                                Image(systemName: "clock")
-                                    .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                                    .font(themeManager.selectedTheme.titleFont)
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(themeManager.selectedTheme.accentColor)
                             }
-                            
                         }
 
                         // Times
@@ -130,14 +123,13 @@ struct PlaceInputRow: View {
                                 DatePicker(
                                     "",
                                     selection: Binding(
-                                        get: {
+                                        get: { 
                                             if let time = placeInput.startTime {
                                                 return time
                                             } else {
                                                 // Default to 9:00 AM when first creating
                                                 let calendar = Calendar.current
-                                                var components = calendar.dateComponents(
-                                                    [.year, .month, .day], from: Date())
+                                                var components = calendar.dateComponents([.year, .month, .day], from: Date())
                                                 components.hour = 9
                                                 components.minute = 0
                                                 return calendar.date(from: components) ?? Date()
@@ -146,28 +138,22 @@ struct PlaceInputRow: View {
                                         set: { newTime in
                                             let formatter = DateFormatter()
                                             formatter.dateFormat = "HH:mm:ss"
-                                            print(
-                                                "⏰ Start time picker changed to \(formatter.string(from: newTime))"
-                                            )
-
+                                            print("⏰ Start time picker changed to \(formatter.string(from: newTime))")
+                                            
                                             // Debug the current time before update
                                             if let currentTime = placeInput.startTime {
-                                                print(
-                                                    "⏰ Current start time is \(formatter.string(from: currentTime))"
-                                                )
+                                                print("⏰ Current start time is \(formatter.string(from: currentTime))")
                                             } else {
                                                 print("⏰ Current start time is nil")
                                             }
-
+                                            
                                             // Save state before changing time
                                             viewModel.saveStateBeforeEdit()
-
+                                            
                                             placeInput.startTime = newTime
-
-                                            print(
-                                                "⏰ After update, placeInput.startTime = \(placeInput.startTime.map { formatter.string(from: $0) } ?? "nil")"
-                                            )
-
+                                            
+                                            print("⏰ After update, placeInput.startTime = \(placeInput.startTime.map { formatter.string(from: $0) } ?? "nil")")
+                                            
                                             // Check for overlaps after updating the time
                                             viewModel.checkForTimeOverlaps()
                                         }
@@ -192,39 +178,31 @@ struct PlaceInputRow: View {
                                             } else {
                                                 // Default to 11:00 AM (2 hours after start)
                                                 let calendar = Calendar.current
-                                                var components = calendar.dateComponents(
-                                                    [.year, .month, .day], from: Date())
+                                                var components = calendar.dateComponents([.year, .month, .day], from: Date())
                                                 components.hour = 11
                                                 components.minute = 0
-                                                return calendar.date(from: components)
-                                                    ?? Date().addingTimeInterval(3600)
+                                                return calendar.date(from: components) ?? Date().addingTimeInterval(3600)
                                             }
                                         },
                                         set: { newTime in
                                             let formatter = DateFormatter()
                                             formatter.dateFormat = "HH:mm:ss"
-                                            print(
-                                                "⏰ End time picker changed to \(formatter.string(from: newTime))"
-                                            )
-
+                                            print("⏰ End time picker changed to \(formatter.string(from: newTime))")
+                                            
                                             // Debug the current time before update
                                             if let currentTime = placeInput.endTime {
-                                                print(
-                                                    "⏰ Current end time is \(formatter.string(from: currentTime))"
-                                                )
+                                                print("⏰ Current end time is \(formatter.string(from: currentTime))")
                                             } else {
                                                 print("⏰ Current end time is nil")
                                             }
-
+                                            
                                             // Save state before changing time
                                             viewModel.saveStateBeforeEdit()
-
+                                            
                                             placeInput.endTime = newTime
-
-                                            print(
-                                                "⏰ After update, placeInput.endTime = \(placeInput.endTime.map { formatter.string(from: $0) } ?? "nil")"
-                                            )
-
+                                            
+                                            print("⏰ After update, placeInput.endTime = \(placeInput.endTime.map { formatter.string(from: $0) } ?? "nil")")
+                                            
                                             // Check for overlaps after updating the time
                                             viewModel.checkForTimeOverlaps()
                                         }
@@ -244,10 +222,10 @@ struct PlaceInputRow: View {
                                 "Optional notes",
                                 text: Binding(
                                     get: { placeInput.notes ?? "" },
-                                    set: {
+                                    set: { 
                                         // Save state before changing notes
                                         viewModel.saveStateBeforeEdit()
-                                        placeInput.notes = $0
+                                        placeInput.notes = $0 
                                     }
                                 )
                             )
