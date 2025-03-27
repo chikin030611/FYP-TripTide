@@ -20,7 +20,18 @@ class HomeViewModel: ObservableObject {
     }
     
     func checkAuthAndFetchRecommendations() async {
-        await fetchRecommendations()
+        await checkAuth()
+        if isUserLoggedIn {
+            await fetchRecommendations()
+        }
+    }
+
+    func checkAuth() async {
+        if authManager.isAuthenticated {
+            isUserLoggedIn = true
+        } else {
+            isUserLoggedIn = false
+        }
     }
     
     func fetchRecommendations() async {

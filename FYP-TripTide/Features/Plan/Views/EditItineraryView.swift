@@ -3,20 +3,21 @@ import UniformTypeIdentifiers
 
 struct EditItineraryView: View {
     @EnvironmentObject private var themeManager: ThemeManager
-    @ObservedObject var viewModel: EditItineraryViewModel
+    @StateObject private var viewModel: EditItineraryViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTab: Int = 0
     @State private var isDraggingCards = false
 
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
+        print("⚠️ EditItineraryView init - tripId: \(tripId), day: \(day)")
         let vm = EditItineraryViewModel(
             tripId: tripId,
             day: day,
             numberOfDays: numberOfDays,
             isEditing: isEditing
         )
-        self._viewModel = ObservedObject(wrappedValue: vm)
+        _viewModel = StateObject(wrappedValue: vm)
     }
 
     var body: some View {
@@ -27,9 +28,13 @@ struct EditItineraryView: View {
             dismiss: dismiss
         )
         .onAppear {
+            print("⚠️ EditItineraryView onAppear")
             Task {
                 await viewModel.loadAvailablePlaces()
             }
+        }
+        .onDisappear {
+            print("⚠️ EditItineraryView onDisappear")
         }
         .background(themeManager.selectedTheme.appBackgroundColor)
         .tint(themeManager.selectedTheme.accentColor)
@@ -48,7 +53,7 @@ struct MainContentView: View {
     @State private var isExpanded = false
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 12) {
             DayButtonsView(
                 numberOfDays: viewModel.numberOfDays,
                 selectedDayIndex: viewModel.day - 1,
@@ -56,6 +61,37 @@ struct MainContentView: View {
                     viewModel.day = index + 1
                 }
             )
+
+            // Display the date for the selected day
+            if let date = viewModel.selectedDate {
+                HStack {
+                    Text(date.formatted(date: .long, time: .omitted))
+                        .font(themeManager.selectedTheme.titleFont)
+                        .foregroundColor(themeManager.selectedTheme.primaryColor)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(themeManager.selectedTheme.primaryColor, lineWidth: 1)
+                        )
+
+                    Spacer()
+
+                    // Add undo button
+                    if viewModel.canUndo {
+                        Button {
+                            viewModel.undo()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.uturn.backward")
+                                Text("Undo")
+                            }
+                        }
+                        .buttonStyle(SecondaryTagButtonStyle())
+                    }
+                }
+                .padding(.horizontal)
+            }
 
             DisclosureGroup(
                 isExpanded: $isExpanded,
@@ -87,7 +123,7 @@ struct MainContentView: View {
             if !viewModel.timeOverlapWarnings.isEmpty {
                 TimeOverlapWarningsView(warnings: viewModel.timeOverlapWarnings)
             }
-            
+
             if !viewModel.invalidTimeRangeWarnings.isEmpty {
                 InvalidTimeRangeWarningsView(warnings: viewModel.invalidTimeRangeWarnings)
             }
@@ -127,7 +163,6 @@ struct MainContentView: View {
         }) {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
-                // Text("Back")
             }
             .foregroundColor(themeManager.selectedTheme.primaryColor)
         }
@@ -349,21 +384,29 @@ struct ActionButtonsView: View {
         HStack {
             Button(viewModel.isEditing ? "Preview Changes" : "Preview Itinerary") {
                 print("🔘 Preview button clicked")
-                
+
                 // Force update dictionary before creating preview
                 viewModel.forceUpdateDictionaryForCurrentDay()
-                
+
                 // Create a preview copy
                 previewViewModel = viewModel.createPreviewCopy()
-                
+
                 // Debug output
-                print("📋 Created preview model with isPreviewMode=\(previewViewModel?.isPreviewMode ?? false)")
-                
+                print(
+                    "📋 Created preview model with isPreviewMode=\(previewViewModel?.isPreviewMode ?? false)"
+                )
+
                 showPreview = true
             }
             .buttonStyle(PrimaryButtonStyle())
-            .disabled(viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty || !viewModel.invalidTimeRangeWarnings.isEmpty)
-            .opacity((!viewModel.timeOverlapWarnings.isEmpty || !viewModel.invalidTimeRangeWarnings.isEmpty) ? 0.7 : 1.0)
+            .disabled(
+                viewModel.isLoading || !viewModel.timeOverlapWarnings.isEmpty
+                    || !viewModel.invalidTimeRangeWarnings.isEmpty
+            )
+            .opacity(
+                (!viewModel.timeOverlapWarnings.isEmpty
+                    || !viewModel.invalidTimeRangeWarnings.isEmpty) ? 0.7 : 1.0
+            )
             .sheet(isPresented: $showPreview) {
                 if let previewVM = previewViewModel {
                     ItineraryPreviewView(
@@ -372,18 +415,20 @@ struct ActionButtonsView: View {
                             // Copy data from preview model back to original model before saving
                             viewModel.scheduledPlaces = previewVM.scheduledPlaces
                             viewModel.scheduledPlacesByDay = previewVM.scheduledPlacesByDay
-                            
+
                             // IMPORTANT: Make sure we're saving to the current day, not the original day
                             // This is the key fix - ensure the day value is properly transferred
                             viewModel.day = previewVM.day
-                            
+
                             // Update existingItineraryId to match the current day
-                            if let itinerary = viewModel.allItineraries.first(where: { $0.dayNumber == viewModel.day }) {
+                            if let itinerary = viewModel.allItineraries.first(where: {
+                                $0.dayNumber == viewModel.day
+                            }) {
                                 viewModel.existingItineraryId = itinerary.id
                             } else {
                                 viewModel.existingItineraryId = nil
                             }
-                            
+
                             Task {
                                 await viewModel.saveItinerary()
                                 if viewModel.isSuccess {

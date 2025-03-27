@@ -86,12 +86,45 @@ class EditItineraryViewModel: ObservableObject {
     // Add this property near the top with other properties
     @Published var isPreviewMode = false
     
+    // Add state tracking for undo functionality
+    private var undoStack: [[ScheduledPlaceInput]] = []
+    @Published var canUndo: Bool = false
+    
+    // Add a computed property to get the date for the selected day
+    var selectedDate: Date? {
+        // Find the itinerary for the current day to get its date
+        if let itinerary = allItineraries.first(where: { $0.dayNumber == day }) {
+            return itinerary.date
+        }
+        
+        // If no itinerary exists yet but we have a cached trip, calculate date from trip start date
+        if let trip = cachedTrip {
+            let calendar = Calendar.current
+            return calendar.date(byAdding: .day, value: day - 1, to: trip.startDate)
+        }
+        
+        return nil
+    }
+    
+    // Add a property to store the cached trip
+    private var cachedTrip: Trip? = nil
+    
     init(tripId: String, day: Int, numberOfDays: Int, isEditing: Bool = false) {
         self.tripId = tripId
         self.day = day
         self.numberOfDays = numberOfDays
         // We'll still initialize _isEditing, but it will be overridden as needed
         self._isEditing = isEditing
+        
+        // Load the trip to get its start date
+        Task {
+            do {
+                let tripsManager = TripsManager.shared
+                self.cachedTrip = try await tripsManager.fetchTrip(id: tripId)
+            } catch {
+                print("Error loading trip: \(error.localizedDescription)")
+            }
+        }
         
         // Start loading places immediately using tracked tasks
         loadPlacesTask = Task { 
@@ -293,6 +326,10 @@ class EditItineraryViewModel: ObservableObject {
     
     func removePlaceAt(index: Int) {
         guard index < scheduledPlaces.count else { return }
+        
+        // Save current state to undo stack
+        saveStateForUndo()
+        
         scheduledPlaces.remove(at: index)
         
         // Update our dictionary
@@ -303,9 +340,6 @@ class EditItineraryViewModel: ObservableObject {
 
         if scheduledPlaces.isEmpty {
             showDropArea = true
-            
-            // Remove the automatic deletion when all places are removed
-            // We'll let the confirmation flow handle this now
         }
     }
     
@@ -369,8 +403,11 @@ class EditItineraryViewModel: ObservableObject {
         }
     }
     
-    // Modify the addPlaceWithId method to check for overlaps after adding a place
+    // Modify the addPlaceWithId method to save state before adding a place
     func addPlaceWithId(_ placeId: String) {
+        // Save current state to undo stack
+        saveStateForUndo()
+        
         let newPlace = ScheduledPlaceInput()
         newPlace.placeId = placeId
         
@@ -631,6 +668,59 @@ class EditItineraryViewModel: ObservableObject {
         previewModel.invalidTimeRangeWarnings = self.invalidTimeRangeWarnings
         
         return previewModel
+    }
+    
+    // Add these methods for undo functionality
+    private func saveStateForUndo() {
+        // Create deep copy of current scheduled places
+        let copy = scheduledPlaces.map { place -> ScheduledPlaceInput in
+            let newPlace = ScheduledPlaceInput()
+            newPlace.placeId = place.placeId
+            newPlace.startTime = place.startTime
+            newPlace.endTime = place.endTime
+            newPlace.notes = place.notes
+            
+            // Set up notification callback
+            newPlace.notifyParent = { [weak self] in
+                self?.updateDictionaryForCurrentDay()
+            }
+            
+            return newPlace
+        }
+        
+        // Add current state to undo stack
+        undoStack.append(copy)
+        canUndo = true
+        
+        // Limit undo stack size
+        if undoStack.count > 10 {
+            undoStack.removeFirst()
+        }
+    }
+    
+    // Public method for components to save state before edits
+    func saveStateBeforeEdit() {
+        saveStateForUndo()
+    }
+    
+    func undo() {
+        guard !undoStack.isEmpty else { return }
+        
+        // Get previous state
+        let previousState = undoStack.removeLast()
+        
+        // Update UI
+        scheduledPlaces = previousState
+        scheduledPlacesByDay[day] = previousState
+        
+        // Update undo button state
+        canUndo = !undoStack.isEmpty
+        
+        // Check for overlaps
+        checkForTimeOverlaps()
+        
+        // Update drop area visibility
+        showDropArea = scheduledPlaces.isEmpty
     }
 }
 

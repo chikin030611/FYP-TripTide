@@ -101,16 +101,22 @@ struct HomeTabView: View {
                                             .font(themeManager.selectedTheme.titleFont)
                                             .foregroundColor(themeManager.selectedTheme.primaryColor)
                                         Spacer()
-                                        Text("View All")
-                                            .font(themeManager.selectedTheme.bodyTextFont)
-                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
-                                            .underline()
+                                        // Text("View All")
+                                        //     .font(themeManager.selectedTheme.bodyTextFont)
+                                        //     .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                        //     .underline()
                                     }
                                     .padding(.bottom)
                                     .padding(.top, 20)
 
-                                    CardGroup(cards: viewModel.cards, style: .wide)
-                                        .padding(.horizontal, -10)
+                                    if viewModel.isUserLoggedIn {
+                                        CardGroup(cards: viewModel.cards, style: .wide)
+                                            .padding(.horizontal, -10)
+                                    } else {
+                                        Text("Please log in to view your recommended places")
+                                            .font(themeManager.selectedTheme.bodyTextFont)
+                                            .foregroundColor(themeManager.selectedTheme.secondaryColor)
+                                    }
 
                                     // HStack {
                                     //     Text("Popular Destinations")
