@@ -11,6 +11,7 @@ class AuthManager: ObservableObject {
     private let refreshTokenKey = "refresh_token"
     
     @Published private(set) var isAuthenticated = false
+    private var authCheckComplete = false
     
     private init() {
         keychain = KeychainSwift()
@@ -19,6 +20,20 @@ class AuthManager: ObservableObject {
         // Check if token exists and validate it
         Task {
             await validateToken()
+            authCheckComplete = true
+        }
+    }
+    
+    // Add a method to wait for auth check completion
+    func waitForAuthReady() async {
+        // If auth check is already complete, return immediately
+        if authCheckComplete {
+            return
+        }
+        
+        // Otherwise wait for auth check to complete
+        while !authCheckComplete {
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
         }
     }
     

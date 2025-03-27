@@ -27,6 +27,9 @@ class HomeViewModel: ObservableObject {
     }
 
     func checkAuth() async {
+        // Wait for auth manager to complete its initial check
+        await authManager.waitForAuthReady()
+        
         if authManager.isAuthenticated {
             isUserLoggedIn = true
         } else {
