@@ -1,29 +1,5 @@
 import Foundation
 
-// Add cache for basic place data
-actor PlaceBasicCache {
-    static let shared = PlaceBasicCache()
-    
-    private var cache: [String: (data: PlaceBasicData, timestamp: Date)] = [:]
-    private let cacheDuration: TimeInterval = 3600 // 1 hour
-    
-    func get(_ id: String) -> PlaceBasicData? {
-        guard let cached = cache[id],
-              Date().timeIntervalSince(cached.timestamp) < cacheDuration else {
-            return nil
-        }
-        return cached.data
-    }
-    
-    func set(_ data: PlaceBasicData, for id: String) {
-        cache[id] = (data: data, timestamp: Date())
-    }
-    
-    func clear() {
-        cache.removeAll()
-    }
-}
-
 class PlacesService {
     static let shared = PlacesService()
     

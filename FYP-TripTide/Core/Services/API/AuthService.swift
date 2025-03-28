@@ -29,117 +29,71 @@ class AuthService {
     
     private init() {}
     
-    func login(email: String, password: String) async throws -> AuthResponse {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/login")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    // Add generic perform method to handle API requests
+    private func perform<T: Codable>(_ endpoint: String, method: String = "GET", requiresAuth: Bool = false, body: Data? = nil) async throws -> T {
+        var urlRequest = URLRequest(url: URL(string: "\(APIConfig.baseURL)\(endpoint)")!)
+        urlRequest.httpMethod = method
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let body = LoginRequest(email: email, password: password)
-        request.httpBody = try? JSONEncoder().encode(body)
+        if requiresAuth {
+            guard let token = await AuthManager.shared.token else {
+                throw AuthError.invalidCredentials
+            }
+            urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        if let body = body {
+            urlRequest.httpBody = body
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw AuthError.networkError
         }
         
-        let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-        
-        switch httpResponse.statusCode {
-        case 200:
-            if let token = authResponse.token {
-                AuthManager.shared.token = token
-                AuthManager.shared.refreshToken = authResponse.refreshToken
-                return authResponse
-            } else {
-                throw AuthError.invalidResponse
-            }
-        case 401:
-            throw AuthError.invalidCredentials
-        case 400:
-            if let errors = authResponse.errors {
-                throw AuthError.validationError(errors)
-            } else {
-                throw AuthError.serverError(authResponse.message ?? "Bad request")
-            }
-        default:
-            throw AuthError.serverError(authResponse.message ?? "Server error")
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw AuthError.serverError("Server returned status code \(httpResponse.statusCode)")
         }
+        
+        return try JSONDecoder().decode(T.self, from: data)
     }
     
-    func validateToken(token: String) async throws -> AuthResponse {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/validate")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        let (data, _) = try await URLSession.shared.data(for: request)
-        return try JSONDecoder().decode(AuthResponse.self, from: data)
-    }
-    
-    func refreshToken(refreshToken: String) async throws -> AuthResponse {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/refresh")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(refreshToken)", forHTTPHeaderField: "Authorization")
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AuthError.networkError
-        }
-        
-        let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-        
-        if httpResponse.statusCode == 200 {
-            if let token = authResponse.token {
-                AuthManager.shared.token = token
-                return authResponse
-            }
-        }
-        
-        throw AuthError.serverError(authResponse.message ?? "Failed to refresh token")
-    }
-    
-    func register(username: String, email: String, password: String) async throws -> AuthResponse {
-        let url = URL(string: "\(APIConfig.baseURL)/auth/register")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body = RegistrationRequest(username: username, email: email, password: password)
-        request.httpBody = try? JSONEncoder().encode(body)
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AuthError.networkError
-        }
-        
-        let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-        
-        switch httpResponse.statusCode {
-        case 200:
-            return authResponse
-        case 400:
-            if let errors = authResponse.errors {
-                throw AuthError.validationError(errors)
-            } else {
-                throw AuthError.serverError(authResponse.message ?? "Registration failed")
-            }
-        default:
-            throw AuthError.serverError(authResponse.message ?? "Server error")
-        }
-    }
-    
+    // Update getUserProfile to use the new perform method
     func getUserProfile() async throws -> User {
-        let request = try APIRequest<User>(
-            endpoint: "/users/profile",
-            method: .get,
-            requiresAuth: true
-        )
+        return try await perform("/users/profile", method: "GET", requiresAuth: true)
+    }
+    
+    // Update validateToken to use the new perform method
+    func validateToken(token: String) async throws -> AuthResponse {
+        var urlRequest = URLRequest(url: URL(string: "\(APIConfig.baseURL)/auth/validate")!)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        return try await APIClient.shared.perform(request)
+        return try await perform("/auth/validate", method: "GET", requiresAuth: true)
+    }
+    
+    // Update refreshToken to use the new perform method
+    func refreshToken(refreshToken: String) async throws -> AuthResponse {
+        var urlRequest = URLRequest(url: URL(string: "\(APIConfig.baseURL)/auth/refresh")!)
+        urlRequest.setValue("Bearer \(refreshToken)", forHTTPHeaderField: "Authorization")
+        
+        return try await perform("/auth/refresh", method: "POST", requiresAuth: true)
+    }
+    
+    // Update login to use the new perform method
+    func login(email: String, password: String) async throws -> AuthResponse {
+        let body = LoginRequest(email: email, password: password)
+        let encodedBody = try? JSONEncoder().encode(body)
+        
+        return try await perform("/auth/login", method: "POST", requiresAuth: false, body: encodedBody)
+    }
+    
+    // Update register to use the new perform method
+    func register(username: String, email: String, password: String) async throws -> AuthResponse {
+        let body = RegistrationRequest(username: username, email: email, password: password)
+        let encodedBody = try? JSONEncoder().encode(body)
+        
+        return try await perform("/auth/register", method: "POST", requiresAuth: false, body: encodedBody)
     }
 }
