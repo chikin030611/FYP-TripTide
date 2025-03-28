@@ -1,28 +1,5 @@
 import Foundation
 
-enum AuthError: LocalizedError {
-    case invalidCredentials
-    case networkError
-    case invalidResponse
-    case serverError(String)
-    case validationError([String: String])
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidCredentials:
-            return "Invalid email or password"
-        case .networkError:
-            return "Network error occurred"
-        case .invalidResponse:
-            return "Invalid response from server"
-        case .serverError(let message):
-            return message
-        case .validationError(let errors):
-            return errors.values.joined(separator: "\n")
-        }
-    }
-}
-
 @MainActor
 class AuthService {
     static let shared = AuthService()
