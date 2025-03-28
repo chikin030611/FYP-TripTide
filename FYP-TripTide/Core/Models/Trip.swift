@@ -70,6 +70,7 @@ extension Trip {
     }
 }
 
+// Mock data
 extension Trip {
     static let touristAttractions = [
         Place(
