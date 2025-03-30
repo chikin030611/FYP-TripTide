@@ -1,5 +1,5 @@
 {
-  "originHash" : "ff345b6495f0d56fc1164b51977ea10b3d7879539005fbaac384f67f2840cb33",
+  "originHash" : "f7f5be63b113bd651c5665a91f3920592d5eefee1458ef4e11289175f4fdbbed",
   "pins" : [
     {
       "identity" : "bottombar-swiftui",
@@ -8,24 +8,6 @@
       "state" : {
         "branch" : "master",
         "revision" : "26c5c48842632b39242bb268399651097ace653a"
-      }
-    },
-    {
-      "identity" : "cardslider#requirements",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Ramotion/cardslider#requirements",
-      "state" : {
-        "revision" : "016e2996d9f9fc20ac108ad82fd9fce007546be1",
-        "version" : "0.1.0"
-      }
-    },
-    {
-      "identity" : "horizoncalendar?tab=readme-ov-file#day-range-selection",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/airbnb/HorizonCalendar?tab=readme-ov-file#day-range-selection",
-      "state" : {
-        "branch" : "master",
-        "revision" : "697c6f22f7e2f6da69fd0ca5dca0d08c973ea3a8"
       }
     },
     {

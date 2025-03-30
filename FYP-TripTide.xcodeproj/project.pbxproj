@@ -8,11 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		5D14993C2D65D7CC004C08D1 /* BottomBar-SwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5D14993B2D65D7CC004C08D1 /* BottomBar-SwiftUI */; };
-		5D14994A2D6626B6004C08D1 /* CardSlider in Frameworks */ = {isa = PBXBuildFile; productRef = 5D1499492D6626B6004C08D1 /* CardSlider */; };
 		5D6E27882D26CC18007747FD /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 5D6E27872D26CC18007747FD /* JWTDecode */; };
 		5DA2C8ED2D23F00E001D5A4F /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */; };
 		5DAF4B672CEFAA5F0039CD4F /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 5DAF4B662CEFAA5F0039CD4F /* Inject */; };
-		5DF3B8242D6F74CE00653118 /* HorizonCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 5DF3B8232D6F74CE00653118 /* HorizonCalendar */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,9 +48,7 @@
 			files = (
 				5DA2C8ED2D23F00E001D5A4F /* KeychainSwift in Frameworks */,
 				5DAF4B672CEFAA5F0039CD4F /* Inject in Frameworks */,
-				5D14994A2D6626B6004C08D1 /* CardSlider in Frameworks */,
 				5D6E27882D26CC18007747FD /* JWTDecode in Frameworks */,
-				5DF3B8242D6F74CE00653118 /* HorizonCalendar in Frameworks */,
 				5D14993C2D65D7CC004C08D1 /* BottomBar-SwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,8 +96,6 @@
 				5DA2C8EC2D23F00E001D5A4F /* KeychainSwift */,
 				5D6E27872D26CC18007747FD /* JWTDecode */,
 				5D14993B2D65D7CC004C08D1 /* BottomBar-SwiftUI */,
-				5D1499492D6626B6004C08D1 /* CardSlider */,
-				5DF3B8232D6F74CE00653118 /* HorizonCalendar */,
 			);
 			productName = "FYP-TripTide";
 			productReference = 5D5661062CA5B031001E5D6B /* FYP-TripTide.app */;
@@ -137,8 +131,6 @@
 				5DA2C8EB2D23F00E001D5A4F /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				5D6E27862D26CC18007747FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */,
 				5D14993A2D65D7CC004C08D1 /* XCRemoteSwiftPackageReference "bottombar-swiftui" */,
-				5D1499482D6626B6004C08D1 /* XCRemoteSwiftPackageReference "cardslider" */,
-				5DF3B8222D6F74CE00653118 /* XCRemoteSwiftPackageReference "HorizonCalendar" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D5661072CA5B031001E5D6B /* Products */;
@@ -492,14 +484,6 @@
 				kind = branch;
 			};
 		};
-		5D1499482D6626B6004C08D1 /* XCRemoteSwiftPackageReference "cardslider" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Ramotion/cardslider#requirements";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
-			};
-		};
 		5D6E27862D26CC18007747FD /* XCRemoteSwiftPackageReference "JWTDecode.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/auth0/JWTDecode.swift.git";
@@ -524,14 +508,6 @@
 				minimumVersion = 1.5.2;
 			};
 		};
-		5DF3B8222D6F74CE00653118 /* XCRemoteSwiftPackageReference "HorizonCalendar" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/HorizonCalendar?tab=readme-ov-file#day-range-selection";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -539,11 +515,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D14993A2D65D7CC004C08D1 /* XCRemoteSwiftPackageReference "bottombar-swiftui" */;
 			productName = "BottomBar-SwiftUI";
-		};
-		5D1499492D6626B6004C08D1 /* CardSlider */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5D1499482D6626B6004C08D1 /* XCRemoteSwiftPackageReference "cardslider" */;
-			productName = CardSlider;
 		};
 		5D6E27872D26CC18007747FD /* JWTDecode */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -559,11 +530,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5DAF4B652CEFAA5F0039CD4F /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
-		};
-		5DF3B8232D6F74CE00653118 /* HorizonCalendar */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5DF3B8222D6F74CE00653118 /* XCRemoteSwiftPackageReference "HorizonCalendar" */;
-			productName = HorizonCalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
