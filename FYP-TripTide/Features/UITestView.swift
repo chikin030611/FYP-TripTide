@@ -8,7 +8,6 @@
 import UIKit
 import SwiftUI
 import Inject
-import HorizonCalendar
 
 struct UITestView: View {
     @ObserveInjection var injection
