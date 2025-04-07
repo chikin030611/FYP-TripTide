@@ -3,7 +3,7 @@ import UniformTypeIdentifiers
 
 struct EditItineraryView: View {
     @EnvironmentObject private var themeManager: ThemeManager
-    @ObservedObject var viewModel: EditItineraryViewModel
+    @StateObject var viewModel: EditItineraryViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTab: Int = 0
@@ -17,7 +17,7 @@ struct EditItineraryView: View {
             numberOfDays: numberOfDays,
             isEditing: isEditing
         )
-        self._viewModel = ObservedObject(wrappedValue: vm)
+        self._viewModel = StateObject(wrappedValue: vm)
     }
 
     var body: some View {
